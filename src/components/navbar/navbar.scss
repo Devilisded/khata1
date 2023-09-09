@@ -1,0 +1,50 @@
+.active{
+  border-radius: 50%;
+  padding: 10px;
+  transition: all 0.5s ease-in;
+  background-color: white;
+  color: #008cffb4;
+  border: 1px solid #008cffb4;
+}
+.navbar {
+  background-color: #ffffff;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  .left {
+    margin-left: 100px;
+  }
+  .center {
+    .items {
+      .item {
+        .icon {
+          background-color: #008cffb4;
+          border-radius: 50%;
+          color: white;
+          padding: 10px;
+          transition: all 0.5s ease-in;
+          border: 1px solid transparent;
+        }
+
+        .icon:hover {
+          background-color: white;
+          color: #008cffb4;
+          border: 1px solid #008cffb4;
+        }
+
+        .name {
+          color: #008cff;
+        }
+      }
+    }
+  }
+  .right {
+    margin-right: 100px;
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}

@@ -1,0 +1,66 @@
+.mainpage{
+    .content{
+        .left{
+            border-right: 1px solid lightgrey;
+            .heading{
+                color: #008cffb4;
+                border-bottom:1px solid lightgrey;
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 15px;
+                
+                .num{
+                    background-color: #008cffb4;
+                    font-size: 13px;
+                    width: 3rem;
+                    height: 1.7rem;
+                    padding: 0.2rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 2rem;
+                }
+            }
+            .giveget{
+                padding: 20px;
+                border-bottom:1px solid lightgrey;
+                button{
+                    border: 1px solid #008cff;
+                    color: #008cff;
+                    padding: 10px;
+                    font-weight: 600;
+                    border-radius: 10px;
+                    transition: all 400ms ease-in;
+                }
+                button:hover{
+                    background-color:#008cff;
+                    border: 1px solid transparent;
+                    color: white;
+                }
+            }
+            .heading1{
+                padding: 20px;
+                border-bottom: 1px solid lightgrey;
+                display: flex;
+                justify-content: space-between;
+                font-weight: 600;
+                background-color: rgb(240, 240, 240);
+            }
+        }
+        .right{
+            .customer{
+                padding: 10px;
+            }
+            .heading{
+                padding: 30px;
+                display: flex;
+                justify-content: space-between;
+                border-bottom: 1px solid lightgrey;
+                font-size: 19px;
+                
+            }
+        }
+    }
+}
