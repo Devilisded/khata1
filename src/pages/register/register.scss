@@ -16,10 +16,11 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
+      h1{
+        color: #1976d2;
+      }
       h1,
-      h2,
-      h6,
-      p {
+      h2{
         margin: 0;
       }
     }

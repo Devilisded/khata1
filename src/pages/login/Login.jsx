@@ -4,13 +4,16 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import "./login.scss";
-
+import { InputAdornment } from "@mui/material";
+import { IconLock, IconUser } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 function Login() {
+
   return (
     <div className="login-section">
       <div className="container1">
         <div className="section-1">
-          <h1>ACCBOOK</h1>
+          <h1 className="text-3xl">ACCBOOK</h1>
           <div>Hi, Welcome Back</div>
         </div>
         <div className="section-2">
@@ -22,7 +25,14 @@ function Login() {
             noValidate
             autoComplete="off"
           >
-            <TextField id="standard-basic" label="Email" variant="standard" />
+            <TextField id="standard-basic" label="Email" variant="standard" 
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <IconUser />
+                              </InputAdornment>
+                            ),
+                          }}/>
           </Box>
 
           <Box sx={{ "& > :not(style)": { m: 1, width: "45ch" } }}>
@@ -31,6 +41,13 @@ function Login() {
               label="Password"
               type="password"
               variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconLock />
+                  </InputAdornment>
+                ),
+              }}
             />
           </Box>
         </div>
@@ -39,16 +56,20 @@ function Login() {
             <Checkbox inputProps={{ "aria-label": "controlled" }} />
             Keep me logged in
           </div>
-          <div>Forgot Password?</div>
         </div>
         <div className="section-4">
+          <Link to="/">
           <Button variant="contained" sx={{ width: "50ch" }}>
             Log In
           </Button>
+          </Link>
         </div>
         <div>
           <p>
-            <a href="#">Don't have an account?</a>
+          <div className="text-center">Forgot Password?</div>
+          <Link to="/register">
+            <p className=" cursor-pointer">Don't Have An Account ?</p>
+          </Link>
           </p>
         </div>
       </div>

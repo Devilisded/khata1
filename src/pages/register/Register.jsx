@@ -8,6 +8,7 @@ import { IconInbox, IconPhoneCall, IconUser } from "@tabler/icons-react";
 import { IconLock } from "@tabler/icons-react";
 import IconButton from "@mui/material/IconButton";
 import "./register.scss";
+import { Link } from "react-router-dom";
 function Register() {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -18,10 +19,8 @@ function Register() {
     <div className="register">
       <div className="register-section">
         <div className="section-1">
-          <h1>AccBook</h1>
+          <h1 className="text-3xl">AccBook</h1>
           <h2>Sign up</h2>
-          <p>Enter your credentials to continue</p>
-          <h6>Sign up with Email address</h6>
         </div>
         <div className="section-2">
           <Box
@@ -81,12 +80,6 @@ function Register() {
               }}
             />
           </Box>
-
-          {/*<Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                    <IconAt sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                    <TextField id="input-with-sx" label="With sx" variant="standard" />
-                </Box>*/}
-
           <Box
             component="form"
             sx={{
@@ -137,9 +130,11 @@ function Register() {
           </Button>
         </div>
         <div className="section-5">
+          <Link to="/login">    
           <p>
-            <a href="#">Already have an account?</a>
+            Already have an account?
           </p>
+          </Link>
         </div>
       </div>
     </div>
