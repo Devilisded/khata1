@@ -1,9 +1,9 @@
-import MainPage from "./pages/mainpage/MainPage"
+import Login from "./pages/login/Login"
 
 
 const App = () => {
   return (
-    <div><MainPage/></div>
+    <div><Login/></div>
   )
 }
 
