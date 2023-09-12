@@ -1,5 +1,9 @@
 import { IconBuildingFactory2, IconServer, IconSettings, IconTruckLoading, IconUser } from "@tabler/icons-react"
 import "./navbar.scss"
+import { useState } from "react";
+import { Menu , MenuItem } from "@mui/material";
+import Fade from '@mui/material/Fade';
+import { Link } from "react-router-dom";
 const Navbar = () => {
     const items=[
         {
@@ -23,7 +27,14 @@ const Navbar = () => {
         }
 
     ]
-
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
 
 
   return (
@@ -47,7 +58,23 @@ const Navbar = () => {
       </div>
       <div className="right">
         <div className="profile">
-            <div>AB</div>
+            <div onClick={handleClick} className=" cursor-pointer">AB</div>
+            <Menu
+        id="fade-menu"
+        MenuListProps={{
+          'aria-labelledby': 'fade-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Fade}
+      >
+        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <Link to="/login">
+        <MenuItem>Logout</MenuItem>
+        </Link>
+      </Menu>
         </div>
       </div>
     </div>
