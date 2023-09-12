@@ -47,6 +47,7 @@
     }
 
     .cards{
+        height: calc(100vh - 283px);
         overflow-y: scroll;
     }
 }

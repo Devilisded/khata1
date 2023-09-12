@@ -1,11 +1,11 @@
 import { IconArrowDownLeft, IconArrowUpRight, IconPlus } from "@tabler/icons-react";
 import CardItem from "../cardItem/CardItem";
 import "./mainleft.scss"
-const MainLeft = () => {
+const MainLeft = (props) => {
   return (
       <div className="left bg-white shadow-lg w-full flex flex-col h-full">
         <div className="heading text-xl font-semibold">
-          Customer <p className=" text-sky-600 num font-semibold">20</p>
+          Customer <p className=" text-sky-600 num font-semibold">{props.users.length}</p>
         </div>
         <div className="giveget flex justify-between">
           <div className="give text-gray-500 flex gap-1 items-center">
@@ -26,19 +26,11 @@ const MainLeft = () => {
           <div className="amount">Amount</div>
         </div>
         <div className="cards">
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
-          <CardItem />
+          {
+            props.users.map((item,index)=>(
+              <CardItem key={index} users={item}/>
+            ))
+          }
         </div>
       </div>
   );

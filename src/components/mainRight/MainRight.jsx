@@ -2,7 +2,7 @@ import CardTran from "../cardTran/CardTran";
 import Transaction from "../transaction/Transaction";
 import "./mainright.scss"
 
-const MainRight = () => {
+const MainRight = (props) => {
   return (
     <div className="right bg-white shadow-xl w-full">
       <div className="customer">
@@ -16,21 +16,11 @@ const MainRight = () => {
         </div>
       </div>
       <div className="transactions">
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
-        <Transaction />
+        {
+          props.transactions.map((item,index)=>(
+            <Transaction key={index} transactions={item}/>
+          ))
+        }
       </div>
       <div className="btn shadow-lg">
         <button className="pay text-red-600">Pay ₹</button>

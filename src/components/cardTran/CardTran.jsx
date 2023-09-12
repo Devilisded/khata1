@@ -5,12 +5,12 @@ const CardTran = () => {
   return (
     <div>
     <div>
-      <div class="flex justify-between space-x-6 items-center p-6">
-        <div class="flex items-center gap-4">
+      <div className="flex justify-between space-x-6 items-center p-6">
+        <div className="flex items-center gap-4">
         <div className="icon2">
             <IconUser className="text-blue-500"/>
           </div>
-          <div class="flex flex-col">
+          <div className="flex flex-col">
             <span className="text-xl">John Doe</span>
             <span className="text-slate-500 text-xs">+91 9466210083</span>
           </div>
