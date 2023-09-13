@@ -16,7 +16,7 @@ const MainLeft = (props) => {
             You'll Get: <span className="text-gray-700 font-bold">₹ 300</span>
             <IconArrowDownLeft className="text-green-600" />
           </div>
-          <button className="flex gap-1 " onClick={props.click1}>
+          <button className="flex gap-1 " onClick={props.add}>
             <IconPlus className="w-5" />
             Add Customer
           </button>

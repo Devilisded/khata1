@@ -1,7 +1,7 @@
 import { IconChecklist, IconSettings, IconUser } from "@tabler/icons-react"
 import "./cardtran.scss"
 
-const CardTran = () => {
+const CardTran = (props) => {
   return (
     <div>
     <div>
@@ -18,7 +18,7 @@ const CardTran = () => {
         <div>
           <div className="flex items-center gap-6 buttons">
             <button><IconChecklist className="w-10"/>Report</button>
-            <button><IconSettings/></button>
+            <button onClick={props.edit}><IconSettings/></button>
           </div>
         </div>
       </div>
