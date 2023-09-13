@@ -8,12 +8,15 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import "./mainpage.scss";
 import AddCustomer from "../../components/addCustomer/AddCustomer";
+import Pay from "../../components/pay/Pay";
+import Receive from "../../components/receive/Receive";
+import Edit from "../../components/edit/Edit";
 const MainPage = () => {
   const [state, setState] = useState({
     add: false,
-    edit:false,
-    pay:false,
-    receive:false,
+    edit: false,
+    pay: false,
+    receive: false,
   });
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -24,7 +27,21 @@ const MainPage = () => {
     }
     setState({ ...state, [anchor]: open });
   };
-  const list = (anchor) => <Box sx={{ width: 350 }} role="presentation">{anchor==="add"?<AddCustomer/>:anchor==="edit"?"Edit" : anchor==="pay"?"Pay":anchor==="receive"?"Receive":"-"}</Box>;
+  const list = (anchor) => (
+    <Box sx={{ width: 350 }} role="presentation">
+      {anchor === "add" ? (
+        <AddCustomer />
+      ) : anchor === "edit" ? (
+        <Edit/>
+      ) : anchor === "pay" ? (
+        <Pay/>
+      ) : anchor === "receive" ? (
+        <Receive/>
+      ) : (
+        "-"
+      )}
+    </Box>
+  );
   const users = [
     {
       name: "Akshit",
@@ -91,10 +108,19 @@ const MainPage = () => {
       <div className="mainpage">
         <Navbar />
         <div className="content flex">
-          <MainLeft users={users} click={handleClick} add={toggleDrawer("add", true)} />
+          <MainLeft
+            users={users}
+            click={handleClick}
+            add={toggleDrawer("add", true)}
+          />
 
           {active ? (
-            <MainRight transactions={transactions} edit={toggleDrawer("edit",true)} pay={toggleDrawer("pay",true)} receive={toggleDrawer("receive",true)}/>
+            <MainRight
+              transactions={transactions}
+              edit={toggleDrawer("edit", true)}
+              pay={toggleDrawer("pay", true)}
+              receive={toggleDrawer("receive", true)}
+            />
           ) : (
             <SelectCustomer />
           )}

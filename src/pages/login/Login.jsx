@@ -9,7 +9,7 @@ const Login = () => {
         <div className="flex rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 bg-white sm:mx-0 h-[500px]" >
             <div className="flex flex-col w-full md:w-1/2 p-4">
                 <div className="flex flex-col flex-1 justify-center mb-8">
-                    <h1 className="text-4xl text-center font-thin">Welcome Back</h1>
+                    <h1 className="text-4xl text-center text-sky-800">Login</h1>
                     <div className="w-full mt-4">
                         <div className="form-horizontal w-3/4 mx-auto">
                             <div className="flex flex-col mt-4">
@@ -23,7 +23,7 @@ const Login = () => {
                             </div>
                             <div className="flex flex-col mt-8">
                                 <Link to="/">                                
-                                <button  className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded w-32">
+                                <button  className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded w-full">
                                     Login
                                 </button>
                                 </Link>

@@ -1,10 +1,9 @@
 ::-webkit-scrollbar {
   width: 4px;
 }
-.sel{
-    border: 1px solid lightgrey;
-    border-radius: 4px;
-    
+.sel {
+  border: 1px solid lightgrey;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -64,17 +63,17 @@
   width: 100%;
   position: fixed;
   width: 350px;
-  
+
   bottom: 0px;
   .add_btn {
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    background-color:#D1FADF;
+    background-color: #d1fadf;
     transition: all 400ms ease-in;
   }
-  .add_btn:hover{
-    background-color: #39B366;
+  .add_btn:hover {
+    background-color: #39b366;
     color: white;
   }
 }

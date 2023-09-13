@@ -1,144 +1,55 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import InputAdornment from "@mui/material/InputAdornment";
-import { IconInbox, IconPhoneCall, IconUser } from "@tabler/icons-react";
-import { IconLock } from "@tabler/icons-react";
-import IconButton from "@mui/material/IconButton";
-import "./register.scss";
-import { Link } from "react-router-dom";
-function Register() {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+import { Link } from 'react-router-dom'
+
+const Register = () => {
   return (
-    <div className="register">
-      <div className="register-section">
-        <div className="section-1">
-          <h1 className="text-3xl">AccBook</h1>
-          <h2>Sign up</h2>
-        </div>
-        <div className="section-2">
-          <Box
-            component="form"
-            sx={{
-              "& > :not(style)": { m: 1, width: "21.5ch", pb: 1 },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              id="standard-basic"
-              label="Name"
-              variant="standard"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconUser />
-                  </InputAdornment>
-                ),
-              }}
-            />
+    <div>
+      <div className="bg-blue-400 h-screen w-screen">
+    <div className="flex flex-col items-center flex-1 h-full justify-center px-4 sm:px-0">
+        <div className="flex rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 bg-white sm:mx-0 h-[500px]" >
+            <div className="flex flex-col w-full md:w-1/2 p-4">
+                <div className="flex flex-col flex-1 justify-center mb-8">
+                    <h1 className="text-4xl text-center text-sky-800">Register</h1>
+                    <div className="w-full mt-4">
+                        <div className="form-horizontal w-3/4 mx-auto">
+                        <div className="flex flex-col mt-4">
+                                <input type="text" className="flex-grow h-8 px-2 border rounded border-grey-400" name="email" placeholder="Name"/>
+                            </div>
+                            <div className="flex flex-col mt-4">
+                                <input type="text" className="flex-grow h-8 px-2 border rounded border-grey-400" name="email" placeholder="Phone Number"/>
+                            </div>
+                            <div className="flex flex-col mt-4">
+                                <input type="text" className="flex-grow h-8 px-2 border rounded border-grey-400" name="email" placeholder="Email"/>
+                            </div>
+                            <div className="flex flex-col mt-4">
+                                <input id="password" type="password" className="flex-grow h-8 px-2 rounded border border-grey-400" name="password" required placeholder="Password"/>
+                            </div>
 
-            <TextField
-              id="standard-basic"
-              label="Phone Number"
-              variant="standard"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconPhoneCall />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-
-          <Box
-            component="form"
-            sx={{
-              "& > :not(style)": { m: 1, width: "45ch", pb: 1 },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              id="standard-basic"
-              label="Email"
-              placeholder="Email"
-              variant="standard"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconInbox />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          <Box
-            component="form"
-            sx={{
-              "& > :not(style)": { m: 1, width: "45ch" },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              id="standard-basic"
-              label="Password"
-              placeholder="Password"
-              type={showPassword ? "text" : "password"}
-              variant="standard"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconLock />
-                  </InputAdornment>
-                ),
-
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
+                            <div className="flex flex-col mt-8">
+                                <Link to="/login">                                
+                                <button  className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded w-full">
+                                    Sign Up
+                                </button>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="text-center mt-4">
+                        </div>
+                        <div className='text-center mt-4'>
+                          <Link to="/login">
+                          <p className='no-underline hover:underline text-blue-dark text-xs'>
+                            Already have an account ?
+                          </p>
+                          </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="hidden md:block md:w-1/2 rounded-r-lg cover"></div>
         </div>
-        <div className="section-3">
-          <div>
-            <span>
-              <Checkbox inputProps={{ "aria-label": "controlled" }} />
-            </span>
-            Agree with Terms & Condition.
-          </div>
-        </div>
-        <div className="section-4">
-          <Button variant="contained" sx={{ width: "50ch" }}>
-            Sign Up
-          </Button>
-        </div>
-        <div className="section-5">
-          <Link to="/login">    
-          <p>
-            Already have an account?
-          </p>
-          </Link>
-        </div>
-      </div>
     </div>
-  );
+</div>
+    </div>
+  )
 }
 
-export default Register;
+export default Register

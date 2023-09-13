@@ -1,0 +1,43 @@
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.heading {
+  padding: 10px;
+  border-bottom: 1px solid rgb(214, 214, 214);
+}
+
+
+
+.add-customer-btn-wrapper {
+  position: absolute;
+  bottom: 0px;
+  z-index: 99;
+  background-color: white;
+  padding: 18px 20px;
+  width: 100%;
+  position: fixed;
+  width: 350px;
+  bottom: 0px;
+  .add_btn1 {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fee4e2;
+    transition: all 400ms ease-in;
+  }
+  .add_btn1:hover{
+    background-color: rgb(220, 38, 38);
+    color: white;
+  }
+}
+
+.css-wb57ya-MuiFormControl-root-MuiTextField-root {
+  margin-top: 0 !important;
+}

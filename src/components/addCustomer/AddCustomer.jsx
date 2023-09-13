@@ -14,13 +14,13 @@ const AddCustomer = () => {
   };
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const label1 = { inputProps: { "aria-label": "Checkbox demo" } };
+const [select,setSelect]=useState(false);
 
-const [select,setSelect]=useState(false)
   return (
     <div>
     <div >
     <Box sx={{ width: 350 }} role="presentation">
-      <h1 className="text_left heading font-semibold text-2xl">Add Customer</h1>
+      <h1 className="text_left heading font-semibold text-2xl flex justify-between items-center">Add Customer</h1>
 
       <div className="section-wrapper-2">
         <div className="section-2">
@@ -63,8 +63,8 @@ const [select,setSelect]=useState(false)
                 required
               />
               <select className={select?"text-green-600 bg-white p-3 sel":"text-red-600 bg-white p-3 sel"}>
-                <option onClick={()=>setSelect(false)}>Debit</option>
-                <option onClick={()=>setSelect(true)}>Credit</option>
+                <option value={10} onClick={()=>setSelect(false)}>Pay</option>
+                <option value={20} onClick={()=>setSelect(true)}>Receive</option>
               </select>
             </Box>
           </Box>
