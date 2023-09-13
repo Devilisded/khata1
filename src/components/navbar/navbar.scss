@@ -1,8 +1,12 @@
+.active{
+  background: #e8f0fe;
+  border-bottom: 2px solid #3b82f6;
+}
 .navbar {
   background-color: #ffffff;
   position: sticky;
-  padding: 5px;
   top: 0;
+  
   .left {
     margin-left: 20px;
   font-weight: 600;
@@ -15,6 +19,8 @@
   .center {
     .items {
       .item {
+        width: 100px;
+        height: 85px;
         .icon1 {
           background: inherit;
           color: #008cff;

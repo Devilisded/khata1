@@ -10,29 +10,33 @@ import "./navbar.scss";
 import { useState } from "react";
 import { Menu, MenuItem } from "@mui/material";
 import Fade from "@mui/material/Fade";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 const Navbar = () => {
   const items = [
     {
       name: "Customer",
       icon: <IconUser />,
-      class: "active",
+      linkto:"/"
     },
     {
       name: "Supplier",
       icon: <IconTruckLoading />,
+      linkto:"/supplier"
     },
     {
       name: "Inventory",
       icon: <IconBuildingFactory2 />,
+      linkto:"/inventory"
     },
     {
       name: "Items",
       icon: <IconServer />,
+      linkto:"/items"
     },
     {
       name: "Settings",
       icon: <IconSettings />,
+      linkto:"/settings"
     },
   ];
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,15 +57,17 @@ const Navbar = () => {
         </div>
       </div>
       <div className="center flex ">
-        <div className="items flex gap-14">
+        <div className="items flex">
           {items.map((item, index) => (
+            <NavLink activeclassname="active" key={index} to={item.linkto}>
             <div
               className="item flex flex-col items-center gap-1 justify-center cursor-pointer"
-              key={index}
+              
             >
               <div className={"icon1"}>{item.icon}</div>
               <div className={"name text-xs"}>{item.name}</div>
             </div>
+            </NavLink>
           ))}
         </div>
       </div>

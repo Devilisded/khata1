@@ -12,7 +12,7 @@ const CardItem = (props) => {
     check()
   })
   return (
-    <div className="cardItem cursor-pointer px-5">
+    <div className="cardItem cursor-pointer px-5" onClick={props.click}>
       <div className="flex justify-between  items-center p-3 " style={{borderBottom:"1px solid rgb(245 245 245"}}>
         <div className="flex items-center gap-2">
           <div className="icon">
