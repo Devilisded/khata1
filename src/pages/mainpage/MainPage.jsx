@@ -11,6 +11,7 @@ import AddCustomer from "../../components/addCustomer/AddCustomer";
 import Pay from "../../components/pay/Pay";
 import Receive from "../../components/receive/Receive";
 import Edit from "../../components/edit/Edit";
+import { useEffect } from "react";
 const MainPage = () => {
   const [state, setState] = useState({
     add: false,
@@ -75,6 +76,15 @@ const MainPage = () => {
   const handleClick = () => {
     setActive(true);
   };
+  useEffect(() => {
+    const handleContextmenu = e => {
+        e.preventDefault()
+    }
+    document.addEventListener('contextmenu', handleContextmenu)
+    return function cleanup() {
+        document.removeEventListener('contextmenu', handleContextmenu)
+    }
+}, [ ])
   return (
     <React.Fragment>
       <Drawer

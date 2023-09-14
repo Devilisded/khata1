@@ -18,7 +18,7 @@ const Navbar = () => {
     {
       name: "Customer",
       icon: <IconUser />,
-      linkto:"/customer"
+      linkto:"/"
     },
     {
       name: "Supplier",
@@ -66,8 +66,8 @@ const Navbar = () => {
               className="item flex flex-col items-center gap-1 justify-center cursor-pointer"
               
             >
-              <div className={"icon1"}>{item.icon}</div>
-              <div className={"name text-xs"}>{item.name}</div>
+              <div className="icon1">{item.icon}</div>
+              <div className="name text-xs">{item.name}</div>
             </div>
             </NavLink>
           ))}

@@ -1,19 +1,15 @@
 :root {
-    //--bs-color: #008cff;
     --bs-color: white;
   }
   
   body {
     margin: 0;
-    //font-family: "Roboto Slab", serif !important;
   }
   .css-ibpfkq{
     background: transparent !important;
     box-shadow: none !important;
   }
   .homepage-main {
-    background-image: url("https://storage.googleapis.com/reskilll/Quiz%20(1)kuqofOqIXe5P9Q.png");
-    background-image: url("https://wallpaperaccess.com/full/2690438.jpg");
     background-image: url("https://finary.com/img/homepage/home/shape-video-poster.png");
     position: relative;
     background-repeat: no-repeat;
@@ -52,7 +48,6 @@
             padding: 10px 20px;
             text-decoration: none;
             font-size: 20px;
-            //background-color: #EEB830;
             opacity: 1;
           }
         }
@@ -61,7 +56,6 @@
   
     .section {
       padding: 0px 0;
-      //max-height: 95vh;
       height: 95%;
       .section-wrapper {
         position: relative;
@@ -97,11 +91,10 @@
           text-decoration: none;
           padding: 1% 14% 1% 14%;
           margin: 0 20px;
-          //background: #6699ff;
+
           color: white;
           transition: 0.3s;
           display: inline-flex;
-          //background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(55, 81, 126, 1) 27%, rgba(0, 212, 255, 1) 100%);
           border: 2px solid white;
           font-size: 16px;
           padding: 16px;
@@ -137,8 +130,6 @@
     padding: 0 4%;
     position: absolute;
     top: 75%;
-    //bottom: 115px;
-    //bottom: 10px;
     text-align: start !important;
     align-items: start;
   
@@ -174,7 +165,6 @@
       .sec-1 {
         .main-heading {
           h1 {
-            //all: revert;
             font-size: 40px;
             color: white;
             margin-top: 0;
@@ -261,7 +251,6 @@
   
           .read-more {
             text-decoration: none !important;
-            //background: #6699ff;
             color: black;
             transition: 0.3s;
             display: inline-flex;
@@ -367,20 +356,6 @@
             transition: all 5s ease-in;
           }
         }
-        /*
-        .bg-img {
-          background-image: url("https://jan.coderdemo.com/newwp/bullion/wp-content/uploads/2023/03/shape-27.png");
-          position: absolute;
-          left: 40px;
-          top: 90px;
-          width: 74%;
-          height: 120px;
-          background-size: cover;
-          background-repeat: no-repeat;
-          opacity: 0;
-          transition: all 500ms ease;
-        }
-        */
         p {
           all: revert;
           padding-top: 5px;
@@ -454,7 +429,6 @@
       background-color: #edf2f8;
       width: 100%;
       position: relative;
-      //top: -820px;
       height: 500px;
       @media screen and (max-width: 500px) {
         height: 800px;

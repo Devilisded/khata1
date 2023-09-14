@@ -15,13 +15,13 @@ const App = () => {
       element:<Register/>
     },
     {
-      path:"/customer",
+      path:"/",
       element:<MainPage/>
     },{
       path:"*",
       element:<NotFound/>
     },{
-      path:"/",
+      path:"/home",
       element:<Home/>
     }
   ])
