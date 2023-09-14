@@ -15,6 +15,12 @@ const users = [
       userId:3,
       name: "Sunil",
     },
+    {
+      userId:4,
+      name:"Shiv",
+      type:"Get",
+      amount:1000
+    }
   ];
 
   export default users
