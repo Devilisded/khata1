@@ -121,7 +121,7 @@ export default function Home() {
                 <Box className="footer-section" sx={{ flexGrow: 1 }}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={3} className="sec-1 sec">
-                      <Item className="">
+                      <Item className=" bg-inherit shadow-inherit">
                         <div className="main-heading">
                           <h1>
                             Open Your <br />
