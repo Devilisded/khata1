@@ -22,7 +22,7 @@ const Login = () => {
                                 <input type="checkbox" name="remember" id="remember" className="mr-2"/> <label for="remember" className="text-sm text-grey-dark">Remember Me</label>
                             </div>
                             <div className="flex flex-col mt-8">
-                                <Link to="/">                                
+                                <Link to="/customer">                                
                                 <button  className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded w-full">
                                     Login
                                 </button>

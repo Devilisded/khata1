@@ -33,6 +33,7 @@ className="w-full"
                     id="outlined-basic"
                     variant="outlined"
                     className="w-full m-0"
+size="small"
                     required
                   />
                 </Box>

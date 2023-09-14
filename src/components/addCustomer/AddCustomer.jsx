@@ -39,6 +39,7 @@ const [select,setSelect]=useState(false);
                 id="outlined-basic"
                 variant="outlined"
                 className="w-full"
+                size="small"
                 required
               />
             </Box>
@@ -50,6 +51,7 @@ const [select,setSelect]=useState(false);
                 label="Phone Number"
                 type="tel"
                 className="w-full"
+                size="small"
                 required
               />
             </Box>
@@ -60,9 +62,10 @@ const [select,setSelect]=useState(false);
                 variant="outlined"
                 label="Enter amount"
                 className="sec-1"
+                size="small"
                 required
               />
-              <select className={select?"text-green-600 bg-white p-3 sel":"text-red-600 bg-white p-3 sel"}>
+              <select className={select?"text-green-600 bg-white p-1 sel":"text-red-600 bg-white p-1 sel"}>
                 <option value={10} onClick={()=>setSelect(false)}>Pay</option>
                 <option value={20} onClick={()=>setSelect(true)}>Receive</option>
               </select>
@@ -90,7 +93,7 @@ const [select,setSelect]=useState(false);
                     variant="outlined"
                     label="GST IN"
                 className="w-full"
-
+                size="small"
                   />
                 </Box>
                 <p className="text-xl font-semibold">Shipping Address</p>
@@ -100,7 +103,7 @@ const [select,setSelect]=useState(false);
                     label="Flat / Building Number"
                     variant="outlined"
                 className="w-full"
-
+size="small"
                   />
                 </Box>
 
@@ -110,7 +113,7 @@ const [select,setSelect]=useState(false);
                     label="Area / Locality"
                     variant="outlined"
                 className="w-full"
-
+size="small"
                   />
                 </Box>
                 <Box className="box-sec">
@@ -120,7 +123,7 @@ const [select,setSelect]=useState(false);
                     variant="outlined"
                     className="w-full"
 
-
+size="small"
                   />
                 </Box>
                 <Box className="box-sec">
@@ -129,7 +132,7 @@ const [select,setSelect]=useState(false);
                     label="PIN Code"
                     variant="outlined"
                 className="w-full"
-
+size="small"
                   />
                 </Box>
                 <Box className="box-sec">
@@ -138,6 +141,7 @@ const [select,setSelect]=useState(false);
                     label="City"
                     variant="outlined"
                     className="sec-1 w-full"
+                    size="small"
                   />
 
                   <TextField
@@ -145,6 +149,7 @@ const [select,setSelect]=useState(false);
                     label="State"
                     variant="outlined"
                     className="sec-2"
+                    size="small"
                   />
                 </Box>
               </Box>
@@ -174,6 +179,7 @@ const [select,setSelect]=useState(false);
                       label="Flat / Building Number"
                       variant="outlined"
                       className="w-full"
+                      size="small"
                     />
                   </Box>
 
@@ -183,7 +189,7 @@ const [select,setSelect]=useState(false);
                       label="Area / Locality"
                       variant="outlined"
                       className="w-full"
-
+                      size="small"
                     />
                   </Box>
                   <Box className="box-sec">
@@ -192,7 +198,7 @@ const [select,setSelect]=useState(false);
                       label="Area / Locality"
                       variant="outlined"
                       className="w-full"
-
+                      size="small"
                     />
                   </Box>
                   <Box className="box-sec">
@@ -201,6 +207,7 @@ const [select,setSelect]=useState(false);
                       label="PIN Code"
                       variant="outlined"
                       className="w-full"
+                      size="small"
                     />
                   </Box>
                   <Box className="box-sec">
@@ -209,6 +216,7 @@ const [select,setSelect]=useState(false);
                       label="City"
                       variant="outlined"
                       className="sec-1"
+                      size="small"
                     />
 
                     <TextField
@@ -216,6 +224,7 @@ const [select,setSelect]=useState(false);
                       label="State"
                       variant="outlined"
                       className="sec-2"
+                      size="small"
                     />
                   </Box>
                 </Box>

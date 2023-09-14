@@ -1,6 +1,8 @@
 import {
   IconBook2,
+  IconBriefcase,
   IconBuildingFactory2,
+  IconLogout,
   IconServer,
   IconSettings,
   IconTruckLoading,
@@ -16,7 +18,7 @@ const Navbar = () => {
     {
       name: "Customer",
       icon: <IconUser />,
-      linkto:"/"
+      linkto:"/customer"
     },
     {
       name: "Supplier",
@@ -86,10 +88,10 @@ const Navbar = () => {
             onClose={handleClose}
             TransitionComponent={Fade}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
+            <MenuItem className="gap-2" onClick={handleClose}><IconUser className="text-slate-600 w-5"/>Profile</MenuItem>
+            <MenuItem className="gap-2" onClick={handleClose}><IconBriefcase className="text-slate-600 w-5"/> Account</MenuItem>
             <Link to="/login">
-              <MenuItem>Logout</MenuItem>
+              <MenuItem className="gap-2"><IconLogout className="text-slate-600 w-5"/>Logout</MenuItem>
             </Link>
           </Menu>
         </div>
