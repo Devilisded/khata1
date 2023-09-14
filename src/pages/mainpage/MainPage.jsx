@@ -12,6 +12,9 @@ import Pay from "../../components/pay/Pay";
 import Receive from "../../components/receive/Receive";
 import Edit from "../../components/edit/Edit";
 import { useEffect } from "react";
+import users from "./dummyData";
+import { UserContext } from "../../context/UserIdContext";
+import { useContext } from "react";
 const MainPage = () => {
   const [state, setState] = useState({
     add: false,
@@ -43,21 +46,6 @@ const MainPage = () => {
       )}
     </Box>
   );
-  const users = [
-    {
-      name: "Akshit",
-      type: "Get",
-      amount: 300,
-    },
-    {
-      name: "Harsh",
-      type: "Give",
-      amount: 400,
-    },
-    {
-      name: "Sunil",
-    },
-  ];
   const transactions = [
     {
       date: "10 Sep 2023",
@@ -73,18 +61,22 @@ const MainPage = () => {
     },
   ];
   const [active, setActive] = useState(false);
-  const handleClick = () => {
-    setActive(true);
-  };
-  useEffect(() => {
-    const handleContextmenu = e => {
-        e.preventDefault()
-    }
-    document.addEventListener('contextmenu', handleContextmenu)
-    return function cleanup() {
-        document.removeEventListener('contextmenu', handleContextmenu)
-    }
-}, [ ])
+  const {userId}=useContext(UserContext)
+  const checkActive=()=>{
+    userId>0?setActive(true):setActive(false);
+  }
+  useEffect(()=>{
+    checkActive();
+  },[userId])
+//   useEffect(() => {
+//     const handleContextmenu = e => {
+//         e.preventDefault()
+//     }
+//     document.addEventListener('contextmenu', handleContextmenu)
+//     return function cleanup() {
+//         document.removeEventListener('contextmenu', handleContextmenu)
+//     }
+// }, [ ])
   return (
     <React.Fragment>
       <Drawer
@@ -120,7 +112,6 @@ const MainPage = () => {
         <div className="content flex">
           <MainLeft
             users={users}
-            click={handleClick}
             add={toggleDrawer("add", true)}
           />
 

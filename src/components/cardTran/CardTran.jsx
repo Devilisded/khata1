@@ -1,7 +1,10 @@
 import { IconChecklist, IconSettings, IconUser } from "@tabler/icons-react"
 import "./cardtran.scss"
-
+import { useContext } from "react"
+import { UserContext } from "../../context/UserIdContext"
+import users from "../../pages/mainpage/dummyData"
 const CardTran = (props) => {
+  const {userId}=useContext(UserContext)
   return (
     <div>
     <div>
@@ -11,7 +14,11 @@ const CardTran = (props) => {
             <IconUser className="text-blue-500"/>
           </div>
           <div className="flex flex-col">
-            <span className="text-xl">John Doe</span>
+            {
+              users.filter(persons=>persons.userId==userId).map(filteredPersons=>(
+                <span className="text-xl">{filteredPersons.name}</span>
+              ))
+            }
             <span className="text-slate-500 text-xs">+91 9466210083</span>
           </div>
         </div>
