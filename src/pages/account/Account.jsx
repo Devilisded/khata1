@@ -187,6 +187,7 @@ export default function Account() {
                 variant="outlined"
                 size="small"
                 label="Address"
+                className="w-full"
               />
             </Box>
 
@@ -196,6 +197,7 @@ export default function Account() {
                 variant="outlined"
                 size="small"
                 label="GST Number"
+                className="w-full"
               />
             </Box>
 
