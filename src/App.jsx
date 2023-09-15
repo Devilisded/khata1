@@ -4,6 +4,8 @@ import Login from "./pages/login/Login"
 import MainPage from "./pages/mainpage/MainPage"
 import NotFound from "./pages/notfound/NotFound"
 import Home from "./pages/home/Home"
+import Account from "./pages/account/Account"
+
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -23,6 +25,9 @@ const App = () => {
     },{
       path:"/home",
       element:<Home/>
+    },{
+      path:"/account",
+      element:<Account/>
     }
   ])
   return (
