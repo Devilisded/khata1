@@ -245,7 +245,7 @@ export default function Account() {
               )}
             </div>
             <div className="create_acc_btn_wrapper">
-              <button className="create_acc_btn text-green-600">
+              <button className="create_acc_btn text-green-600" onClick={(e)=>e.preventDefault()}>
                 Create Account
               </button>
             </div>
