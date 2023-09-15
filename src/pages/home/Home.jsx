@@ -107,16 +107,10 @@ export default function Home() {
                   </div>
                 </a>
               </div>
-
-              
-
-              
             </div>
           </div>
         </div>
       </div>
-
-
       <div className="footer">
                 <Box className="footer-section" sx={{ flexGrow: 1 }}>
                   <Grid container spacing={2}>
@@ -166,8 +160,6 @@ export default function Home() {
                   </Grid>
                 </Box>
               </div>
-      {/* ###################   features   ########################### */}
-
       <div className="features-section">
         <div className="features">
           <Box className="section-1">
@@ -185,7 +177,6 @@ export default function Home() {
                   </div>
                 </Item>
               </Grid>
-
               <Grid item xs={12} md={4} className="sec-1-2">
                 <Item>
                   <a href="#" className="read-more">
@@ -198,7 +189,6 @@ export default function Home() {
               </Grid>
             </Grid>
           </Box>
-
           <Box className="section-2" sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={3} className="sec-2-1">
@@ -264,12 +254,9 @@ export default function Home() {
           </Box>
         </div>
       </div>
-
-      {/* ###################  why accbook    ########################### */}
       <div className="why-accbook">
         <Box className="why-accbook-section" sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
-            
             <Grid item xs={12} md={4} className="sec-2 sec">
               <Item className="sec-content">
                 <Card sx={{ maxWidth: 310 }}>
@@ -304,7 +291,6 @@ export default function Home() {
                 </div>
               </Item>
             </Grid>
-
             <Grid item xs={12} md={4} className="sec-2 sec">
               <Item className="sec-content">
                 <Card sx={{ maxWidth: 310 }}>
@@ -340,7 +326,6 @@ export default function Home() {
                 </div>
               </Item>
             </Grid>
-
             <Grid item xs={12} md={4} className="sec-2 sec">
               <Item className="sec-content">
                 <Card sx={{ maxWidth: 310 }}>
@@ -379,9 +364,7 @@ export default function Home() {
           </Grid>
         </Box>
       </div>
-
       {/* ###################  services-wrapper   ########################### */}
-
       <div className="services-wrapper" id="services-wrapper">
         <div className="shape-1">
           <div className="inside-shape"></div>
@@ -406,7 +389,6 @@ export default function Home() {
                 <Grid item xs={12} md={6} className="sec-2-1-a">
                   <Item></Item>
                 </Grid>
-
                 <Grid item xs={12} md={6} className="sec-2-1-b">
                   <Item>
                     <div className="sec-card">
@@ -423,7 +405,6 @@ export default function Home() {
                 </Grid>
               </Grid>
             </Box>
-
             <Box className="sec-2-1" sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} className="sec-2-1-a">
@@ -440,19 +421,16 @@ export default function Home() {
                     </div>
                   </Item>
                 </Grid>
-
                 <Grid item xs={12} md={6} className="sec-2-1-b">
                   <Item></Item>
                 </Grid>
               </Grid>
             </Box>
-
             <Box className="sec-2-1" sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} className="sec-2-1-a">
                   <Item></Item>
                 </Grid>
-
                 <Grid item xs={12} md={6} className="sec-2-1-b">
                   <Item>
                     <div className="sec-card">
@@ -469,7 +447,6 @@ export default function Home() {
                 </Grid>
               </Grid>
             </Box>
-
             <Box className="sec-2-1" sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} className="sec-2-1-a">
@@ -486,7 +463,6 @@ export default function Home() {
                     </div>
                   </Item>
                 </Grid>
-
                 <Grid item xs={12} md={6} className="sec-2-1-b">
                   <Item></Item>
                 </Grid>

@@ -4,7 +4,7 @@ import "./carditem.scss"
 import { UserContext } from "../../context/UserIdContext";
 
 const CardItem = (props) => {
-  const {changeUser} =useContext(UserContext)
+  const {changeUser,userId} =useContext(UserContext)
   const [type,setType]=useState(false);
   const check =()=>{
     if(props.users.type=="Get"){
@@ -15,7 +15,7 @@ const CardItem = (props) => {
     check()
   })
   return (
-    <div className="cardItem cursor-pointer px-5" onClick={()=>changeUser(props.users.userId)}>
+    <div className={userId===props.users.userId?"bg-[#0759852f] cardItem cursor-pointer shadow":"cardItem cursor-pointer"} onClick={()=>changeUser(props.users.userId)} >
       <div className="flex justify-between  items-center p-3 " style={{borderBottom:"1px solid rgb(245 245 245"}}>
         <div className="flex items-center gap-2">
           <div className="icon">

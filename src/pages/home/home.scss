@@ -190,7 +190,6 @@
      .footer {
       all: revert;
       position: relative;
-      //top: 600px;
       padding: 50px;
       background-color: #008cba;
     }
@@ -213,7 +212,6 @@
     margin: 0;
     .features {
       padding: 20px 40px 39px 40px;
-      //background-color: whitesmoke;
       background-color: #edf2f8;
       .section-1 {
         padding: 30px 20px;
@@ -351,7 +349,7 @@
           position: relative;
           box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  
+            transition: all 300ms ease-in-out;
           .inside-img-wrapper {
             transition: all 5s ease-in;
           }
