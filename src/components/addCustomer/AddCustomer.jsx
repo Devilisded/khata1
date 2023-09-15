@@ -19,7 +19,7 @@ const [select,setSelect]=useState(false);
   return (
     <div>
     <div >
-    <Box sx={{ width: 350 }} role="presentation">
+    <Box sx={{ width: 400 }} role="presentation">
       <h1 className="text_left heading font-semibold text-2xl flex justify-between items-center">Add Customer</h1>
 
       <div className="section-wrapper-2">
@@ -156,10 +156,9 @@ size="small"
               <Box className="box-sec check-box-sec text-center ">
                 <Checkbox
                   {...label1}
-                  defaultChecked
                   onChange={handleOnChange2}
                 />
-                <span>Billing Address same as shipping address</span>
+                <span>Billing Address</span>
               </Box>
 
               {isChecked2 ? (
@@ -240,8 +239,8 @@ size="small"
       </div>
     </Box>
     </div>
-    <div className="add-customer-btn-wrapper">
-    <button className="add_btn text-green-600" type="submit">Add Customer</button>
+    <div className="add-customer-btn-wrapper1">
+    <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in">Add Customer</button>
   </div>
     </div>
   )

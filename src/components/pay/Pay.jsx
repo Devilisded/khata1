@@ -71,8 +71,8 @@ size="small"
           </div>
         
       
-      <div className="add-customer-btn-wrapper">
-        <button className="add_btn1 text-red-600" type="submit">
+      <div className="add-customer-btn-wrapper1">
+        <button className="add_btn2 text-red-600" type="submit">
           You Pay
         </button>
       </div>

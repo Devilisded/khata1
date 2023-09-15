@@ -15,24 +15,21 @@
 
 
 
-.add-customer-btn-wrapper {
-  position: absolute;
-  bottom: 0px;
-  z-index: 99;
-  background-color: white;
-  padding: 18px 20px;
+.add-customer-btn-wrapper1 {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
   width: 100%;
-  position: fixed;
-  width: 350px;
-  bottom: 0px;
-  .add_btn1 {
+  position: absolute;
+  bottom: 10px;
+  .add_btn2 {
     width: 100%;
     padding: 10px;
     border-radius: 8px;
     background-color: #fee4e2;
     transition: all 400ms ease-in;
   }
-  .add_btn1:hover{
+  .add_btn2:hover{
     background-color: rgb(220, 38, 38);
     color: white;
   }

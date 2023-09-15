@@ -89,11 +89,10 @@ const Receive = () => {
                  {" "}
       </div>
                          {" "}
-      <div className="add-customer-btn-wrapper">
+      <div className="add-customer-btn-wrapper1">
                {" "}
-        <button className="add_btn text-green-600" type="submit">
-                    You Receive        {" "}
-        </button>
+        <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in">You Receive</button>
+
              {" "}
       </div>
     </div>

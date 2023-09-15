@@ -42,7 +42,7 @@ const Edit = () => {
         .filter((persons) => persons.userId === userId)
         .map((persons) => (
           <div key={userId}>
-            <Box sx={{ width: 350 }} className="w-full">
+            <Box sx={{ width: 400 }} className="w-full">
               <h1 className="text_left heading">Edit Customer</h1>
               <div className="customer-profile flex items-start px-4 py-6">
                 <img
@@ -81,7 +81,7 @@ const Edit = () => {
             </Box>
           </div>
         ))}
-      <div className="add-customer-btn-wrapper">
+      <div className="add-customer-btn-wrapper flex justify-center">
         <button
           className="delete-btn text-red-600 flex gap-1 justify-center"
           type="submit"

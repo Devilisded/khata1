@@ -15,6 +15,8 @@ import { useEffect } from "react";
 import users from "./dummyData";
 import { UserContext } from "../../context/UserIdContext";
 import { useContext } from "react";
+
+
 const MainPage = () => {
   const [state, setState] = useState({
     add: false,
@@ -32,7 +34,7 @@ const MainPage = () => {
     setState({ ...state, [anchor]: open });
   };
   const list = (anchor) => (
-    <Box sx={{ width: 350 }} role="presentation">
+    <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add" ? (
         <AddCustomer />
       ) : anchor === "edit" ? (

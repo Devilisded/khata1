@@ -1,29 +1,13 @@
-::-webkit-scrollbar {
-  width: 4px;
-}
-.sel {
-  border: 1px solid lightgrey;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 .heading {
   padding: 10px;
-
   border-bottom: 1px solid rgb(214, 214, 214);
 }
-
 .section-wrapper-2 {
   background-color: white;
   padding-bottom: 70px;
   margin: 0 auto;
   overflow-y: scroll;
+  height: calc(100vh - 87px - 53px);
   .section-2 {
     display: flex;
     align-items: center;
@@ -31,7 +15,7 @@
     flex-direction: column;
     form {
       flex-direction: column;
-      padding: 10px;
+      padding: 30px;
       svg {
         position: static;
       }
@@ -54,25 +38,21 @@
   }
 }
 
-.add-customer-btn-wrapper {
-  position: absolute;
-  bottom: 0px;
-  z-index: 99;
-  background-color: white;
-  padding: 18px 20px;
+.add-customer-btn-wrapper2 {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
   width: 100%;
   position: fixed;
-  width: 350px;
-
-  bottom: 0px;
-  .add_btn {
+  bottom: 100px;
+  button{
     width: 100%;
     padding: 10px;
     border-radius: 8px;
     background-color: #d1fadf;
     transition: all 400ms ease-in;
   }
-  .add_btn:hover {
+  button:hover{
     background-color: #39b366;
     color: white;
   }
