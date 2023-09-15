@@ -23,7 +23,7 @@ const CardItem = (props) => {
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-lg text-slate-700">{props.users.name}</span>
-            <span className="text-slate-500 text-sm">+91 9466210083</span>
+            <span className="text-slate-500 text-sm">{props.users.number}</span>
           </div>
         </div>
         <div>
