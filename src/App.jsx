@@ -5,6 +5,7 @@ import MainPage from "./pages/mainpage/MainPage"
 import NotFound from "./pages/notfound/NotFound"
 import Home from "./pages/home/Home"
 import Account from "./pages/account/Account"
+import Contact from "./pages/contactUs/Contact"
 
 const App = () => {
   const router = createBrowserRouter([
@@ -28,6 +29,9 @@ const App = () => {
     },{
       path:"/account",
       element:<Account/>
+    },{
+      path:"/contact",
+      element:<Contact/>
     }
   ])
   return (

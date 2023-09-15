@@ -19,6 +19,7 @@ import {
   IconBrandX,
   IconMapPins,
   IconMessage2,
+  IconBook2,
 } from "@tabler/icons-react";
 import Faq from "../../components/faq/Faq.jsx";
 
@@ -66,14 +67,19 @@ export default function Home() {
       <div className="homepage-main ">
         <div className="homepage-main-section">
           <div className="navbar-wraperr">
-            <div className="logo">AccBook</div>
-            <div className="links">
-              <div>
-                <a href="#">Contact Us</a>
-              </div>
+          <div className="left flex items-center">
+            <IconBook2 className=" h-16 w-16" />
+            <div className="text-[50px] ">
+              Acc<span className="font-bold text-[37px] uppercase">Book</span>
+            </div>
+          </div>
+            <div className="links gap-6">
+              <Link to="/contact">
+                <p className="text-xl">Contact Us</p>
+              </Link>
               <Link to="/Login"> 
               <div>
-                <a href="#">Log In</a>
+                <p className="text-xl">Log In</p>
               </div>
               </Link>
             </div>
