@@ -2,6 +2,8 @@ import {
   IconBook2,
   IconBriefcase,
   IconBuildingFactory2,
+  IconHelpCircle,
+  IconHome2,
   IconLogout,
   IconServer,
   IconSettings,
@@ -93,8 +95,12 @@ const Navbar = () => {
             onClose={handleClose}
             TransitionComponent={Fade}
           >
-            <MenuItem className="gap-2" onClick={handleClose}><IconUser className="text-slate-600 w-5"/>Profile</MenuItem>
-            <MenuItem className="gap-2" onClick={handleClose}><IconBriefcase className="text-slate-600 w-5"/> Account</MenuItem>
+            <Link to="/home">
+            <MenuItem className="gap-2"><IconHome2 className="text-slate-600 w-5"/>Home</MenuItem>
+            </Link>
+            <Link to="/contact">
+            <MenuItem className="gap-2"><IconHelpCircle className="text-slate-600 w-5"/>Contact Us</MenuItem>
+            </Link>
             <Link to="/login">
               <MenuItem className="gap-2"><IconLogout className="text-slate-600 w-5"/>Logout</MenuItem>
             </Link>
