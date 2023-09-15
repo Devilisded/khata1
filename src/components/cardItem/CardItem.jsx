@@ -15,7 +15,7 @@ const CardItem = (props) => {
     check()
   })
   return (
-    <div className={userId===props.users.userId?"bg-[#0759852f] cardItem cursor-pointer shadow":"cardItem cursor-pointer"} onClick={()=>changeUser(props.users.userId)} >
+    <div className={userId===props.users.userId?"bg-[#e8f0fe] cardItem cursor-pointer shadow":"cardItem cursor-pointer"} onClick={()=>changeUser(props.users.userId)} >
       <div className="flex justify-between  items-center p-3 " style={{borderBottom:"1px solid rgb(245 245 245"}}>
         <div className="flex items-center gap-2">
           <div className="icon">
