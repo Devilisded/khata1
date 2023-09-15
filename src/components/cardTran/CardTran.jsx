@@ -11,7 +11,7 @@ const CardTran = (props) => {
         {users
           .filter((persons) => persons.userId == userId)
           .map((filteredPersons) => (
-            <div className="flex justify-between space-x-6 items-center p-6">
+            <div className="flex justify-between space-x-6 items-center p-6" key={userId}>
               <div className="flex items-center gap-4">
                 <div className="icon2">
                   <IconUser className="text-blue-500" />

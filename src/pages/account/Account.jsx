@@ -86,7 +86,7 @@ export default function Account() {
             noValidate
             autoComplete="off"
           >
-            <h1 className="font-semibold text-2xl">Create Business Account</h1>
+            <h1 className="text-3xl text-center mb-5 text-sky-700">Create Business Account</h1>
             <Box className="box-sec">
               <TextField
                 
@@ -157,17 +157,17 @@ export default function Account() {
                 className="relative flex min-h-[5px] "
               >
                 <div
-                  className="img-browse-btn inline-flex rounded border bg-[#F5F7FB]
-                border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D] "
+                  className="img-browse-btn inline-flex rounded border border-white
+                 py-2 px-7 text-base font-medium text-sky-800 cursor-pointer"
                 >
                   Browse
                 </div>
                 <div className="   py-2 px-7 block w-full border border-[#e0e0e0]">
                   <div className="flex items-center justify-between">
-                    <span className="truncate pr-3 text-base font-medium text-[#07074D] ">
+                    <span className="truncate pr-3 text-base font-medium text-sky-800 ">
                       {file1}
                     </span>
-                    <button className="text-[#07074D]">
+                    <button className="text-sky-800" onClick={(e)=>e.preventDefault()}>
                       <IconX />
                     </button>
                   </div>
@@ -222,17 +222,17 @@ export default function Account() {
                 className="relative flex min-h-[5px] "
               >
                 <div
-                  className="img-browse-btn inline-flex rounded border bg-[#F5F7FB]
-                border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D] "
+                  className="img-browse-btn inline-flex rounded border border-white text-sky-800 cursor-pointer
+                 py-2 px-7 text-base font-medium"
                 >
                   Browse
                 </div>
                 <div className="   py-2 px-7 block w-full border border-[#e0e0e0]">
                   <div className="flex items-center justify-between">
-                    <span className="truncate pr-3 text-base font-medium text-[#07074D]">
+                    <span className="truncate pr-3 text-base font-medium text-sky-800">
                       {file2}
                     </span>
-                    <button className="text-[#07074D]">
+                    <button className="text-sky-800" onClick={(e)=>e.preventDefault()}>
                       <IconX />
                     </button>
                   </div>

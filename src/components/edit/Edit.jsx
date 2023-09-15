@@ -41,7 +41,7 @@ const Edit = () => {
       {users
         .filter((persons) => persons.userId === userId)
         .map((persons) => (
-          <div>
+          <div key={userId}>
             <Box sx={{ width: 350 }} className="w-full">
               <h1 className="text_left heading">Edit Customer</h1>
               <div className="customer-profile flex items-start px-4 py-6">
