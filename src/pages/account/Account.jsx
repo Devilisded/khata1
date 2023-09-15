@@ -94,6 +94,7 @@ export default function Account() {
                 variant="outlined"
                 size="small"
                 label="Business Name"
+                className="w-full"
                 required
               />
             </Box>
