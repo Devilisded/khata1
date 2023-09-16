@@ -1,16 +1,34 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+
 import {
   IconPhoneCall,
   IconMapPin,
   IconReceipt,
   IconTrash,
+  IconAlertOctagonFilled,
 } from "@tabler/icons-react";
 import "./edit.scss";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserIdContext";
 import users from "../../pages/mainpage/dummyData";
-const Edit = () => {
+const Edit = (props) => {
+  
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const customer_data = [
     {
       icon: <IconPhoneCall />,
@@ -85,10 +103,40 @@ const Edit = () => {
         <button
           className="delete-btn text-red-600 flex gap-1 justify-center"
           type="submit"
+          onClick={handleClickOpen}
         >
           <IconTrash />
           Delete Customer
         </button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <div className="flex">
+            <div className="pt-5 pl-3">
+              <IconAlertOctagonFilled size={60} className="text-red-600"/>
+            </div>
+            <div>
+              <DialogTitle id="alert-dialog-title" >
+                Are You Sure ? 
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  You are about to delete this customer This action cannot be
+                  undone.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions className="flex gap-4">
+                <button className="pb-3" onClick={handleClose}>Cancel</button>
+                <button className="delete-btn text-red-600 pb-3 pr-3" onClick={props.snack} autoFocus>
+                  Delete Customer
+                </button>
+              </DialogActions>
+            </div>
+          </div>
+        </Dialog>
       </div>
     </div>
   );

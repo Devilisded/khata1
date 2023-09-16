@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
-const Receive = () => {
+const Receive = (props) => {
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -91,7 +91,7 @@ const Receive = () => {
                          {" "}
       <div className="add-customer-btn-wrapper1">
                {" "}
-        <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in">You Receive</button>
+        <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snack}>You Receive</button>
 
              {" "}
       </div>

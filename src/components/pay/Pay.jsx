@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import "./pay.scss"
-const Pay = () => {
+const Pay = (props) => {
     const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -72,7 +72,7 @@ size="small"
         
       
       <div className="add-customer-btn-wrapper1">
-        <button className="add_btn2 text-red-600" type="submit">
+        <button className="add_btn2 text-red-600" onClick={props.snack}>
           You Pay
         </button>
       </div>

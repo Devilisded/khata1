@@ -2,11 +2,12 @@ import { Box, Checkbox, TextField } from "@mui/material"
 import "./addcustomer.scss"
 import { useState } from "react";
 
-const AddCustomer = () => {
+const AddCustomer = (props) => {
     const [isChecked, setIsChecked] = useState(false);
   const handleOnChange = () => {
     setIsChecked(!isChecked);
   };
+
 
   const [isChecked2, setIsChecked2] = useState(false);
   const handleOnChange2 = () => {
@@ -241,7 +242,7 @@ size="small"
     </Box>
     </div>
     <div className="add-customer-btn-wrapper1">
-    <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in">Add Customer</button>
+    <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snack}>Add Customer</button>
   </div>
     </div>
   )

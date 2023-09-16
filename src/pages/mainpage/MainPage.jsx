@@ -15,9 +15,12 @@ import { useEffect } from "react";
 import users from "./dummyData";
 import { UserContext } from "../../context/UserIdContext";
 import { useContext } from "react";
+import { SnackbarProvider ,useSnackbar} from "notistack";
 
 
-const MainPage = () => {
+const MyApp = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [state, setState] = useState({
     add: false,
     edit: false,
@@ -33,16 +36,24 @@ const MainPage = () => {
     }
     setState({ ...state, [anchor]: open });
   };
+  const toggleDrawer1=(anchor,open)=>{
+    setState({ ...state, [anchor]: open });
+  }
+  const handleClickVariant =(variant,anchor1)=> {
+    // variant could be success, error, warning, info, or default
+    toggleDrawer1(anchor1,false);
+    enqueueSnackbar('Data has been Updated!', { variant });
+  };
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add" ? (
-        <AddCustomer />
+        <AddCustomer snack={()=>handleClickVariant('success',"add")}/>
       ) : anchor === "edit" ? (
-        <Edit/>
+        <Edit snack={()=>handleClickVariant('success',"edit")}/>
       ) : anchor === "pay" ? (
-        <Pay/>
+        <Pay snack={()=>handleClickVariant('success',"pay")}/>
       ) : anchor === "receive" ? (
-        <Receive/>
+        <Receive snack={()=>handleClickVariant('success',"receive")}/>
       ) : (
         "-"
       )}
@@ -52,14 +63,17 @@ const MainPage = () => {
     {
       date: "10 Sep 2023",
       pay: 600,
+      time:"6:00 AM",
     },
     {
       date: "11 Sep 2023",
       receive: 1000,
+      time:"5:00 PM",
     },
     {
       date: "12 Sep 2023",
       pay: "400",
+      time:"8:00 AM",
     },
   ];
   const [active, setActive] = useState(false);
@@ -132,5 +146,14 @@ const MainPage = () => {
     </React.Fragment>
   );
 };
+
+const MainPage=()=>{
+  return(
+    <SnackbarProvider maxSnack={1}>
+    <MyApp />
+  </SnackbarProvider>
+  );
+}
+
 
 export default MainPage;
