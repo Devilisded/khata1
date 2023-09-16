@@ -157,6 +157,7 @@ size="small"
                 <Checkbox
                   {...label1}
                   onChange={handleOnChange2}
+                  defaultChecked
                 />
                 <span>Billing Address</span>
               </Box>
