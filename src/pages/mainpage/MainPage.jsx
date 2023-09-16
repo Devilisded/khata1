@@ -39,21 +39,21 @@ const MyApp = () => {
   const toggleDrawer1=(anchor,open)=>{
     setState({ ...state, [anchor]: open });
   }
-  const handleClickVariant =(variant,anchor1)=> {
+  const handleClickVariant =(variant,anchor1,msg)=> {
     // variant could be success, error, warning, info, or default
     toggleDrawer1(anchor1,false);
-    enqueueSnackbar('Data has been Updated!', { variant });
+    enqueueSnackbar(msg, { variant });
   };
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add" ? (
-        <AddCustomer snack={()=>handleClickVariant('success',"add")}/>
+        <AddCustomer snack={()=>handleClickVariant('success',"add","Customer Has been Added")}/>
       ) : anchor === "edit" ? (
-        <Edit snack={()=>handleClickVariant('success',"edit")}/>
+        <Edit snack={()=>handleClickVariant('success',"edit","Deleted Successfully")}/>
       ) : anchor === "pay" ? (
-        <Pay snack={()=>handleClickVariant('success',"pay")}/>
+        <Pay snack={()=>handleClickVariant('success',"pay","Paid Entry has been entered")}/>
       ) : anchor === "receive" ? (
-        <Receive snack={()=>handleClickVariant('success',"receive")}/>
+        <Receive snack={()=>handleClickVariant('success',"receive","Received Entry has been entered")}/>
       ) : (
         "-"
       )}
@@ -64,16 +64,19 @@ const MyApp = () => {
       date: "10 Sep 2023",
       pay: 600,
       time:"6:00 AM",
+      id:1,
     },
     {
       date: "11 Sep 2023",
       receive: 1000,
       time:"5:00 PM",
+      id:1,
     },
     {
       date: "12 Sep 2023",
       pay: "400",
       time:"8:00 AM",
+      id:1,
     },
   ];
   const [active, setActive] = useState(false);

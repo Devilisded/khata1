@@ -98,20 +98,22 @@ export default function Home() {
                 </h4>
               </div>
               <div>
-
-                <a href="#services-wrapper" className="read-more ">
+                <Link to="/register">                
+                <p className="read-more ">
                   <div className="btn-wrapper">
                     <span>Open Account Now</span>
                     <IconArrowBadgeRightFilled className="arrow-icon" />
                   </div>
-                </a>
-
-                <a href="#services-wrapper" className="read-more">
+                </p>
+                </Link>
+                <Link  to="/">                
+                <p className="read-more">
                   <div className="btn-wrapper">
-                    <span>For You</span>
+                    <span>Demo Account</span>
                     <IconArrowBadgeRightFilled className="arrow-icon" />
                   </div>
-                </a>
+                </p>
+                </Link>
               </div>
             </div>
           </div>

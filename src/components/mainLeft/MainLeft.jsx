@@ -21,7 +21,7 @@ const MainLeft = (props) => {
   return (
     <div className="left bg-white shadow-lg w-full flex flex-col h-full">
       <div className="heading text-xl font-semibold">
-        Customer{" "}
+        Customers{" "}
         <p className=" text-sky-600 num font-semibold">{props.users.length}</p>
       </div>
       <div className="giveget flex justify-between">

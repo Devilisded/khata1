@@ -1,12 +1,22 @@
 .active{
-  background: #e8f0fe;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(232,240,254,1) 50%, rgba(0,0,0,0) 100%);
   border-bottom: 2px solid #3b82f6;
+  background-size: 200%;
+  background-position: -66px;
+  animation: bg 800ms ease-in-out alternate;
+}
+@keyframes bg {
+  from{
+    background-position: -100px;
+  }
+  to{
+    background-position: -66px;
+  }
 }
 .navbar {
   background-color: #ffffff;
   position: sticky;
   top: 0;
-  
   .left {
     margin-left: 20px;
   font-weight: 600;
