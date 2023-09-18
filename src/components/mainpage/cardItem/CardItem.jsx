@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useContext } from "react";
 import { IconUser } from "@tabler/icons-react";
 import "./carditem.scss"
-import { UserContext } from "../../context/UserIdContext";
+import { UserContext } from "../../../context/UserIdContext";
 
 const CardItem = (props) => {
   const {changeUser,userId} =useContext(UserContext)

@@ -1,8 +1,9 @@
 import { IconChecklist, IconSettings, IconUser } from "@tabler/icons-react";
 import "./cardtran.scss";
 import { useContext } from "react";
-import { UserContext } from "../../context/UserIdContext";
-import users from "../../pages/mainpage/dummyData";
+import { UserContext } from "../../../context/UserIdContext";
+
+import users from "../../../pages/mainpage/dummyData";
 const CardTran = (props) => {
   const { userId } = useContext(UserContext);
   return (

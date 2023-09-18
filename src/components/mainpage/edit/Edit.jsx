@@ -16,8 +16,8 @@ import {
 } from "@tabler/icons-react";
 import "./edit.scss";
 import { useContext } from "react";
-import { UserContext } from "../../context/UserIdContext";
-import users from "../../pages/mainpage/dummyData";
+import { UserContext } from "../../../context/UserIdContext";
+import users from "../../../pages/mainpage/dummyData";
 const Edit = (props) => {
   
   const [open, setOpen] = React.useState(false);

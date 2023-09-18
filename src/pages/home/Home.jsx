@@ -21,7 +21,7 @@ import {
   IconMessage2,
   IconBook2,
 } from "@tabler/icons-react";
-import Faq from "../../components/faq/Faq.jsx";
+import Faq from "../../components/homepage/faq/Faq.jsx";
 
 export default function Home() {
   const Item = styled(Paper)(({ theme }) => ({
