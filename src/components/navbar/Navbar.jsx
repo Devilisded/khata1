@@ -23,14 +23,14 @@ const Navbar = () => {
       linkto:"/"
     },
     {
-      name:"Account",
-      icon:<IconBriefcase/>,
-      linkto:"/account"
-    },
-    {
       name: "Supplier",
       icon: <IconTruckLoading />,
       linkto:"/supplier"
+    },
+    {
+      name:"Account",
+      icon:<IconBriefcase/>,
+      linkto:"/account"
     },
     {
       name: "Inventory",

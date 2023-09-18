@@ -1,28 +1,29 @@
+import "./supleft.scss";
 import {
-  IconArrowDownLeft,
-  IconArrowUpRight,
-  IconPlus,
-  IconSearch,
-} from "@tabler/icons-react";
-import CardItem from "../cardItem/CardItem";
-import "./mainleft.scss";
-import { useState } from "react";
+    IconArrowDownLeft,
+    IconArrowUpRight,
+    IconPlus,
+    IconSearch,
+  } from "@tabler/icons-react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-const MainLeft = (props) => {
-  const [age, setAge] = useState('');
+import { useState } from "react";
+import SupCard from "../supCard/SupCard";
+import suppliers from "../../../pages/supplier/supData"
+const SupLeft = (props) => {
+    const [age, setAge] = useState('');
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-  const [filter,setFilter]=useState('')
-  const handleChange1=(e)=>{
-    setFilter(e.target.value);
-  }
+    const handleChange = (event) => {
+      setAge(event.target.value);
+    };
+    const [filter,setFilter]=useState('')
+    const handleChange1=(e)=>{
+      setFilter(e.target.value);
+    }
   return (
-    <div className="left bg-white shadow-lg w-full flex flex-col h-full">
+    <div className="supleft">
       <div className="heading text-xl font-semibold">
-        Customers
-        <p className=" text-sky-600 num font-semibold">{props.users.length}</p>
+        Suppliers
+        <p className="text-sky-600 num font-semibold">{suppliers.length}</p>
       </div>
       <div className="giveget flex justify-between">
         <div className="give text-gray-500 flex gap-1 items-center">
@@ -33,9 +34,9 @@ const MainLeft = (props) => {
           You'll Get: <span className="text-gray-700 font-bold">₹ 300</span>
           <IconArrowDownLeft className="text-green-600" />
         </div>
-        <button className="flex gap-1 " onClick={props.add}>
+        <button className="flex gap-1" onClick={props.add}>
           <IconPlus className="w-5" />
-          Add Customer
+          Add Supplier
         </button>
       </div>
       <div className="filters flex items-center justify-between">
@@ -87,12 +88,14 @@ const MainLeft = (props) => {
         <div className="amount">Amount</div>
       </div>
       <div className="cards">
-        {props.users.map((item, index) => (
-          <CardItem key={index} click={props.click} users={item} />
-        ))}
+        {
+          suppliers.map((item,index)=>(
+            <SupCard key={index} data={item}/>
+          ))
+        }
       </div>
     </div>
   );
 };
 
-export default MainLeft;
+export default SupLeft;

@@ -6,7 +6,6 @@ import Navbar from "../../components/navbar/Navbar";
 import SelectCustomer from "../../components/mainpage/selectCustomer/SelectCustomer";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import "./mainpage.scss";
 import AddCustomer from "../../components/mainpage/addCustomer/AddCustomer";
 import Pay from "../../components/mainpage/pay/Pay";
 import Receive from "../../components/mainpage/receive/Receive";

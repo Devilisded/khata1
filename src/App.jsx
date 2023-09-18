@@ -6,6 +6,7 @@ import NotFound from "./pages/notfound/NotFound"
 import Home from "./pages/home/Home"
 import Account from "./pages/account/Account"
 import Contact from "./pages/contactUs/Contact"
+import Supplier from "./pages/supplier/Supplier"
 
 const App = () => {
   const router = createBrowserRouter([
@@ -32,6 +33,9 @@ const App = () => {
     },{
       path:"/contact",
       element:<Contact/>
+    },{
+      path:"/supplier",
+      element:<Supplier/>
     }
   ])
   return (
