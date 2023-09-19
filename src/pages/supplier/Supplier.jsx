@@ -37,6 +37,9 @@ const MyApp = () => {
     toggleDrawer1(anchor1,false);
     enqueueSnackbar(msg, { variant });
   };
+  const handleClickVariant1=(variant,msg)=>{
+    enqueueSnackbar(msg,{variant})
+  }
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add" ? (
@@ -96,7 +99,7 @@ const MyApp = () => {
         <Navbar />
         <div className="scontent flex">
           <SupLeft add={toggleDrawer("add", true)}/>
-          {active ? <SupRight edit={toggleDrawer("edit", true)} pay={toggleDrawer("pay", true)} receive={toggleDrawer("receive", true)}/> : <SupplierSelect />}
+          {active ? <SupRight edit={toggleDrawer("edit", true)} pay={toggleDrawer("pay", true)} receive={toggleDrawer("receive", true)} snack={()=>handleClickVariant1("error","This feature is not available right now")}/> : <SupplierSelect />}
         </div>
       </div>
     </React.Fragment>
@@ -106,7 +109,7 @@ const MyApp = () => {
 
 const Supplier=()=>{
   return(
-    <SnackbarProvider maxSnack={1}>
+    <SnackbarProvider maxSnack={2}>
     <MyApp />
   </SnackbarProvider>
   );

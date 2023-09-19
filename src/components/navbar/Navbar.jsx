@@ -1,7 +1,6 @@
 import {
   IconBook2,
   IconBriefcase,
-  IconBuildingFactory2,
   IconHelpCircle,
   IconHome2,
   IconLogout,
@@ -14,8 +13,9 @@ import "./navbar.scss";
 import { useState } from "react";
 import { Menu, MenuItem } from "@mui/material";
 import Fade from "@mui/material/Fade";
-import { Link, NavLink } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 const Navbar = () => {
+  const location=useLocation()
   const items = [
     {
       name: "Customer",
@@ -28,19 +28,15 @@ const Navbar = () => {
       linkto:"/supplier"
     },
     {
+      name: "Items",
+      icon: <IconServer />,
+      linkto:"/products",
+      link2:"/services"
+    },
+    {
       name:"Account",
       icon:<IconBriefcase/>,
       linkto:"/account"
-    },
-    {
-      name: "Inventory",
-      icon: <IconBuildingFactory2 />,
-      linkto:"/inventory"
-    },
-    {
-      name: "Items",
-      icon: <IconServer />,
-      linkto:"/items"
     },
     {
       name: "Settings",
@@ -68,7 +64,7 @@ const Navbar = () => {
       <div className="center flex ">
         <div className="items flex">
           {items.map((item, index) => (
-            <NavLink activeclassname="active" key={index} to={item.linkto}>
+            <Link className={location.pathname===item.linkto||location.pathname===item.link2?"active":""} key={index} to={item.linkto}>
             <div
               className="item flex flex-col items-center gap-1 justify-center cursor-pointer"
               
@@ -76,7 +72,7 @@ const Navbar = () => {
               <div className="icon1">{item.icon}</div>
               <div className="name text-xs">{item.name}</div>
             </div>
-            </NavLink>
+            </Link>
           ))}
         </div>
       </div>

@@ -9,6 +9,7 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import SupCard from "../supCard/SupCard";
 import suppliers from "../../../pages/supplier/supData"
+
 const SupLeft = (props) => {
     const [age, setAge] = useState('');
 
@@ -23,7 +24,7 @@ const SupLeft = (props) => {
     <div className="supleft">
       <div className="heading text-xl font-semibold">
         Suppliers
-        <p className="text-sky-600 num font-semibold">{suppliers.length}</p>
+        <p className=" text-sky-600 num font-semibold">{suppliers.length}</p>
       </div>
       <div className="giveget flex justify-between">
         <div className="give text-gray-500 flex gap-1 items-center">

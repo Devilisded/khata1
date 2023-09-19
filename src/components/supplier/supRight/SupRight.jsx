@@ -18,12 +18,12 @@ const SupRight = (props) => {
           Send Reminder <IconAlertCircle className="w-4 h-4" />
         </div>
         <div className="right flex gap-5">
-          <button className="flex p-3 bg-white gap-2 items-center rounded-md text-slate-600 hover:bg-green-500 hover:text-white">
+          <button className="flex p-3 bg-white gap-2 items-center rounded-md text-slate-600 hover:bg-green-500 hover:text-white" onClick={props.snack}>
             <IconBrandWhatsapp className="text-green-600 onhover" />
             via Whatsapp
           </button>
 
-          <button className="flex p-3 bg-white gap-2 items-center rounded-md text-slate-600  hover:bg-blue-500 hover:text-white">
+          <button className="flex p-3 bg-white gap-2 items-center rounded-md text-slate-600  hover:bg-blue-500 hover:text-white" onClick={props.snack}>
             <IconMessage2 className="text-blue-600 onhover" />
             via SMS
           </button>
