@@ -5,7 +5,7 @@ import { useState } from "react";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import SerCard from "../serCard/SerCard";
 import service from "../../../pages/services/servicedata";
-// import products from "../../../pages/Products/productsdata";
+import products from "../../../pages/products/productsdata";
 
 const SerLeft = () => {
   const [age, setAge] = useState('');
@@ -30,7 +30,7 @@ const SerLeft = () => {
             }
           >
             Products
-            <p className=" text-sky-600 num font-semibold">5</p>
+            <p className=" text-sky-600 num font-semibold">{products.length}</p>
           </div>
         </Link>
         <div

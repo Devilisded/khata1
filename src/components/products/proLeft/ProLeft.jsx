@@ -4,7 +4,7 @@ import { useLocation ,Link} from "react-router-dom";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import ProCard from "../proCard/ProCard";
-import products from "../../../pages/Products/productsdata";
+import products from "../../../pages/products/productsdata";
 import service from "../../../pages/services/servicedata";
 
 const ProLeft = () => {
