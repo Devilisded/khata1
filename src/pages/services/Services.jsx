@@ -6,7 +6,7 @@ import SelectService from "../../components/services/selectService/SelectService
 
 
 const Services = () => {
-  const [active,setActive]=useState(false)
+  const [active,setActive]=useState(true)
 
   return (
     <div className="services">

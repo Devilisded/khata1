@@ -1,4 +1,5 @@
 import ProCardTran from "../proCardTran/ProCardTran"
+import ProTran from "../proTran/ProTran"
 import "./proright.scss"
 
 const ProRight = () => {
@@ -97,7 +98,11 @@ const ProRight = () => {
         </div>
       </div>
       <div className="transactions">
-
+        <ProTran/>
+      </div>
+      <div className="btn shadow-lg">
+        <button className="pay text-red-600" >Stock Out</button>
+        <button className="receive text-green-600 ">Stock In</button>
       </div>
 
     </div>
