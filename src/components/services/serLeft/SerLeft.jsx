@@ -5,7 +5,7 @@ import { useState } from "react";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import SerCard from "../serCard/SerCard";
 import service from "../../../pages/services/servicedata";
-import products from "../../../pages/Products/productsdata";
+import products from "../../../pages/Products/productsdata"
 
 const SerLeft = () => {
   const [age, setAge] = useState('');
