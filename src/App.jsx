@@ -8,6 +8,7 @@ import Account from "./pages/account/Account"
 import Contact from "./pages/contactUs/Contact"
 import Supplier from "./pages/supplier/Supplier"
 import Services from "./pages/services/Services"
+import Products from "./pages/Products/Products"
 
 const App = () => {
   const router = createBrowserRouter([
@@ -40,6 +41,9 @@ const App = () => {
     },{
       path:"/services",
       element:<Services/>
+    },{
+      path:"/products",
+      element:<Products/>
     }
   ])
   return (
