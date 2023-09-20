@@ -148,7 +148,6 @@ const AddService = () => {
         const [isOn2, setIsOn2] = useState(false);
         const handleOnChange2 = () => {
           setIsOn2(!isOn2);
-          //console.log("isOn2 : ", isOn2);
         };
       
         const [isClicked, setIsClicked] = useState(false);
@@ -158,30 +157,23 @@ const AddService = () => {
         const handleOnChange3 = () => {
           setIsClicked(!isClicked);
           setIsClicked2(false)
-          //console.log("isClicked : ", isClicked);
         };
-        //console.log("isClicked before click : ", isClicked);
       
        
         const handleOnChange4 = () => {
           setIsClicked2(!isClicked2);
           setIsClicked(false)
-          //console.log("isClicked2 : ", isClicked2);
         };
-        //console.log("isClicked2 before click : ", isClicked2);
       
         const [gstOnItem, setGstOnItem] = useState("");
         const [gstValue1, setGstValue1] = useState("GST %");
         const [gstValue2, setGstValue2] = useState("");
-        //console.log("gstOnItem : ", gstOnItem);
       
         const [hsnCode, setHsnCode] = useState("SAC Code");
         const [hsnValue1, setHsnValue1] = useState("");
         const [hsnValue2, setHsnValue2] = useState("");
-        //console.log(hsnCode, hsnValue1, hsnValue2);
       
         const [searchValue, setSearchValue] = useState("0");
-        console.log(searchValue);
       
         const [customGst, setcustomGst] = useState("");
         const [customeCess, setCustomeCess] = useState("");
@@ -195,35 +187,15 @@ const AddService = () => {
           "% IGST ; " +
           customeCess +
           "% CESS )";
-        //console.log(custom_gst_details);
       
-        const handleClick = () => {
-          setGstValue1(customGst);
-          setGstValue2(custom_gst_details);
-        };
       
-        const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+        const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
         const maxFileSize = 20000;
         const [file, setFile] = useState("File Name");
         const [fileExists, setFileExists] = useState(false);
       
         const label = { inputProps: { "aria-label": "Checkbox demo" } };
-        const [state, setState] = React.useState({
-          top: false,
-          left: false,
-          bottom: false,
-          right: false,
-        });
       
-        const toggleDrawer = (anchor, open) => (event) => {
-          if (
-            event.type === "keydown" &&
-            (event.key === "Tab" || event.key === "Shift")
-          ) {
-            return;
-          }
-          setState({ ...state, [anchor]: open });
-        };
   return (
     <div>
     <div>
@@ -263,7 +235,6 @@ const AddService = () => {
                         setFile(event.target.value);
                         setFileExists(true);
                         const get_file_size = event.target.files[0];
-                        console.log(get_file_size);
                         if (get_file_size.size > maxFileSize) {
                           setFileSizeExceeded(true);
                           return;
@@ -314,7 +285,7 @@ const AddService = () => {
                   {fileSizeExceeded && (
                     <>
                       <p className="error">
-                        File size exceeded the limit of {maxFileSize / 1000}{" "}
+                        File size exceeded the limit of {maxFileSize / 1000}
                         KB
                       </p>
                     </>
@@ -357,7 +328,7 @@ const AddService = () => {
                   variant="outlined"
                   value={hsnCode}
                   helperText={hsnValue1}
-                  className="sec-1"
+                  className="sec-1 cursor-pointer"
                   size="small"
                   InputProps={{
                     readOnly: true,
@@ -372,7 +343,7 @@ const AddService = () => {
                   variant="outlined"
                   value={gstValue1}
                   helperText={gstValue2}
-                  className="sec-2"
+                  className="sec-2 cursor-pointer"
                   size="small"
                   InputProps={{
                     readOnly: true,
@@ -407,9 +378,9 @@ const AddService = () => {
                       )
                       .map((filteredItem) => (
                         <div
+                        key={filteredItem.hsn_code}
                           className="flex card-sec"
                           onClick={() => {
-                            console.log(filteredItem.hsn_code);
                             setHsnCode(filteredItem.hsn_code),
                               setHsnValue1(filteredItem.product_name),
                               setGstValue1(filteredItem.tax),

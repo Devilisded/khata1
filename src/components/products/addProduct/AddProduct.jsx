@@ -11,15 +11,6 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import Switch from "@mui/material/Switch";
 import "./addproduct.scss"
 const AddProduct = () => {
-  const handleSubmit = () => {
-    if (productName === "" & sellPrice === "") {
-      setSubmitDisabled(true)
-      console.log("submitDisabled : ",submitDisabled)
-    } else {
-      setSubmitDisabled(false)
-      console.log("submitDisabled : ",submitDisabled)
-    }
-  }
   
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const units = [
@@ -160,13 +151,11 @@ const AddProduct = () => {
     const [isOn, setIsOn] = useState(false);
     const handleOnChange1 = () => {
       setIsOn(!isOn);
-      console.log("isOn : ", isOn);
     };
 
     const [isOn2, setIsOn2] = useState(false);
     const handleOnChange2 = () => {
       setIsOn2(!isOn2);
-      //console.log("isOn2 : ", isOn2);
     };
 
     const [isClicked, setIsClicked] = useState(false);
@@ -190,7 +179,6 @@ const AddProduct = () => {
     const [hsnValue1, setHsnValue1] = useState("");
 
     const [searchValue, setSearchValue] = useState("0");
-    console.log(searchValue);
 
     const [customGst, setcustomGst] = useState("");
     const [customeCess, setCustomeCess] = useState("");
@@ -205,10 +193,6 @@ const AddProduct = () => {
       customeCess +
       "% CESS )";
 
-    const handleClick = () => {
-      setGstValue1(customGst);
-      setGstValue2(custom_gst_details);
-    };
 
     const today = new Date();
     const month = today.getMonth() + 1;
@@ -277,7 +261,6 @@ const AddProduct = () => {
                         setFile(event.target.value);
                         setFileExists(true);
                         const get_file_size = event.target.files[0];
-                        console.log(get_file_size);
                         if (get_file_size.size > maxFileSize) {
                           setFileSizeExceeded(true);
                           return;
@@ -503,9 +486,9 @@ const AddProduct = () => {
                         )
                         .map((filteredItem) => (
                           <div
+                          key={filteredItem.hsn_code}
                             className="flex card-sec"
                             onClick={() => {
-                              console.log(filteredItem.hsn_code);
                               setHsnCode(filteredItem.hsn_code),
                                 setHsnValue1(filteredItem.product_name),
                                 setGstValue1(filteredItem.tax),
