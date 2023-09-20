@@ -8,7 +8,7 @@ import Account from "./pages/account/Account"
 import Contact from "./pages/contactUs/Contact"
 import Supplier from "./pages/supplier/Supplier"
 import Services from "./pages/services/Services"
-import Products from "./pages/Products/Products"
+import Products from "./pages/products/Products"
 
 const App = () => {
   const router = createBrowserRouter([
