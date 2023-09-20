@@ -7,7 +7,7 @@ import ProCard from "../proCard/ProCard";
 import products from "../../../pages/products/productsdata";
 import service from "../../../pages/services/servicedata";
 
-const ProLeft = () => {
+const ProLeft = (props) => {
   const [age, setAge] = useState('');
 
   const handleChange = (event) => {
@@ -35,7 +35,7 @@ const ProLeft = () => {
       <div className="info flex justify-between items-center">
         <div className="total text-slate-400 text-lg font-semibold">Total Stock Value : <span className="text-black font-semibold">₹ 4000</span></div>
         <div className="low text-slate-400 text-lg font-semibold">Low Stock Products : <span className="text-red-600 font-semibold">0</span></div>
-        <button className="flex gap-1"> <IconPlus className="w-5"/>Add Product</button>
+        <button className="flex gap-1" onClick={props.add}> <IconPlus className="w-5"/>Add Product</button>
       </div>
       <div className="filters flex items-center justify-between">
         <div className="searchbar1 flex h-10 rounded p-1 w-72 items-center gap-2 border border-slate-400 hover:border-black">

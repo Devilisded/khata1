@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import Img from "../../../assets/proIcon.png";
+import { UserContext } from "../../../context/UserIdContext";
 
 const SerCard = (props) => {
+  const {changeService,serId}=useContext(UserContext)
   return (
-    <div className={"cardItem cursor-pointer"}>
+    <div className={serId===props.data.serId?"bg-[#e8f0fe] cardItem cursor-pointer shadow":"cardItem cursor-pointer"} onClick={()=>changeService(props.data.serId)}>
     <div
       className="flex justify-between  items-center p-3 "
       style={{ borderBottom: "1px solid rgb(245 245 245" }}

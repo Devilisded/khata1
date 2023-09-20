@@ -2,11 +2,11 @@ import SerCardTran from "../serCardTran/SerCardTran"
 import SerTran from "../serTran/SerTran"
 import "./serright.scss"
 
-const SerRight = () => {
+const SerRight = (props) => {
   return (
     <div className="serright">
       <div className="service">
-        <SerCardTran/>
+        <SerCardTran edit={props.edit}/>
       </div>
       <div className="details grid grid-cols-4">
         <div className="grItems">
@@ -58,7 +58,7 @@ const SerRight = () => {
         <SerTran/>
       </div>
       <div className="btn shadow-lg">
-        <button>Record a Sale</button>
+        <button onClick={props.record}>Record a Sale</button>
       </div>
     </div>
   )

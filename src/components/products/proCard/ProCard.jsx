@@ -1,8 +1,10 @@
+import { useContext } from "react";
 import Img from "../../../assets/proIcon.png";
-
+import { UserContext } from "../../../context/UserIdContext";
 const ProCard = (props) => {
+  const {changeProduct,pId}=useContext(UserContext)
   return (
-    <div className={"cardItem cursor-pointer"}>
+    <div className={pId===props.data.pId?"bg-[#e8f0fe] cardItem cursor-pointer shadow":"cardItem cursor-pointer"} onClick={()=>changeProduct(props.data.pId)}>
       <div
         className="flex justify-between  items-center p-3 "
         style={{ borderBottom: "1px solid rgb(245 245 245" }}

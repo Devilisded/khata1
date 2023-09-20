@@ -2,11 +2,11 @@ import ProCardTran from "../proCardTran/ProCardTran"
 import ProTran from "../proTran/ProTran"
 import "./proright.scss"
 
-const ProRight = () => {
+const ProRight = (props) => {
   return (
     <div className='proright'>
       <div className="product">
-        <ProCardTran/>
+        <ProCardTran edit={props.edit}/>
       </div>
       <div className="details grid grid-cols-4 grid-rows-2">
         <div className="grItems">
@@ -93,16 +93,16 @@ const ProRight = () => {
       <div className="heading text-slate-600 flex justify-between p-4 font-semibold">
         <div className="entry">Stock Entry</div>
         <div className="flex gap-40 mr-24">
-          <div className="gave">Stock Out</div>
-          <div className="get">Stock In</div>
+          <div className="gave" >Stock Out</div>
+          <div className="get" >Stock In</div>
         </div>
       </div>
       <div className="transactions">
         <ProTran/>
       </div>
       <div className="btn shadow-lg">
-        <button className="pay text-red-600" >Stock Out</button>
-        <button className="receive text-green-600 ">Stock In</button>
+        <button className="pay text-red-600" onClick={props.out}>Stock Out</button>
+        <button className="receive text-green-600 " onClick={props.in}>Stock In</button>
       </div>
 
     </div>

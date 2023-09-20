@@ -7,7 +7,7 @@ import SerCard from "../serCard/SerCard";
 import service from "../../../pages/services/servicedata";
 import products from "../../../pages/products/productsdata";
 
-const SerLeft = () => {
+const SerLeft = (props) => {
   const [age, setAge] = useState('');
 
   const handleChange = (event) => {
@@ -87,7 +87,7 @@ const SerLeft = () => {
           </Select>
           </FormControl>
         </div>
-          <button className="flex gap-1" ><IconPlus/> Add Service</button>
+          <button className="flex gap-1" onClick={props.add} ><IconPlus/> Add Service</button>
       </div>
       <div className="heading1">
         <div className="pname text-slate-600">Service Name</div>
