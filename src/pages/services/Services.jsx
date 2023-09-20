@@ -6,6 +6,7 @@ import SerRight from "../../components/services/serRight/SerRight";
 import SelectService from "../../components/services/selectService/SelectService";
 import { UserContext } from "../../context/UserIdContext";
 import { Box, Drawer } from "@mui/material";
+import AddService from "../../components/services/addService/AddService";
 
 const Services = () => {
   const [state, setState] = useState({
@@ -25,7 +26,7 @@ const Services = () => {
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add"
-        ? "Add Service"
+        ? <AddService/>
         : anchor === "edit"
         ? "Edit Service"
         : anchor === "record"
