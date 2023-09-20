@@ -3,6 +3,8 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { IconX } from "@tabler/icons-react";
+import { useState } from "react";
 
 const PaySup = (props) => {
 
@@ -12,6 +14,11 @@ const PaySup = (props) => {
       const date = today.getDate();
       const current_date = `${month}/${date}/${year}`;
     const value =dayjs(current_date);
+    const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
+      const maxFileSize = 20000;
+      const [file, setFile] = useState("File Name");
+      const [fileExists, setFileExists] = useState(false);
+
   return (
     <div>
               <h1 className="text_left heading text-red-500 font-semibold text-lg">Add New Entry</h1>
@@ -67,6 +74,73 @@ const PaySup = (props) => {
                       </LocalizationProvider>
                     </Box>
                   </Box>
+            <div className="w-[80%]">
+              <div className="mb-4">
+                <input
+                  type="file"
+                  id="file-1"
+                  className="hidden sr-only w-full"
+                  accept="image/x-png,image/gif,image/jpeg"
+                  onChange={(event) => {
+                    setFile(event.target.value);
+                    setFileExists(true);
+                    const get_file_size = event.target.files[0];
+                    console.log(get_file_size);
+                    if (get_file_size.size > maxFileSize) {
+                      setFileSizeExceeded(true);
+                      return;
+                    } else {
+                      setFileSizeExceeded(false);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="file-1"
+                  id="file-1"
+                  className="relative flex  items-center justify-center rounded-md text-center border border-dashed border-[#b6b6b6] py-8 px-16"
+                >
+                  <div>
+                    <span className="mb-2 block text-xl font-semibold text-[#07074D]">
+                      Drop files here
+                    </span>
+                    <span className="mb-2 block text-base font-medium text-[#6B7280]">
+                      Or
+                    </span>
+                    <span className="img-browse-btn inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]">
+                      Browse
+                    </span>
+                  </div>
+                </label>
+              </div>
+              {fileExists ? (
+                <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
+                  <div class="flex items-center justify-between">
+                    <span class="truncate pr-3 text-base font-medium text-[#07074D]">
+                      {file}
+                    </span>
+                    <button
+                      class="text-[#07074D]"
+                      onClick={(e) => {
+                        e.preventDefault(), setFile("");
+                        setFileExists(false);
+                        setFileSizeExceeded(false);
+                      }}
+                    >
+                      <IconX />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div></div>
+              )}
+              {fileSizeExceeded && (
+                <>
+                  <p className="error">
+                    File size exceeded the limit of {maxFileSize / 1000} KB
+                  </p>
+                </>
+              )}
+            </div>
                 </div>
               </div>
             

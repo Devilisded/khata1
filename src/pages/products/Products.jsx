@@ -6,6 +6,7 @@ import ProRight from "../../components/products/proRight/ProRight";
 import SelectProduct from "../../components/products/selectProduct/SelectProduct";
 import { UserContext } from "../../context/UserIdContext";
 import { Box, Drawer } from "@mui/material";
+import AddProduct from "../../components/products/addProduct/AddProduct";
 
 const Products = () => {
   const [state, setState] = useState({
@@ -26,7 +27,7 @@ const Products = () => {
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add"
-        ? "Add Product"
+        ? <AddProduct/>
         : anchor === "edit"
         ? "Edit Product"
         : anchor === "out"
