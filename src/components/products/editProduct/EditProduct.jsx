@@ -660,7 +660,7 @@ const hsn = [
       {submitDisabled ? (
         <button
           disabled={submitDisabled}
-          className="text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          className="text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in cursor-not-allowed"
          >
           Update
         </button>
