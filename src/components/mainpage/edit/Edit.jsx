@@ -15,6 +15,7 @@ import {
   IconSquareRoundedX,
   IconEdit,
   IconChevronLeft,
+  IconAlertOctagonFilled,
 } from "@tabler/icons-react";
 import "./edit.scss"
 
@@ -151,7 +152,7 @@ const Edit = (props) => {
             >
               <div className="flex">
                 <div className="pt-5 pl-3">
-                  <IconSquareRoundedX size={60} color="red" />
+                  <IconAlertOctagonFilled size={60} className="text-red-600" />
                 </div>
                 <div>
                   <DialogTitle id="alert-dialog-title">
