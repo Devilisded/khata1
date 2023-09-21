@@ -58,7 +58,7 @@ const business_nature = [
 
 export default function Account() {
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-  const [fileSizeExceeded1, setFileSizeExceeded1] =useState(false);
+  const [fileSizeExceeded1, setFileSizeExceeded1] = useState(false);
   const maxFileSize1 = 2000000;
   const maxFileSize2 = 100000;
   const [file, setFile] = useState("File Name");
@@ -86,10 +86,11 @@ export default function Account() {
             noValidate
             autoComplete="off"
           >
-            <h1 className="text-3xl text-center mb-5 text-sky-700">Create Business Account</h1>
+            <h1 className="text-3xl text-center mb-5 text-sky-700">
+              Create Business Account
+            </h1>
             <Box className="box-sec">
               <TextField
-                
                 id="outlined-basic"
                 variant="outlined"
                 size="small"
@@ -99,6 +100,25 @@ export default function Account() {
               />
             </Box>
 
+            <Box className="box-sec">
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                size="small"
+                label="Address"
+                className="w-full"
+              />
+            </Box>
+
+            <Box className="box-sec">
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                size="small"
+                label="GST Number"
+                className="w-full"
+              />
+            </Box>
             <Box className="flex w-full">
               <Autocomplete
                 className="box-sec w-full mr-3"
@@ -134,6 +154,7 @@ export default function Account() {
                 )}
               />
             </Box>
+
             <div className="upload-img-sec">
               <input
                 type="file"
@@ -168,7 +189,10 @@ export default function Account() {
                     <span className="truncate pr-3 text-base font-medium text-sky-800 ">
                       {file1}
                     </span>
-                    <button className="text-sky-800" onClick={(e)=>e.preventDefault()}>
+                    <button
+                      className="text-sky-800"
+                      onClick={(e) => e.preventDefault()}
+                    >
                       <IconX />
                     </button>
                   </div>
@@ -180,27 +204,6 @@ export default function Account() {
                 </p>
               )}
             </div>
-
-            <Box className="box-sec">
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                size="small"
-                label="Address"
-                className="w-full"
-              />
-            </Box>
-
-            <Box className="box-sec">
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                size="small"
-                label="GST Number"
-                className="w-full"
-              />
-            </Box>
-
             <div className="upload-img-sec">
               <input
                 type="file"
@@ -235,7 +238,10 @@ export default function Account() {
                     <span className="truncate pr-3 text-base font-medium text-sky-800">
                       {file2}
                     </span>
-                    <button className="text-sky-800" onClick={(e)=>e.preventDefault()}>
+                    <button
+                      className="text-sky-800"
+                      onClick={(e) => e.preventDefault()}
+                    >
                       <IconX />
                     </button>
                   </div>
@@ -248,7 +254,10 @@ export default function Account() {
               )}
             </div>
             <div className="create_acc_btn_wrapper border">
-              <button className="create_acc_btn text-green-600 w-full" onClick={(e)=>e.preventDefault()}>
+              <button
+                className="create_acc_btn text-green-600 w-full"
+                onClick={(e) => e.preventDefault()}
+              >
                 Create Account
               </button>
             </div>

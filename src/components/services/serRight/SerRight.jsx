@@ -55,7 +55,7 @@ const SerRight = (props) => {
         <div className="sales mr-60">Sales</div>
       </div>
       <div className="transactions">
-        <SerTran/>
+        <SerTran editSale={props.editSale}/>
       </div>
       <div className="btn shadow-lg">
         <button onClick={props.record}>Record a Sale</button>

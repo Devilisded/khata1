@@ -10,8 +10,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import Switch from "@mui/material/Switch";
 import "./addproduct.scss"
-const AddProduct = () => {
-  
+const AddProduct = (props) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const units = [
     {
@@ -31,7 +30,6 @@ const AddProduct = () => {
       label: "Hours - HRS",
     },
   ];
-
   const gst = [
     {
       value: "taxExempted",
@@ -89,7 +87,6 @@ const AddProduct = () => {
       label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
     },
   ];
-
   const hsn = [
     {
       hsn_code: "21",
@@ -593,7 +590,7 @@ const AddProduct = () => {
         <button
           disabled={submitDisabled}
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-        >
+        onClick={props.snack}>
           Add Product
         </button>
       </div>

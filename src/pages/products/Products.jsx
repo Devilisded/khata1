@@ -7,8 +7,13 @@ import SelectProduct from "../../components/products/selectProduct/SelectProduct
 import { UserContext } from "../../context/UserIdContext";
 import { Box, Drawer } from "@mui/material";
 import AddProduct from "../../components/products/addProduct/AddProduct";
+import StockOut from "../../components/products/stockOut/StockOut";
+import StockIn from "../../components/products/stockIn/StockIn";
+import EditProduct from "../../components/products/editProduct/EditProduct";
+import { SnackbarProvider,useSnackbar } from "notistack";
 
-const Products = () => {
+const MyApp = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState({
     add: false,
     edit: false,
@@ -24,16 +29,24 @@ const Products = () => {
     }
     setState({ ...state, [anchor]: open });
   };
+  const toggleDrawer1=(anchor,open)=>{
+    setState({ ...state, [anchor]: open });
+  }
+  const handleClickVariant =(variant,anchor1,msg)=> {
+    // variant could be success, error, warning, info, or default
+    toggleDrawer1(anchor1,false);
+    enqueueSnackbar(msg, { variant });
+  };
   const list = (anchor) => (
     <Box sx={{ width: 400 }} role="presentation">
       {anchor === "add"
-        ? <AddProduct/>
+        ? <AddProduct snack={()=>handleClickVariant('success',"add","Product Has been Added")}/>
         : anchor === "edit"
-        ? "Edit Product"
+        ? <EditProduct snack={()=>handleClickVariant('success',"edit","Product Updated Successfully")} snackd={()=>handleClickVariant('success',"edit","Deleted Successfully")}/>
         : anchor === "out"
-        ? "Stock Out"
+        ? <StockOut snack={()=>handleClickVariant('success',"out","Sale has been recorded")}/>
         : anchor === "in"
-        ? "Stock In"
+        ? <StockIn snack={()=>handleClickVariant('success',"in","Purchase has been recorded")}/>
         : "-"}
     </Box>
   );
@@ -86,5 +99,14 @@ const Products = () => {
     </React.Fragment>
   );
 };
+
+
+const Products=()=>{
+  return (
+    <SnackbarProvider maxSnack={1}>
+    <MyApp />
+  </SnackbarProvider>
+  )
+}
 
 export default Products;

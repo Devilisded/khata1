@@ -45,7 +45,7 @@ const MyApp = () => {
       {anchor === "add" ? (
         <AddSupplier snack={()=>handleClickVariant('success',"add","Customer Has been Added")}/>
       ) : anchor === "edit" ? (
-        <EditSup snack={()=>handleClickVariant('success',"edit","Deleted Successfully")}/>
+        <EditSup snack={()=>handleClickVariant('success',"edit","Deleted Successfully")} snacku={()=>handleClickVariant('success',"edit","Updated Successfully")}/>
       ) : anchor === "pay" ? (
         <PaySup snack={()=>handleClickVariant('success',"pay","Paid Entry has been entered")}/>
       ) : anchor === "receive" ? (

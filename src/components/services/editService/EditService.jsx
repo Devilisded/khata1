@@ -5,9 +5,16 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Switch from "@mui/material/Switch";
 import {
   IconX,
+  IconTrash , IconSquareRoundedX, IconAlertOctagonFilled,
 } from "@tabler/icons-react";
-import "./addservice.scss"
-const AddService = (props) => {
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import "./editservice.scss"
+
+const EditService = (props) => {
     const units = [
         {
           value: "pieces",
@@ -144,67 +151,98 @@ const AddService = (props) => {
           tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
         },
       ];
-
-        const [isOn2, setIsOn2] = useState(false);
-        const handleOnChange2 = () => {
-          setIsOn2(!isOn2);
-        };
-      
-        const [isClicked, setIsClicked] = useState(false);
-        const [isClicked2, setIsClicked2] = useState(false);
-      
-      
-        const handleOnChange3 = () => {
-          setIsClicked(!isClicked);
-          setIsClicked2(false)
-        };
-      
-       
-        const handleOnChange4 = () => {
-          setIsClicked2(!isClicked2);
-          setIsClicked(false)
-        };
-      
-        const [gstOnItem, setGstOnItem] = useState("");
-        const [gstValue1, setGstValue1] = useState("GST %");
-        const [gstValue2, setGstValue2] = useState("");
-      
-        const [hsnCode, setHsnCode] = useState("SAC Code");
-        const [hsnValue1, setHsnValue1] = useState("");
-        const [hsnValue2, setHsnValue2] = useState("");
-      
-        const [searchValue, setSearchValue] = useState("0");
-      
-        const [customGst, setcustomGst] = useState("");
-        const [customeCess, setCustomeCess] = useState("");
-        const custom_gst_details =
-          "(" +
-          customGst / 2 +
-          "% CSTS + " +
-          customGst / 2 +
-          "% SGST/UT GST ; " +
-          customGst +
-          "% IGST ; " +
-          customeCess +
-          "% CESS )";
-      
-      
-        const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-        const maxFileSize = 20000;
-        const [file, setFile] = useState("File Name");
-        const [fileExists, setFileExists] = useState(false);
-      
-        const label = { inputProps: { "aria-label": "Checkbox demo" } };
-      
+    const [open, setOpen] = React.useState(false);
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+  
+    const [isOn2, setIsOn2] = useState(false);
+    const handleOnChange2 = () => {
+      setIsOn2(!isOn2);
+      //console.log("isOn2 : ", isOn2);
+    };
+  
+    const [isClicked, setIsClicked] = useState(false);
+    const [isClicked2, setIsClicked2] = useState(false);
+  
+  
+    const handleOnChange3 = () => {
+      setIsClicked(!isClicked);
+      setIsClicked2(false)
+      //console.log("isClicked : ", isClicked);
+    };
+  
+  
+   
+    const handleOnChange4 = () => {
+      setIsClicked2(!isClicked2);
+      setIsClicked(false)
+  
+    };
+  
+    const [gstValue1, setGstValue1] = useState("GST %");
+    const [gstValue2, setGstValue2] = useState("");
+  
+  
+    const [hsnCode, setHsnCode] = useState("SAC Code");
+    const [hsnValue1, setHsnValue1] = useState("");
+    const [hsnValue2, setHsnValue2] = useState("");
+  
+  
+    const [searchValue, setSearchValue] = useState("0");
+    console.log(searchValue);
+  
+    const [customGst, setcustomGst] = useState("");
+    const [customeCess, setCustomeCess] = useState("");
+    const custom_gst_details =
+      "(" +
+      customGst / 2 +
+      "% CSTS + " +
+      customGst / 2 +
+      "% SGST/UT GST ; " +
+      customGst +
+      "% IGST ; " +
+      customeCess +
+      "% CESS )";
+  
+  
+    
+  
+    const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+    const maxFileSize = 20000;
+    const [file, setFile] = useState("File Name");
+    const [fileExists, setFileExists] = useState(false);
+  
+    const label = { inputProps: { "aria-label": "Checkbox demo" } };
+    const [state, setState] = React.useState({
+      top: false,
+      left: false,
+      bottom: false,
+      right: false,
+    });
+  
+    const toggleDrawer = (anchor, open) => (event) => {
+      if (
+        event.type === "keydown" &&
+        (event.key === "Tab" || event.key === "Shift")
+      ) {
+        return;
+      }
+      setState({ ...state, [anchor]: open });
+    };
   return (
     <div>
     <div>
       <Box sx={{ width: 400 }} role="presentation">
         <h1 className="text_left heading font-semibold text-2xl flex justify-between items-center">
-          Add Services
+          Edit Services
         </h1>
 
-        <div className="add-services-section-wrapper">
+        <div className="add-services-edit-section-wrapper">
           <div className="section-2">
             <Box
               component="form"
@@ -235,6 +273,7 @@ const AddService = (props) => {
                         setFile(event.target.value);
                         setFileExists(true);
                         const get_file_size = event.target.files[0];
+                        console.log(get_file_size);
                         if (get_file_size.size > maxFileSize) {
                           setFileSizeExceeded(true);
                           return;
@@ -285,7 +324,7 @@ const AddService = (props) => {
                   {fileSizeExceeded && (
                     <>
                       <p className="error">
-                        File size exceeded the limit of {maxFileSize / 1000}
+                        File size exceeded the limit of {maxFileSize / 1000}{" "}
                         KB
                       </p>
                     </>
@@ -328,7 +367,7 @@ const AddService = (props) => {
                   variant="outlined"
                   value={hsnCode}
                   helperText={hsnValue1}
-                  className="sec-1 cursor-pointer"
+                  className="sec-1"
                   size="small"
                   InputProps={{
                     readOnly: true,
@@ -343,7 +382,7 @@ const AddService = (props) => {
                   variant="outlined"
                   value={gstValue1}
                   helperText={gstValue2}
-                  className="sec-2 cursor-pointer"
+                  className="sec-2"
                   size="small"
                   InputProps={{
                     readOnly: true,
@@ -378,9 +417,9 @@ const AddService = (props) => {
                       )
                       .map((filteredItem) => (
                         <div
-                        key={filteredItem.hsn_code}
                           className="flex card-sec"
                           onClick={() => {
+                            console.log(filteredItem.hsn_code);
                             setHsnCode(filteredItem.hsn_code),
                               setHsnValue1(filteredItem.product_name),
                               setGstValue1(filteredItem.tax),
@@ -389,7 +428,7 @@ const AddService = (props) => {
                               setSearchValue("0")
                           }}
                         >
-                          <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded">
+                          <div className="gst-card-text">
                             <div className="flex gap-6 pb-4">
                               <h2 className=" rounded bg-slate-300 px-6 py-1 ">
                                 {filteredItem.hsn_code}
@@ -438,13 +477,15 @@ const AddService = (props) => {
                       </div>
                     </div>
                   </Box>
+                  <div>Custom Tax %</div>
                   <Box className="box-sec">
-                    <div>Custom Tax %</div>
+                    
                     <TextField
                       label="GST"
                       id="outlined-basic"
                       variant="outlined"
                       className="sec-1"
+                      size="small"
                       required
                       onChange={(e) => {
                         setcustomGst(e.target.value);
@@ -455,6 +496,7 @@ const AddService = (props) => {
                       id="outlined-basic"
                       variant="outlined"
                       className="sec-2"
+                      size="small"
                       required
                       onChange={(e) => {
                         setCustomeCess(e.target.value);
@@ -481,13 +523,56 @@ const AddService = (props) => {
         </div>
       </Box>
     </div>
-    <div className="add-customer-btn-wrapper1">
-      <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snack}>
-        Add Services
+    <div className="add-services-edit-btn-wrapper flex gap-3">
+    <button
+          className="delete-btn text-red-600 flex gap-1 justify-center"
+          type="submit"
+          onClick={handleClickOpen}
+        >
+          <IconTrash />
+          Delete
+        </button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <div className="flex">
+            <div className="pt-5 pl-3">
+              <IconAlertOctagonFilled size={60} className="text-red-600" />
+            </div>
+            <div>
+              <DialogTitle id="alert-dialog-title">
+                Are You Sure ?
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  You are about to delete this service This action cannot be
+                  undone.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions className="flex gap-4">
+                <button className="pb-3" onClick={handleClose}>
+                  Cancel
+                </button>
+                <button
+                  className="delete-btn text-red-600 pb-3 pr-3"
+                  onClick={props.snackd}
+                  autoFocus
+                >
+                  Delete Service
+                </button>
+              </DialogActions>
+            </div>
+          </div>
+        </Dialog>
+      <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"  onClick={props.snacku}>
+        Update Service
       </button>
     </div>
   </div>
   )
 }
 
-export default AddService
+export default EditService
