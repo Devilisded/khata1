@@ -18,7 +18,7 @@ const MainRight = (props) => {
       <div className="transactions">
         {
           props.transactions.map((item,index)=>(
-            <Transaction key={index} transactions={item} pay={props.pay} receive={props.receive}/>
+            <Transaction key={index} transactions={item} editPay={props.editPay} editReceive={props.editReceive}/>
           ))
         }
       </div>

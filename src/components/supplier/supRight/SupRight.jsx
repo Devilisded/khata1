@@ -37,9 +37,7 @@ const SupRight = (props) => {
         </div>
       </div>
       <div className="transactions">
-        <SupTransaction />
-        <SupTransaction />
-        <SupTransaction />
+        <SupTransaction editPay={props.editPay}/>
       </div>
       <div className="btn shadow-lg">
         <button className="pay text-red-600" onClick={props.pay}>
