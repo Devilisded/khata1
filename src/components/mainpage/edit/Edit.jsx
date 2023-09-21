@@ -169,7 +169,7 @@ const Edit = (props) => {
                     </button>
                     <button
                       className="delete-btn text-red-600 pb-3 pr-3"
-                      onClick={handleClose}
+                      onClick={props.snack}
                       autoFocus
                     >
                       Delete Customer
@@ -430,7 +430,7 @@ const Edit = (props) => {
               </Box>
             </div>
             <div className="add-customer-edit-btn-wrapper bg-white">
-              <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in">
+              <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snacku}>
                 Update Customer
               </button>
             </div>

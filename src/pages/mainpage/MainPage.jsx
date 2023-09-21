@@ -58,6 +58,9 @@ const MyApp = () => {
           snack={() =>
             handleClickVariant("success", "edit", "Deleted Successfully")
           }
+          snacku={() =>
+            handleClickVariant("success", "edit", "Updated Successfully")
+          }
         />
       ) : anchor === "pay" ? (
         <Pay
