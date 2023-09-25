@@ -1,16 +1,46 @@
-import { IconPointFilled } from "@tabler/icons-react"
-import "./transaction.scss"
+import { IconPointFilled } from "@tabler/icons-react";
+import "./transaction.scss";
 
 const Transaction = (props) => {
+  const time1 = new Date(props.transactions.tran_time);
+  const hours = time1.getHours();
+  const minutes = time1.getMinutes();
+  const fminutes = minutes < 10 ? "0" + minutes : minutes;
+  const fhours = hours > 12 ? hours - 12 : hours;
+  const AMPM = hours > 12 ? "PM" : "AM";
   return (
-    <div className='transaction cursor-pointer' onClick={props.transactions.pay?props.editPay:props.transactions.receive?props.editReceive:alert("No Transactions")}>
-        <div className="details flex flex-col gap-1 "><div className="date font-semibold flex items-center gap-1 text-slate-800">{props.transactions.date}<IconPointFilled className="w-3 h-3"/>{props.transactions.time}</div><div className="text-sm text-slate-600">Balance : -500</div></div>
-        <div className="flex gap-56 mr-36">
-        <div className="text-red-600">{props.transactions.pay?'₹ '+ props.transactions.pay : '-'}</div>
-        <div className="text-green-600">{props.transactions.receive?'₹ '+ props.transactions.receive : '-'}</div>
+    <div
+      className="transaction cursor-pointer"
+      onClick={
+        props.transactions.tran_pay
+          ? props.editPay
+          : props.transactions.tran_receive
+          ? props.editReceive
+          : alert("No Transactions")
+      }
+    >
+      <div className="details flex flex-col gap-1 ">
+        <div className="date font-semibold flex items-center gap-1 text-slate-800">
+          {props.transactions.tran_date}
+          <IconPointFilled className="w-3 h-3" />
+          {fhours + ":" + fminutes + " " + AMPM}
         </div>
+        <div className="text-sm text-slate-600">Balance : -500</div>
+      </div>
+      <div className="flex gap-56 mr-36">
+        <div className="text-red-600">
+          {props.transactions.tran_pay
+            ? "₹ " + props.transactions.tran_pay
+            : "-"}
+        </div>
+        <div className="text-green-600">
+          {props.transactions.tran_receive
+            ? "₹ " + props.transactions.tran_receive
+            : "-"}
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Transaction
+export default Transaction;
