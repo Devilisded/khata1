@@ -79,59 +79,36 @@ const MyApp = () => {
           }
         />
       ) : anchor === "editPay" ? (
-        <EditPay         snackd={() =>
-          handleClickVariant("success", "editPay", "Deleted Successfully")
-        }         snacku={() =>
-          handleClickVariant("success", "editPay","Updated Successfully")
-        }/>
+        <EditPay
+          snackd={() =>
+            handleClickVariant("success", "editPay", "Deleted Successfully")
+          }
+          snacku={() =>
+            handleClickVariant("success", "editPay", "Updated Successfully")
+          }
+        />
       ) : anchor === "editReceive" ? (
-        <EditReceive         snackd={() =>
-          handleClickVariant("success", "editReceive", "Deleted Successfully")
-        }         snacku={() =>
-          handleClickVariant("success", "editReceive", "Updated Successfully")
-        }/>
+        <EditReceive
+          snackd={() =>
+            handleClickVariant("success", "editReceive", "Deleted Successfully")
+          }
+          snacku={() =>
+            handleClickVariant("success", "editReceive", "Updated Successfully")
+          }
+        />
       ) : (
         "-"
       )}
     </Box>
   );
-  const transactions = [
-    {
-      date: "10 Sep 2023",
-      pay: 600,
-      time: "6:00 AM",
-      id: 1,
-    },
-    {
-      date: "11 Sep 2023",
-      receive: 1000,
-      time: "5:00 PM",
-      id: 1,
-    },
-    {
-      date: "12 Sep 2023",
-      pay: "400",
-      time: "8:00 AM",
-      id: 1,
-    },
-  ];
   const [active, setActive] = useState(false);
-  const { userId } = useContext(UserContext);
+  const { userId, change } = useContext(UserContext);
   const checkActive = () => {
-    userId > 0 ? setActive(true) : setActive(false);
+    userId === 0 ? setActive(false) : setActive(true);
   };
   useEffect(() => {
     checkActive();
-  }, [userId]);
-  //   useEffect(() => {
-  //     const handleContextmenu = e => {
-  //         e.preventDefault()
-  //     }
-  //     document.addEventListener('contextmenu', handleContextmenu)
-  //     return function cleanup() {
-  //         document.removeEventListener('contextmenu', handleContextmenu)
-  //     }
-  // }, [ ])
+  }, [userId, change]);
   return (
     <React.Fragment>
       <Drawer
@@ -183,12 +160,11 @@ const MyApp = () => {
 
           {active ? (
             <MainRight
-              transactions={transactions}
               edit={toggleDrawer("edit", true)}
               pay={toggleDrawer("pay", true)}
               receive={toggleDrawer("receive", true)}
-              editPay={toggleDrawer("editPay",true)}
-              editReceive={toggleDrawer("editReceive",true)}
+              editPay={toggleDrawer("editPay", true)}
+              editReceive={toggleDrawer("editReceive", true)}
             />
           ) : (
             <SelectCustomer />

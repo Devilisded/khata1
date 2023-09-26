@@ -23,11 +23,17 @@ export const UserContextProvider = ({ children }) => {
   const changeChange = () => {
     setChange((prev) => prev + 1);
   };
+  const [tranId, setTranId] = useState(0);
+  const changeTranId = (tid) => {
+    setTranId(tid);
+  };
   return (
     <UserContext.Provider
       value={{
         userId,
         changeUser,
+        tranId,
+        changeTranId,
         supId,
         changeSup,
         pId,

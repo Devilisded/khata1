@@ -1,6 +1,6 @@
 import { Box, TextField } from "@mui/material";
 import "./addcustomer.scss";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 const AddCustomer = (props) => {
@@ -47,7 +47,21 @@ const AddCustomer = (props) => {
     setIsChecked2(!isChecked2);
   };
   const [select, setSelect] = useState(false);
-
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      values.cust_name !== "" &&
+      values.cust_number !== "" &&
+      values.cust_amt !== "" &&
+      values.amt_type !== ""
+    ) {
+      setSubmitDisabled(false);
+      console.log("submitDisabled : ", submitDisabled);
+    } else {
+      setSubmitDisabled(true);
+      console.log("submitDisabled : ", submitDisabled);
+    }
+  }, [values.cust_name, values.cust_number, values.cust_amt, values.amt_type]);
   return (
     <div>
       <form method="post">
@@ -107,12 +121,12 @@ const AddCustomer = (props) => {
                     }
                     name="amt_type"
                     onChange={handleChange}
+                    defaultValue=""
                   >
-                    <option
-                      value="pay"
-                      onClick={() => setSelect(false)}
-                      selected
-                    >
+                    <option value="" disabled>
+                      Select
+                    </option>
+                    <option value="pay" onClick={() => setSelect(false)}>
                       Pay
                     </option>
                     <option value="receive" onClick={() => setSelect(true)}>
@@ -278,12 +292,24 @@ const AddCustomer = (props) => {
             </div>
           </div>
           <div className="add-customer-btn-wrapper1">
-            <button
-              className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-              onClick={handleClick}
-            >
-              Add Customer
-            </button>
+                       {" "}
+            {submitDisabled ? (
+              <button
+                disabled={submitDisabled}
+                className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+              >
+                                Add Customer              {" "}
+              </button>
+            ) : (
+              <button
+                onClick={handleClick}
+                disabled={submitDisabled}
+                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+              >
+                                Add Customer              {" "}
+              </button>
+            )}
+                     {" "}
           </div>
         </Box>
       </form>

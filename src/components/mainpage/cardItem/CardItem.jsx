@@ -2,30 +2,15 @@ import React, { useEffect, useState, useContext } from "react";
 import { IconUser } from "@tabler/icons-react";
 import "./carditem.scss";
 import { UserContext } from "../../../context/UserIdContext";
-import axios from "axios";
 
 const CardItem = (props) => {
-  const { changeUser, userId, change } = useContext(UserContext);
-  const [type, setType] = useState(false);
-  const check = () => {
-    if (props.users.amt_type === "receive") {
-      setType(true);
-    }
-  };
-  const [result, setResult] = useState([]);
-  useEffect(() => {
-    axios.get("http://localhost:8000/api/auth/fetchAll").then((response) => {
-      setResult(response.data);
-    });
-    check();
-    console.log(result);
-  }, [userId, change]);
-  const pay = result
+  const { changeUser, userId } = useContext(UserContext);
+  const pay = props.result
     .filter((person) => person.cnct_id === props.users.cust_id)
     .reduce(function (prev, current) {
       return prev + +current.tran_pay;
     }, 0);
-  const receive = result
+  const receive = props.result
     .filter((person) => person.cnct_id === props.users.cust_id)
     .reduce(function (prev, current) {
       return prev + +current.tran_receive;

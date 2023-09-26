@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState } from "react";
-import { Checkbox } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -12,13 +11,16 @@ import {
   IconMapPin,
   IconReceipt,
   IconTrash,
-  IconSquareRoundedX,
   IconEdit,
   IconChevronLeft,
   IconAlertOctagonFilled,
+  IconUser,
+  IconCash,
 } from "@tabler/icons-react";
-import "./edit.scss"
-
+import "./edit.scss";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 const Edit = (props) => {
   const [isChecked, setIsChecked] = useState(false);
   const handleOnChange = () => {
@@ -29,8 +31,6 @@ const Edit = (props) => {
   const handleOnChange2 = () => {
     setIsChecked2(!isChecked2);
   };
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const label1 = { inputProps: { "aria-label": "Checkbox demo" } };
   const [select, setSelect] = useState(false);
 
   const [openEntryDetails, setOpenEntryDetails] = useState(true);
@@ -47,146 +47,257 @@ const Edit = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
+  const { userId, change, changeChange, changeUser } = useContext(UserContext);
+  const [result, setResult] = useState([]);
+  const [data, setData] = useState({
+    cust_name: "",
+    cust_number: "",
+    cust_amt: "",
+    amt_type: "",
+    cust_gstin: "",
+    cust_sflat: "",
+    cust_sarea: "",
+    cust_spin: "",
+    cust_scity: "",
+    cust_sstate: "",
+    cust_bflat: "",
+    cust_barea: "",
+    cust_bpin: "",
+    cust_bcity: "",
+    cust_bstate: "",
+  });
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/auth/fetchCust/${userId}`)
+      .then((response) => {
+        setResult(response.data);
+        setData({
+          ...data,
+          cust_name: response.data[0].cust_name,
+          cust_number: response.data[0].cust_number,
+          cust_amt: response.data[0].cust_amt,
+          amt_type: response.data[0].amt_type,
+          cust_gstin: response.data[0].cust_gstin,
+          cust_sflat: response.data[0].cust_sflat,
+          cust_sarea: response.data[0].cust_sarea,
+          cust_spin: response.data[0].cust_spin,
+          cust_scity: response.data[0].cust_scity,
+          cust_sstate: response.data[0].cust_sstate,
+          cust_bflat: response.data[0].cust_bflat,
+          cust_barea: response.data[0].cust_barea,
+          cust_bpin: response.data[0].cust_bpin,
+          cust_bcity: response.data[0].cust_bcity,
+          cust_bstate: response.data[0].cust_bstate,
+        });
+      });
+  }, [change, userId]);
+  const deleteCustomer = async () => {
+    try {
+      await axios.post(`http://localhost:8000/api/auth/delcust/${userId}`);
+      changeChange();
+      props.snack();
+      changeUser(0);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    try {
+      axios.put(`http://localhost:8000/api/auth/updatecust/${userId}`, data);
+      changeChange();
+      props.snacku();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
-    <Box
-      sx={{ width: 400 }}
-      role="presentation"
-    >
+    <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
-        <div>
-          <Box sx={{ width: 400 }} className="w-full">
-            <h1 className="text_left heading">Pay Entry Details</h1>
-            <div className="customer-profile flex items-start px-4 py-6">
-              <img
-                className="w-12 h-12 rounded-full object-cover mr-4 shadow"
-                src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                alt="avatar"
-              />
-              <div className="">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-normal text-gray-700 -mt-1">
-                    Rajat Kumar
-                  </h2>
+        result.map((filteredPersons) => (
+          <div key={userId}>
+            <Box sx={{ width: 400 }} className="w-full">
+              <h1 className="text_left heading">Pay Entry Details</h1>
+              <div className="customer-profile flex items-start px-4 py-6 gap-4">
+                <div className="icon2 p-3 rounded-full">
+                  <IconUser className="text-blue-500" />
                 </div>
-                <p className="text-gray-500  bg-slate-200 rounded-full text-center">
-                  18 Sep 2023
-                </p>
+                <div className="">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-normal text-gray-700 -mt-1">
+                      {filteredPersons.cust_name}
+                    </h2>
+                  </div>
+                  <p className="text-gray-500  bg-slate-200 rounded text-center">
+                    Customer
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="pay-edit-entry-btn-wrapper flex justify-center">
+              <div className="pay-edit-entry-btn-wrapper flex justify-center">
+                <button
+                  className="edit-entry-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
+                  type="submit"
+                  onClick={handleClick}
+                >
+                  <IconEdit />
+                  Edit Entry
+                </button>
+              </div>
+
+              <div className="customer-edit-section-wrapper">
+                <div className="edit-section">
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconCash />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Opening Balance</h2>
+                      <p className=" font-medium flex gap-2">
+                        ₹ {filteredPersons.cust_amt}
+                        <span className=" capitalize">
+                          {filteredPersons.amt_type}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconPhoneCall />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Phone Number</h2>
+                      <p className=" font-medium">
+                        {filteredPersons.cust_number}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconReceipt />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>GST Number</h2>
+                      <p className=" font-medium">
+                        {filteredPersons.cust_gstin
+                          ? filteredPersons.cust_gstin
+                          : "-"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconMapPin />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Shipping Address</h2>
+                      <p className=" font-medium">
+                        {filteredPersons.cust_sflat
+                          ? filteredPersons.cust_sflat + ","
+                          : ""}
+                        {filteredPersons.cust_sarea
+                          ? " " + filteredPersons.cust_sarea + ","
+                          : ""}
+                        {filteredPersons.cust_scity
+                          ? " " + filteredPersons.cust_scity + ","
+                          : ""}
+                        {filteredPersons.cust_sstate
+                          ? " " + filteredPersons.cust_sstate + ","
+                          : ""}
+                        {filteredPersons.cust_spin
+                          ? " " + filteredPersons.cust_spin
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconMapPin />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Billing Address</h2>
+                      <p className=" font-medium">
+                        {filteredPersons.cust_bflat
+                          ? filteredPersons.cust_bflat + ","
+                          : ""}
+                        {filteredPersons.cust_barea
+                          ? " " + filteredPersons.cust_barea + ","
+                          : ""}
+                        {filteredPersons.cust_bcity
+                          ? " " + filteredPersons.cust_bcity + ","
+                          : ""}
+                        {filteredPersons.cust_bstate
+                          ? " " + filteredPersons.cust_bstate + ","
+                          : ""}
+                        {filteredPersons.cust_bpin
+                          ? " " + filteredPersons.cust_bpin
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Box>
+
+            <div className="delete-customer-btn-wrapper flex justify-center">
               <button
-                className="edit-entry-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
+                className="delete-btn text-red-600 flex gap-1 justify-center"
                 type="submit"
-                onClick={handleClick}
+                onClick={handleClickOpen}
               >
-                <IconEdit />
-                Edit Entry
+                <IconTrash />
+                Delete Entry
               </button>
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <div className="flex">
+                  <div className="pt-5 pl-3">
+                    <IconAlertOctagonFilled
+                      size={60}
+                      className="text-red-600"
+                    />
+                  </div>
+                  <div>
+                    <DialogTitle id="alert-dialog-title">
+                      Are You Sure ?
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        You are about to delete this customer This action cannot
+                        be undone.
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions className="flex gap-4">
+                      <button className="pb-3" onClick={handleClose}>
+                        Cancel
+                      </button>
+                      <button
+                        className="delete-btn text-red-600 pb-3 pr-3"
+                        onClick={deleteCustomer}
+                        autoFocus
+                      >
+                        Delete Customer
+                      </button>
+                    </DialogActions>
+                  </div>
+                </div>
+              </Dialog>
             </div>
-
-            <div className="customer-edit-section-wrapper">
-              <div className="edit-section">
-                <div className="flex card-sec">
-                  <div className="customer-info-icon-wrapper ">
-                    <IconPhoneCall />
-                  </div>
-                  <div className="customer-info-text">
-                    <h2>Phone Number</h2>
-                    <p className=" font-medium">234257543</p>
-                  </div>
-                </div>
-
-                <div className="flex card-sec">
-                  <div className="customer-info-icon-wrapper ">
-                    <IconReceipt />
-                  </div>
-                  <div className="customer-info-text">
-                    <h2>GST Number</h2>
-                    <p className=" font-medium">29ABCDE1234TMZP</p>
-                  </div>
-                </div>
-
-                <div className="flex card-sec">
-                  <div className="customer-info-icon-wrapper ">
-                    <IconMapPin />
-                  </div>
-                  <div className="customer-info-text">
-                    <h2>Shipping Address</h2>
-                    <p className=" font-medium">
-                      22, 6th Cross Street, Basavanagudi, Bangalore, KARNATAKA,
-                      560004
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex card-sec">
-                  <div className="customer-info-icon-wrapper ">
-                    <IconMapPin />
-                  </div>
-                  <div className="customer-info-text">
-                    <h2>Billing Address</h2>
-                    <p className=" font-medium">
-                      7/11, Hauz Khas, New Delhi, DELHI, 110016
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Box>
-
-          <div className="delete-customer-btn-wrapper flex justify-center">
-            <button
-              className="delete-btn text-red-600 flex gap-1 justify-center"
-              type="submit"
-              onClick={handleClickOpen}
-            >
-              <IconTrash />
-              Delete Entry
-            </button>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <div className="flex">
-                <div className="pt-5 pl-3">
-                  <IconAlertOctagonFilled size={60} className="text-red-600" />
-                </div>
-                <div>
-                  <DialogTitle id="alert-dialog-title">
-                    Are You Sure ?
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      You are about to delete this customer This action cannot
-                      be undone.
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions className="flex gap-4">
-                    <button className="pb-3" onClick={handleClose}>
-                      Cancel
-                    </button>
-                    <button
-                      className="delete-btn text-red-600 pb-3 pr-3"
-                      onClick={props.snack}
-                      autoFocus
-                    >
-                      Delete Customer
-                    </button>
-                  </DialogActions>
-                </div>
-              </div>
-            </Dialog>
           </div>
-        </div>
+        ))
       ) : (
         <div></div>
       )}
       {openSupplierPay ? (
         <div>
-            <div className="back-btn-wrapper ">
+          <div className="back-btn-wrapper ">
             <button
               className="back-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-2 pl-0 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
               type="submit"
@@ -196,7 +307,7 @@ const Edit = (props) => {
               Back
             </button>
           </div>
-          <div>
+          <form method="post">
             <div>
               <Box sx={{ width: 400 }} role="presentation">
                 <h1 className="text_left heading font-semibold text-2xl flex justify-between items-center">
@@ -205,26 +316,28 @@ const Edit = (props) => {
 
                 <div className="add-customer-edit-wrapper">
                   <div className="section-2">
-                    <Box
-                      component="form"
+                    <div
                       sx={{
                         "& > :not(style)": { m: 1, width: "97%" },
                       }}
-                      noValidate
-                      autoComplete="off"
+                      className="forms"
                     >
-                      <Box className="box-sec">
+                      <div className="box-sec">
                         <TextField
                           label="Name"
                           id="outlined-basic"
                           variant="outlined"
                           className="w-full"
                           size="small"
+                          value={data.cust_name}
+                          onChange={(e) =>
+                            setData({ ...data, cust_name: e.target.value })
+                          }
                           required
                         />
-                      </Box>
+                      </div>
 
-                      <Box className="box-sec">
+                      <div className="box-sec">
                         <TextField
                           id="outlined-basic"
                           variant="outlined"
@@ -232,106 +345,124 @@ const Edit = (props) => {
                           type="tel"
                           className="w-full"
                           size="small"
+                          value={data.cust_number}
+                          onChange={(e) =>
+                            setData({ ...data, cust_number: e.target.value })
+                          }
                           required
                         />
-                      </Box>
+                      </div>
 
-                      <Box className="box-sec ">
+                      <div className="box-sec ">
                         <TextField
                           id="outlined-basic"
                           variant="outlined"
                           label="Enter amount"
                           className="sec-1"
                           size="small"
+                          value={data.cust_amt}
+                          onChange={(e) =>
+                            setData({ ...data, cust_amt: e.target.value })
+                          }
                           required
                         />
                         <select
                           className={
-                            select
-                              ? "text-green-600 bg-white p-1 sel"
-                              : "text-red-600 bg-white p-1 sel"
+                            data.amt_type === "receive"
+                              ? "text-green-600 bg-white p-1 border border-slate-400 rounded"
+                              : "text-red-600 bg-white p-1 border border-slate-400 rounded"
+                          }
+                          value={data.amt_type}
+                          onChange={(e) =>
+                            setData({ ...data, amt_type: e.target.value })
                           }
                         >
-                          <option value={10} onClick={() => setSelect(false)}>
-                            Pay
-                          </option>
-                          <option value={20} onClick={() => setSelect(true)}>
-                            Receive
-                          </option>
+                          <option value="pay">Pay</option>
+                          <option value="receive">Receive</option>
                         </select>
-                      </Box>
-                    </Box>
-                    <Box className="box-sec check-box-sec">
-                      <Checkbox {...label} onChange={handleOnChange} />
+                      </div>
+                    </div>
+                    <div className="box-sec check-box-sec">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 mr-2 cursor-pointer"
+                        onChange={handleOnChange}
+                      />
                       <span>Add GSTIN & GST</span>
-                    </Box>
+                    </div>
 
                     {isChecked ? (
                       <>
-                        <Box
-                          component="form"
+                        <div
                           sx={{
                             "& > :not(style)": { m: 1, width: "97%" },
                           }}
-                          noValidate
-                          autoComplete="off"
-                          className="box-sec-2"
+                          className="box-sec-2 forms"
                         >
-                          <Box className="box-sec ">
+                          <div className="box-sec ">
                             <TextField
                               id="outlined-basic"
                               variant="outlined"
                               label="GST IN"
                               className="w-full"
+                              value={data.cust_gstin}
+                              onChange={(e) =>
+                                setData({ ...data, cust_gstin: e.target.value })
+                              }
                               size="small"
                             />
-                          </Box>
-                          <p className="text-xl font-semibold">
-                            Shipping Address
-                          </p>
-                          <Box className="box-sec">
+                          </div>
+                          <p className="mt-2">Shipping Address</p>
+                          <div className="box-sec">
                             <TextField
                               id="outlined-basic"
                               label="Flat / Building Number"
                               variant="outlined"
                               className="w-full"
                               size="small"
+                              value={data.cust_sflat}
+                              onChange={(e) =>
+                                setData({ ...data, cust_sflat: e.target.value })
+                              }
                             />
-                          </Box>
+                          </div>
 
-                          <Box className="box-sec">
+                          <div className="box-sec">
                             <TextField
                               id="outlined-basic"
                               label="Area / Locality"
                               variant="outlined"
                               className="w-full"
                               size="small"
+                              value={data.cust_sarea}
+                              onChange={(e) =>
+                                setData({ ...data, cust_sarea: e.target.value })
+                              }
                             />
-                          </Box>
-                          <Box className="box-sec">
-                            <TextField
-                              id="outlined-basic"
-                              label="Area / Locality"
-                              variant="outlined"
-                              className="w-full"
-                              size="small"
-                            />
-                          </Box>
-                          <Box className="box-sec">
+                          </div>
+                          <div className="box-sec">
                             <TextField
                               id="outlined-basic"
                               label="PIN Code"
                               variant="outlined"
                               className="w-full"
                               size="small"
+                              value={data.cust_spin}
+                              onChange={(e) =>
+                                setData({ ...data, cust_spin: e.target.value })
+                              }
                             />
-                          </Box>
-                          <Box className="box-sec">
+                          </div>
+                          <div className="box-sec">
                             <TextField
                               id="outlined-basic"
                               label="City"
                               variant="outlined"
                               className="sec-1 w-full"
+                              value={data.cust_scity}
+                              onChange={(e) =>
+                                setData({ ...data, cust_scity: e.target.value })
+                              }
                               size="small"
                             />
 
@@ -341,73 +472,97 @@ const Edit = (props) => {
                               variant="outlined"
                               className="sec-2"
                               size="small"
+                              value={data.cust_sstate}
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  cust_sstate: e.target.value,
+                                })
+                              }
                             />
-                          </Box>
-                        </Box>
-                        <Box className="box-sec check-box-sec text-center ">
-                          <Checkbox
-                            {...label1}
+                          </div>
+                        </div>
+                        <div className="box-sec check-box-sec text-center ">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 mr-2 cursor-pointer"
                             onChange={handleOnChange2}
                             defaultChecked
                           />
                           <span>Billing Address</span>
-                        </Box>
+                        </div>
 
                         {isChecked2 ? (
-                          <Box
-                            component="form"
+                          <div
                             sx={{
                               "& > :not(style)": { m: 1, width: "97%" },
                             }}
-                            noValidate
-                            autoComplete="off"
-                            className="box-sec-2"
+                            className="box-sec-2 forms"
                           >
                             <p className="text_left">Billing Address</p>
-                            <Box className="box-sec">
+                            <div className="box-sec">
                               <TextField
                                 id="outlined-basic"
                                 label="Flat / Building Number"
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
+                                value={data.cust_bflat}
+                                onChange={(e) =>
+                                  setData({
+                                    ...data,
+                                    cust_bflat: e.target.value,
+                                  })
+                                }
                               />
-                            </Box>
+                            </div>
 
-                            <Box className="box-sec">
+                            <div className="box-sec">
                               <TextField
                                 id="outlined-basic"
                                 label="Area / Locality"
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
+                                value={data.cust_barea}
+                                onChange={(e) =>
+                                  setData({
+                                    ...data,
+                                    cust_barea: e.target.value,
+                                  })
+                                }
                               />
-                            </Box>
-                            <Box className="box-sec">
-                              <TextField
-                                id="outlined-basic"
-                                label="Area / Locality"
-                                variant="outlined"
-                                className="w-full"
-                                size="small"
-                              />
-                            </Box>
-                            <Box className="box-sec">
+                            </div>
+                            <div className="box-sec">
                               <TextField
                                 id="outlined-basic"
                                 label="PIN Code"
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
+                                value={data.cust_bpin}
+                                onChange={(e) =>
+                                  setData({
+                                    ...data,
+                                    cust_bpin: e.target.value,
+                                  })
+                                }
                               />
-                            </Box>
-                            <Box className="box-sec">
+                            </div>
+                            <div className="box-sec">
                               <TextField
                                 id="outlined-basic"
                                 label="City"
                                 variant="outlined"
                                 className="sec-1"
                                 size="small"
+                                value={data.cust_bcity}
+                                onChange={(e) =>
+                                  setData({
+                                    ...data,
+                                    cust_bcity: e.target.value,
+                                  })
+                                }
                               />
 
                               <TextField
@@ -416,9 +571,16 @@ const Edit = (props) => {
                                 variant="outlined"
                                 className="sec-2"
                                 size="small"
+                                value={data.cust_bstate}
+                                onChange={(e) =>
+                                  setData({
+                                    ...data,
+                                    cust_bstate: e.target.value,
+                                  })
+                                }
                               />
-                            </Box>
-                          </Box>
+                            </div>
+                          </div>
                         ) : (
                           <div></div>
                         )}
@@ -431,11 +593,14 @@ const Edit = (props) => {
               </Box>
             </div>
             <div className="add-customer-edit-btn-wrapper bg-white">
-              <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snacku}>
+              <button
+                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                onClick={handleSubmit}
+              >
                 Update Customer
               </button>
             </div>
-          </div>
+          </form>
         </div>
       ) : (
         <div></div>
