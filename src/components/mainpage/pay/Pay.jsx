@@ -4,7 +4,6 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { IconX } from "@tabler/icons-react";
 import "./pay.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
@@ -17,7 +16,7 @@ const Pay = (props) => {
   const current_date = `${month}/${date}/${year}`;
   const todaysDate = dayjs(current_date);
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-  const maxFileSize = 20000;
+  const maxFileSize = 2000000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
   const [transactionDate, setTransactionDate] = useState(todaysDate);
@@ -29,16 +28,20 @@ const Pay = (props) => {
     tran_description: "",
     cnct_id: userId,
   });
-  console.log(values.cnct_id);
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
       values.tran_date = filteredDate;
-      console.log(values);
-      await axios.post("http://localhost:8000/api/auth/sendTran", values);
+      formData.append("image", file);
+      formData.append("tran_pay", values.tran_pay);
+      formData.append("tran_description", values.tran_description);
+      formData.append("cnct_id", values.cnct_id);
+      formData.append("tran_date", values.tran_date);
+      await axios.post("http://localhost:8000/api/auth/sendTran", formData);
       changeChange();
       props.snack();
     } catch (err) {
@@ -116,10 +119,10 @@ const Pay = (props) => {
                 className="hidden sr-only w-full"
                 accept="image/x-png,image/gif,image/jpeg"
                 onChange={(event) => {
-                  setFile(event.target.value);
+                  setFile(event.target.files[0]);
                   setFileExists(true);
                   const get_file_size = event.target.files[0];
-                  console.log(get_file_size);
+
                   if (get_file_size.size > maxFileSize) {
                     setFileSizeExceeded(true);
                     return;
@@ -151,22 +154,11 @@ const Pay = (props) => {
             </div>
 
             {fileExists ? (
-              <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
-                <div class="flex items-center justify-between">
-                  <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                    {file}
+              <div className=" rounded-md bg-[#F5F7FB] py-4 px-8">
+                <div className="flex items-center justify-between">
+                  <span className="truncate pr-3 text-base font-medium text-[#07074D]">
+                    {file.name}
                   </span>
-
-                  <button
-                    class="text-[#07074D]"
-                    onClick={(e) => {
-                      e.preventDefault(), setFile("");
-                      setFileExists(false);
-                      setFileSizeExceeded(false);
-                    }}
-                  >
-                    <IconX />
-                  </button>
                 </div>
               </div>
             ) : (
@@ -177,7 +169,7 @@ const Pay = (props) => {
               <>
                 <p className="error">
                   File size exceeded the limit of
-                  {maxFileSize / 1000} KB
+                  {maxFileSize / 1000000} MB
                 </p>
               </>
             )}

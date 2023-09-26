@@ -10,7 +10,6 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const Receive = (props) => {
   const { userId, changeChange } = useContext(UserContext);
-
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -36,9 +35,14 @@ const Receive = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
       values.tran_date = filteredDate;
-      console.log(values);
-      await axios.post("http://localhost:8000/api/auth/sendTran", values);
+      formData.append("image", file);
+      formData.append("tran_receive", values.tran_receive);
+      formData.append("tran_description", values.tran_description);
+      formData.append("cnct_id", values.cnct_id);
+      formData.append("tran_date", values.tran_date);
+      await axios.post("http://localhost:8000/api/auth/sendTran", formData);
       changeChange();
       props.snack();
     } catch (err) {
@@ -115,10 +119,10 @@ const Receive = (props) => {
                 className="hidden sr-only w-full"
                 accept="image/x-png,image/gif,image/jpeg"
                 onChange={(event) => {
-                  setFile(event.target.value);
+                  setFile(event.target.files[0]);
                   setFileExists(true);
+
                   const get_file_size = event.target.files[0];
-                  console.log(get_file_size);
                   if (get_file_size.size > maxFileSize) {
                     setFileSizeExceeded(true);
                     return;
@@ -149,7 +153,7 @@ const Receive = (props) => {
               <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                 <div class="flex items-center justify-between">
                   <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                    {file}
+                    {file.name}
                   </span>
                   <button
                     class="text-[#07074D]"
