@@ -12,7 +12,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { UserContext } from "../../../context/UserIdContext";
 import {
-  IconPhoneCall,
   IconReceipt,
   IconTrash,
   IconEdit,
@@ -191,7 +190,18 @@ const EditPay = (props) => {
                       </div>
                       <div className="customer-info-text">
                         <h2>Photo Attachment</h2>
-                        <p className=" font-medium">-</p>
+                        <p className=" font-medium">
+                          {item.tran_bill ? (
+                            <img
+                              src={
+                                "http://localhost:8000/images/" + item.tran_bill
+                              }
+                              target="_blank"
+                            />
+                          ) : (
+                            "-"
+                          )}
+                        </p>
                       </div>
                     </div>
 
