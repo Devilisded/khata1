@@ -4,22 +4,48 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 
 const PaySup = (props) => {
+  const { supId, changeChange } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
   const date = today.getDate();
   const current_date = `${month}/${date}/${year}`;
-  const value = dayjs(current_date);
+  const todaysDate = dayjs(current_date);
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
+  const [transactionDate, setTransactionDate] = useState(todaysDate);
+  var date1 = transactionDate.$d;
+  var filteredDate = date1.toString().slice(4, 16);
+  const [values, setValues] = useState({
+    sup_tran_pay: "",
+    sup_tran_description: "",
+    sup_tran_date: "",
+    sup_tran_cnct_id: supId,
+  });
+  const handleChange = (e) => {
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const handleClick = async (e) => {
+    e.preventDefault();
+    try {
+      values.sup_tran_date = filteredDate;
+      await axios.post("http://localhost:8000/api/sup/sendTran", values);
+      changeChange();
+      props.snack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <div>
+    <form className="block overflow-hidden" method="post">
       <h1 className="text_left heading text-red-500 font-semibold text-lg">
         Add New Entry
       </h1>
@@ -27,13 +53,12 @@ const PaySup = (props) => {
       <div className="section-wrapper-2">
         <div className="section-2">
           <Box
-            component="form"
             sx={{
               "& > :not(style)": { m: 1, width: "95%" },
             }}
             noValidate
             autoComplete="off"
-            className="w-full"
+            className="w-full p-6"
           >
             <Box className="box-sec">
               <TextField
@@ -42,6 +67,8 @@ const PaySup = (props) => {
                 variant="outlined"
                 className="w-full m-0"
                 size="small"
+                name="sup_tran_pay"
+                onChange={handleChange}
                 required
               />
             </Box>
@@ -55,6 +82,8 @@ const PaySup = (props) => {
                 label="Description"
                 type="text"
                 placeholder="Enter Details"
+                name="sup_tran_description"
+                onChange={handleChange}
                 InputProps={{
                   rows: 5,
                 }}
@@ -67,10 +96,11 @@ const PaySup = (props) => {
                 <DemoContainer components={["DatePicker", "DatePicker"]}>
                   <DatePicker
                     label="Date"
-                    value={value}
+                    value={transactionDate}
+                    onChange={(newValue) => setTransactionDate(newValue)}
                     format="LL"
                     className="w-full"
-                    maxDate={value}
+                    maxDate={todaysDate}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -101,7 +131,7 @@ const PaySup = (props) => {
               <label
                 htmlFor="file-1"
                 id="file-1"
-                className="relative flex  items-center justify-center rounded-md text-center border border-dashed border-[#b6b6b6] py-8 px-16"
+                className="relative flex items-center justify-center rounded-md text-center border border-dashed border-[#b6b6b6] py-8 px-16"
               >
                 <div>
                   <span className="mb-2 block text-xl font-semibold text-[#07074D]">
@@ -155,11 +185,11 @@ const PaySup = (props) => {
       </div>
 
       <div className="add-customer-btn-wrapper1">
-        <button className="add_btn2 text-red-600" onClick={props.snack}>
+        <button className="add_btn2 text-red-600" onClick={handleClick}>
           You Pay
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

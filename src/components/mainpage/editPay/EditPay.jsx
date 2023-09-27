@@ -196,7 +196,6 @@ const EditPay = (props) => {
                               src={
                                 "http://localhost:8000/images/" + item.tran_bill
                               }
-                              target="_blank"
                             />
                           ) : (
                             "-"

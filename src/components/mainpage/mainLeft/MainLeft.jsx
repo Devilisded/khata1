@@ -65,12 +65,12 @@ const MainLeft = (props) => {
       <div className="giveget flex justify-between">
         <div className="give text-gray-500 flex gap-1 items-center">
           You'll Give :
-          <span className="text-gray-700 font-bold">₹ {total_pay}</span>
+          <span className="text-gray-700 font-bold">₹ {total_receive}</span>
           <IconArrowUpRight className="text-red-600" />
         </div>
         <div className="give text-gray-500 flex gap-1 items-center">
           You'll Get:
-          <span className="text-gray-700 font-bold">₹ {total_receive}</span>
+          <span className="text-gray-700 font-bold">₹ {total_pay}</span>
           <IconArrowDownLeft className="text-green-600" />
         </div>
         <button className="flex gap-1 " onClick={props.add}>

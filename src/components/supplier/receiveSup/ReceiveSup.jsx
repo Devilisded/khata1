@@ -4,22 +4,46 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { IconX } from "@tabler/icons-react";
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 const ReceiveSup = (props) => {
+  const { supId, changeChange } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
   const date = today.getDate();
   const current_date = `${month}/${date}/${year}`;
-  const value = dayjs(current_date);
+  const todaysDate = dayjs(current_date);
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
-
+  const [transactionDate, setTransactionDate] = useState(todaysDate);
+  var date1 = transactionDate.$d;
+  var filteredDate = date1.toString().slice(4, 16);
+  const [values, setValues] = useState({
+    sup_tran_receive: "",
+    sup_tran_description: "",
+    sup_tran_date: "",
+    sup_tran_cnct_id: supId,
+  });
+  const handleChange = (e) => {
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const handleClick = async (e) => {
+    e.preventDefault();
+    try {
+      values.sup_tran_date = filteredDate;
+      await axios.post("http://localhost:8000/api/sup/sendTran", values);
+      changeChange();
+      props.snack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
-    <div>
+    <form className="block overflow-hidden">
       <h1 className="text_left heading text-green-500 font-semibold text-lg">
         Add New Entry
       </h1>
@@ -27,13 +51,10 @@ const ReceiveSup = (props) => {
       <div className="section-wrapper-2">
         <div className="section-2">
           <Box
-            component="form"
             sx={{
               "& > :not(style)": { m: 1, width: "95%" },
             }}
-            noValidate
-            autoComplete="off"
-            className="w-full"
+            className="w-full p-6"
           >
             <Box className="box-sec">
               <TextField
@@ -42,6 +63,8 @@ const ReceiveSup = (props) => {
                 variant="outlined"
                 className="w-full"
                 size="small"
+                name="sup_tran_receive"
+                onChange={handleChange}
                 required
               />
             </Box>
@@ -58,6 +81,8 @@ const ReceiveSup = (props) => {
                 InputProps={{
                   rows: 5,
                 }}
+                name="sup_tran_description"
+                onChange={handleChange}
                 className="w-full"
               />
             </Box>
@@ -67,10 +92,10 @@ const ReceiveSup = (props) => {
                 <DemoContainer components={["DatePicker", "DatePicker"]}>
                   <DatePicker
                     label="Date"
-                    value={value}
+                    value={transactionDate}
                     format="LL"
                     className="w-full"
-                    maxDate={value}
+                    maxDate={todaysDate}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -157,12 +182,12 @@ const ReceiveSup = (props) => {
       <div className="add-customer-btn-wrapper1">
         <button
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={props.snack}
+          onClick={handleClick}
         >
           You Receive
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

@@ -6,28 +6,24 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import * as React from "react";
-import "./editsup.scss"
-
-
-
-
+import "./editsup.scss";
 import TextField from "@mui/material/TextField";
-
 import Checkbox from "@mui/material/Checkbox";
-
 import {
   IconPhoneCall,
   IconMapPin,
   IconReceipt,
   IconTrash,
-  IconSquareRoundedX,
   IconEdit,
   IconChevronLeft,
   IconAlertOctagonFilled,
 } from "@tabler/icons-react";
-
+import { useEffect } from "react";
+import { useContext } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 const EditSup = (props) => {
-
+  const { supId, change } = useContext(UserContext);
   const [isChecked, setIsChecked] = useState(false);
   const handleOnChange = () => {
     setIsChecked(!isChecked);
@@ -41,7 +37,7 @@ const EditSup = (props) => {
   const label1 = { inputProps: { "aria-label": "Checkbox demo" } };
   const [select, setSelect] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -56,137 +52,156 @@ const EditSup = (props) => {
     setOpenSupplierPay(!openSupplierPay);
     setOpenEntryDetails(!openEntryDetails);
   };
-
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/sup/fetchSup/${supId}`)
+      .then((response) => {
+        setData(response.data);
+      });
+  }, [supId, change]);
   return (
     <div>
-    {openEntryDetails ? (
-        <div>
-          <div>
-            <Box sx={{ width: 400 }} className="w-full">
-              <h1 className="text_left heading">Edit Supplier</h1>
-              <div className="customer-profile flex items-start px-4 py-6">
-                <img
-                  className="w-12 h-12 rounded-full object-cover mr-4 shadow"
-                  src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                  alt="avatar"
-                />
-                <div className="">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-normal text-gray-700 -mt-1">
-                      Raman Garg
-                    </h2>
-                  </div>
-                  <p className="text-gray-500  bg-slate-200 rounded-full text-center">
-                    Supplier
-                  </p>
-                </div>
-              </div>
-              <div className="supplier-edit-btn-wrapper flex justify-center">
-                <button
-                  className="supplier-edit-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
-                  type="submit"
-                  onClick={handleClick}
-                >
-                  <IconEdit />
-                  Edit Entry
-                </button>
-              </div>
-              <div className="supplier-edit-section-wrapper">
-                <div className="edit-section">
-                  <div className="flex card-sec">
-                    <div className="customer-info-icon-wrapper ">
-                      <IconPhoneCall />
+      {openEntryDetails ? (
+        data.map((item, index) => (
+          <div key={index}>
+            <div>
+              <Box sx={{ width: 400 }} className="w-full">
+                <h1 className="text_left heading">Edit Supplier</h1>
+                <div className="customer-profile flex items-start px-4 py-6">
+                  <img
+                    className="w-12 h-12 rounded-full object-cover mr-4 shadow"
+                    src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+                    alt="avatar"
+                  />
+                  <div className="">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-normal text-gray-700 -mt-1">
+                        {item.sup_name}
+                      </h2>
                     </div>
-                    <div className="customer-info-text">
-                      <h2>Phone Number</h2>
-                      <p className=" font-medium">234234876</p>
-                    </div>
-                  </div>
-
-                  <div className="flex card-sec">
-                    <div className="customer-info-icon-wrapper ">
-                      <IconReceipt />
-                    </div>
-                    <div className="customer-info-text">
-                      <h2>GST Number</h2>
-                      <p className=" font-medium">29ABCDE1234TMZP</p>
-                    </div>
-                  </div>
-
-                  <div className="flex card-sec">
-                    <div className="customer-info-icon-wrapper ">
-                      <IconMapPin />
-                    </div>
-                    <div className="customer-info-text">
-                      <h2>Shipping Address</h2>
-                      <p className=" font-medium">
-                        22, 6th Cross Street, Basavanagudi, Bangalore,
-                        KARNATAKA, 560004
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex card-sec">
-                    <div className="customer-info-icon-wrapper ">
-                      <IconMapPin />
-                    </div>
-                    <div className="customer-info-text">
-                      <h2>Billing Address</h2>
-                      <p className=" font-medium">
-                        7/11, Hauz Khas, New Delhi, DELHI, 110016
-                      </p>
-                    </div>
+                    <p className="text-gray-500  bg-slate-200 rounded-full text-center">
+                      Supplier
+                    </p>
                   </div>
                 </div>
-              </div>
-            </Box>
+                <div className="supplier-edit-btn-wrapper flex justify-center">
+                  <button
+                    className="supplier-edit-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
+                    type="submit"
+                    onClick={handleClick}
+                  >
+                    <IconEdit />
+                    Edit Entry
+                  </button>
+                </div>
+                <div className="supplier-edit-section-wrapper">
+                  <div className="edit-section">
+                    <div className="flex card-sec">
+                      <div className="customer-info-icon-wrapper ">
+                        <IconPhoneCall />
+                      </div>
+                      <div className="customer-info-text">
+                        <h2>Phone Number</h2>
+                        <p className=" font-medium">{item.sup_number}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex card-sec">
+                      <div className="customer-info-icon-wrapper ">
+                        <IconReceipt />
+                      </div>
+                      <div className="customer-info-text">
+                        <h2>GST Number</h2>
+                        <p className=" font-medium">{item.sup_gstin}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex card-sec">
+                      <div className="customer-info-icon-wrapper ">
+                        <IconMapPin />
+                      </div>
+                      <div className="customer-info-text">
+                        <h2>Shipping Address</h2>
+                        <p className=" font-medium">
+                          {item.sup_sflat ? item.sup_sflat + "," : ""}
+                          {item.sup_sarea ? " " + item.sup_sarea + "," : ""}
+                          {item.sup_scity ? " " + item.sup_scity + "," : ""}
+                          {item.sup_sstate ? " " + item.sup_sstate + "," : ""}
+                          {item.sup_spin ? " " + item.sup_spin : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex card-sec">
+                      <div className="customer-info-icon-wrapper ">
+                        <IconMapPin />
+                      </div>
+                      <div className="customer-info-text">
+                        <h2>Billing Address</h2>
+                        <p className=" font-medium">
+                          {item.sup_bflat ? item.sup_bflat + "," : ""}
+                          {item.sup_barea ? " " + item.sup_barea + "," : ""}
+                          {item.sup_bcity ? " " + item.sup_bcity + "," : ""}
+                          {item.sup_bstate ? " " + item.sup_bstate + "," : ""}
+                          {item.sup_bpin ? " " + item.sup_bpin : ""}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Box>
+            </div>
+            <div className="add-customer-btn-wrapper flex justify-center">
+              <button
+                className="delete-btn text-red-600 flex gap-1 justify-center"
+                type="submit"
+                onClick={handleClickOpen}
+              >
+                <IconTrash />
+                Delete Customer
+              </button>
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <div className="flex">
+                  <div className="pt-5 pl-3">
+                    <IconAlertOctagonFilled
+                      size={60}
+                      className="text-red-600"
+                    />
+                  </div>
+                  <div>
+                    <DialogTitle id="alert-dialog-title">
+                      Are You Sure ?
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        You are about to delete this supplier This action cannot
+                        be undone.
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions className="flex gap-4">
+                      <button className="pb-3" onClick={handleClose}>
+                        Cancel
+                      </button>
+                      <button
+                        className="delete-btn text-red-600 pb-3 pr-3"
+                        onClick={props.snack}
+                        autoFocus
+                      >
+                        Delete Customer
+                      </button>
+                    </DialogActions>
+                  </div>
+                </div>
+              </Dialog>
+            </div>
           </div>
-          <div className="add-customer-btn-wrapper flex justify-center">
-            <button
-              className="delete-btn text-red-600 flex gap-1 justify-center"
-              type="submit"
-              onClick={handleClickOpen}
-            >
-              <IconTrash />
-              Delete Customer
-            </button>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <div className="flex">
-                <div className="pt-5 pl-3">
-                  <IconAlertOctagonFilled size={60} className="text-red-600" />
-                </div>
-                <div>
-                  <DialogTitle id="alert-dialog-title">
-                    Are You Sure ?
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      You are about to delete this supplier This action cannot
-                      be undone.
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions className="flex gap-4">
-                    <button className="pb-3" onClick={handleClose}>
-                      Cancel
-                    </button>
-                    <button
-                      className="delete-btn text-red-600 pb-3 pr-3"
-                      onClick={props.snack}
-                      autoFocus
-                    >
-                      Delete Customer
-                    </button>
-                  </DialogActions>
-                </div>
-              </div>
-            </Dialog>
-          </div>
-        </div>
+        ))
       ) : (
         <div></div>
       )}
@@ -204,9 +219,7 @@ const EditSup = (props) => {
           </div>
           <div>
             <div>
-              <Box
-                
-              >
+              <Box>
                 <h1 className="text_left heading">Edit Supplier</h1>
                 <div className="section-wrapper-2">
                   <div className="section-2">
@@ -436,7 +449,10 @@ const EditSup = (props) => {
               </Box>
             </div>
             <div className="add-customer-btn-wrapper1 bg-white z-50">
-              <button className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in" onClick={props.snacku}>
+              <button
+                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                onClick={props.snacku}
+              >
                 Update Supplier
               </button>
             </div>
@@ -445,8 +461,8 @@ const EditSup = (props) => {
       ) : (
         <div></div>
       )}
-  </div>
-  )
-}
+    </div>
+  );
+};
 
-export default EditSup
+export default EditSup;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 import { IconUser } from "@tabler/icons-react";
 import "./carditem.scss";
 import { UserContext } from "../../../context/UserIdContext";

@@ -9,7 +9,7 @@ const Transaction = (props) => {
   const fminutes = minutes < 10 ? "0" + minutes : minutes;
   const fhours = hours > 12 ? hours - 12 : hours;
   const AMPM = hours > 12 ? "PM" : "AM";
-  const { changeTranId, tranId, change } = useContext(UserContext);
+  const { changeTranId } = useContext(UserContext);
   const tid = (e) => {
     changeTranId(props.transactions.tran_id),
       props.transactions.tran_pay

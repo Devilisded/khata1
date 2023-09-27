@@ -31,15 +31,13 @@ const Edit = (props) => {
   const handleOnChange2 = () => {
     setIsChecked2(!isChecked2);
   };
-  const [select, setSelect] = useState(false);
-
   const [openEntryDetails, setOpenEntryDetails] = useState(true);
   const [openSupplierPay, setOpenSupplierPay] = useState(false);
   const handleClick = () => {
     setOpenSupplierPay(!openSupplierPay);
     setOpenEntryDetails(!openEntryDetails);
   };
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
