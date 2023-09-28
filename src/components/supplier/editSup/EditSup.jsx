@@ -8,7 +8,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import * as React from "react";
 import "./editsup.scss";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
 import {
   IconPhoneCall,
   IconMapPin,
@@ -17,13 +16,15 @@ import {
   IconEdit,
   IconChevronLeft,
   IconAlertOctagonFilled,
+  IconUser,
+  IconCash,
 } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const EditSup = (props) => {
-  const { supId, change } = useContext(UserContext);
+  const { supId, change, changeChange, changeSup } = useContext(UserContext);
   const [isChecked, setIsChecked] = useState(false);
   const handleOnChange = () => {
     setIsChecked(!isChecked);
@@ -33,10 +34,6 @@ const EditSup = (props) => {
   const handleOnChange2 = () => {
     setIsChecked2(!isChecked2);
   };
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const label1 = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [select, setSelect] = useState(false);
-
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -53,13 +50,64 @@ const EditSup = (props) => {
     setOpenEntryDetails(!openEntryDetails);
   };
   const [data, setData] = useState([]);
+  const [info, setInfo] = useState({
+    sup_name: "",
+    sup_number: "",
+    sup_amt: "",
+    sup_amt_type: "",
+    sup_gstin: "",
+    sup_sflat: "",
+    sup_sarea: "",
+    sup_spin: "",
+    sup_scity: "",
+    sup_sstate: "",
+    sup_bflat: "",
+    sup_barea: "",
+    sup_bpin: "",
+    sup_bcity: "",
+    sup_bstate: "",
+  });
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/sup/fetchSup/${supId}`)
       .then((response) => {
         setData(response.data);
+        setInfo({
+          ...info,
+          sup_name: response.data[0].sup_name,
+          sup_number: response.data[0].sup_number,
+          sup_amt: response.data[0].sup_amt,
+          sup_amt_type: response.data[0].sup_amt_type,
+          sup_gstin: response.data[0].sup_gstin,
+          sup_sflat: response.data[0].sup_sflat,
+          sup_sarea: response.data[0].sup_sarea,
+          sup_spin: response.data[0].sup_spin,
+          sup_scity: response.data[0].sup_scity,
+          sup_sstate: response.data[0].sup_sstate,
+          sup_bflat: response.data[0].sup_bflat,
+          sup_barea: response.data[0].sup_barea,
+          sup_bpin: response.data[0].sup_bpin,
+          sup_bcity: response.data[0].sup_bcity,
+          sup_bstate: response.data[0].sup_bstate,
+        });
       });
   }, [supId, change]);
+  const delSup = async () => {
+    await axios.delete(`http://localhost:8000/api/sup/delSup/${supId}`);
+    changeSup(0);
+    changeChange();
+    props.snack();
+  };
+  const updateSup = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:8000/api/sup/updateSup/${supId}`, info);
+      changeChange();
+      props.snacku();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div>
       {openEntryDetails ? (
@@ -68,19 +116,17 @@ const EditSup = (props) => {
             <div>
               <Box sx={{ width: 400 }} className="w-full">
                 <h1 className="text_left heading">Edit Supplier</h1>
-                <div className="customer-profile flex items-start px-4 py-6">
-                  <img
-                    className="w-12 h-12 rounded-full object-cover mr-4 shadow"
-                    src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                    alt="avatar"
-                  />
+                <div className="customer-profile flex items-start px-4 py-6 gap-4">
+                  <div className="icon2 p-3 rounded-full">
+                    <IconUser className="text-blue-500" />
+                  </div>
                   <div className="">
                     <div className="flex items-center justify-between">
                       <h2 className="text-lg font-normal text-gray-700 -mt-1">
                         {item.sup_name}
                       </h2>
                     </div>
-                    <p className="text-gray-500  bg-slate-200 rounded-full text-center">
+                    <p className="text-gray-500  bg-slate-200 rounded text-center">
                       Supplier
                     </p>
                   </div>
@@ -99,6 +145,20 @@ const EditSup = (props) => {
                   <div className="edit-section">
                     <div className="flex card-sec">
                       <div className="customer-info-icon-wrapper ">
+                        <IconCash />
+                      </div>
+                      <div className="customer-info-text">
+                        <h2>Opening Balance</h2>
+                        <p className=" font-medium flex gap-2">
+                          ₹ {item.sup_amt}
+                          <span className=" capitalize">
+                            {item.sup_amt_type}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex card-sec">
+                      <div className="customer-info-icon-wrapper ">
                         <IconPhoneCall />
                       </div>
                       <div className="customer-info-text">
@@ -113,7 +173,9 @@ const EditSup = (props) => {
                       </div>
                       <div className="customer-info-text">
                         <h2>GST Number</h2>
-                        <p className=" font-medium">{item.sup_gstin}</p>
+                        <p className=" font-medium">
+                          {item.sup_gstin ? item.sup_gstin : "-"}
+                        </p>
                       </div>
                     </div>
 
@@ -190,7 +252,7 @@ const EditSup = (props) => {
                       </button>
                       <button
                         className="delete-btn text-red-600 pb-3 pr-3"
-                        onClick={props.snack}
+                        onClick={delSup}
                         autoFocus
                       >
                         Delete Customer
@@ -217,19 +279,17 @@ const EditSup = (props) => {
               Back
             </button>
           </div>
-          <div>
+          <form>
             <div>
               <Box>
                 <h1 className="text_left heading">Edit Supplier</h1>
                 <div className="section-wrapper-2">
                   <div className="section-2">
                     <Box
-                      component="form"
                       sx={{
                         "& > :not(style)": { m: 1, width: "97%" },
                       }}
-                      noValidate
-                      autoComplete="off"
+                      className="forms"
                     >
                       <Box className="box-sec">
                         <TextField
@@ -238,6 +298,10 @@ const EditSup = (props) => {
                           variant="outlined"
                           className="w-full"
                           size="small"
+                          value={info.sup_name}
+                          onChange={(e) =>
+                            setInfo({ ...info, sup_name: e.target.value })
+                          }
                           required
                         />
                       </Box>
@@ -250,6 +314,10 @@ const EditSup = (props) => {
                           type="tel"
                           className="w-full"
                           size="small"
+                          value={info.sup_number}
+                          onChange={(e) =>
+                            setInfo({ ...info, sup_number: e.target.value })
+                          }
                           required
                         />
                       </Box>
@@ -261,39 +329,47 @@ const EditSup = (props) => {
                           label="Enter amount"
                           className="sec-1"
                           size="small"
+                          value={info.sup_amt}
+                          onChange={(e) =>
+                            setInfo({ ...info, sup_amt: e.target.value })
+                          }
                           required
                         />
                         <select
                           className={
-                            select
-                              ? "text-green-600 bg-white p-1 sel"
-                              : "text-red-600 bg-white p-1 sel"
+                            info.sup_amt_type === "receive"
+                              ? "text-green-600 bg-white p-1 border border-slate-400 rounded"
+                              : "text-red-600 bg-white p-1 border border-slate-400 rounded"
+                          }
+                          value={info.sup_amt_type}
+                          onChange={(e) =>
+                            setInfo({
+                              ...info,
+                              sup_amt_type: e.target.value,
+                            })
                           }
                         >
-                          <option value={10} onClick={() => setSelect(false)}>
-                            Pay
-                          </option>
-                          <option value={20} onClick={() => setSelect(true)}>
-                            Receive
-                          </option>
+                          <option value="pay">Pay</option>
+                          <option value="receive">Receive</option>
                         </select>
                       </Box>
                     </Box>
                     <Box className="box-sec check-box-sec">
-                      <Checkbox {...label} onChange={handleOnChange} />
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 mr-2 cursor-pointer"
+                        onChange={handleOnChange}
+                      />
                       <span>Add GSTIN & GST</span>
                     </Box>
 
                     {isChecked ? (
                       <>
                         <Box
-                          component="form"
                           sx={{
                             "& > :not(style)": { m: 1, width: "97%" },
                           }}
-                          noValidate
-                          autoComplete="off"
-                          className="box-sec-2"
+                          className="box-sec-2 forms"
                         >
                           <Box className="box-sec ">
                             <TextField
@@ -302,6 +378,13 @@ const EditSup = (props) => {
                               label="GST IN"
                               className="w-full"
                               size="small"
+                              value={info.sup_gstin}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_gstin: e.target.value,
+                                })
+                              }
                             />
                           </Box>
                           <p className="text-xl font-semibold">
@@ -314,6 +397,13 @@ const EditSup = (props) => {
                               variant="outlined"
                               className="w-full"
                               size="small"
+                              value={info.sup_sflat}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_sflat: e.target.value,
+                                })
+                              }
                             />
                           </Box>
 
@@ -324,15 +414,13 @@ const EditSup = (props) => {
                               variant="outlined"
                               className="w-full"
                               size="small"
-                            />
-                          </Box>
-                          <Box className="box-sec">
-                            <TextField
-                              id="outlined-basic"
-                              label="Area / Locality"
-                              variant="outlined"
-                              className="w-full"
-                              size="small"
+                              value={info.sup_sarea}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_sarea: e.target.value,
+                                })
+                              }
                             />
                           </Box>
                           <Box className="box-sec">
@@ -342,6 +430,13 @@ const EditSup = (props) => {
                               variant="outlined"
                               className="w-full"
                               size="small"
+                              value={info.sup_spin}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_spin: e.target.value,
+                                })
+                              }
                             />
                           </Box>
                           <Box className="box-sec">
@@ -351,6 +446,13 @@ const EditSup = (props) => {
                               variant="outlined"
                               className="sec-1 w-full"
                               size="small"
+                              value={info.sup_scity}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_scity: e.target.value,
+                                })
+                              }
                             />
 
                             <TextField
@@ -359,12 +461,20 @@ const EditSup = (props) => {
                               variant="outlined"
                               className="sec-2"
                               size="small"
+                              value={info.sup_sstate}
+                              onChange={(e) =>
+                                setInfo({
+                                  ...info,
+                                  sup_sstate: e.target.value,
+                                })
+                              }
                             />
                           </Box>
                         </Box>
                         <Box className="box-sec check-box-sec text-center ">
-                          <Checkbox
-                            {...label1}
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 mr-2 cursor-pointer"
                             onChange={handleOnChange2}
                             defaultChecked
                           />
@@ -373,13 +483,11 @@ const EditSup = (props) => {
 
                         {isChecked2 ? (
                           <Box
-                            component="form"
                             sx={{
                               "& > :not(style)": { m: 1, width: "97%" },
                             }}
                             noValidate
-                            autoComplete="off"
-                            className="box-sec-2"
+                            className="forms"
                           >
                             <p className="text_left">Billing Address</p>
                             <Box className="box-sec">
@@ -389,16 +497,13 @@ const EditSup = (props) => {
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
-                              />
-                            </Box>
-
-                            <Box className="box-sec">
-                              <TextField
-                                id="outlined-basic"
-                                label="Area / Locality"
-                                variant="outlined"
-                                className="w-full"
-                                size="small"
+                                value={info.sup_bflat}
+                                onChange={(e) =>
+                                  setInfo({
+                                    ...info,
+                                    sup_bflat: e.target.value,
+                                  })
+                                }
                               />
                             </Box>
                             <Box className="box-sec">
@@ -408,6 +513,13 @@ const EditSup = (props) => {
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
+                                value={info.sup_barea}
+                                onChange={(e) =>
+                                  setInfo({
+                                    ...info,
+                                    sup_barea: e.target.value,
+                                  })
+                                }
                               />
                             </Box>
                             <Box className="box-sec">
@@ -417,6 +529,13 @@ const EditSup = (props) => {
                                 variant="outlined"
                                 className="w-full"
                                 size="small"
+                                value={info.sup_bpin}
+                                onChange={(e) =>
+                                  setInfo({
+                                    ...info,
+                                    sup_bpin: e.target.value,
+                                  })
+                                }
                               />
                             </Box>
                             <Box className="box-sec">
@@ -426,6 +545,13 @@ const EditSup = (props) => {
                                 variant="outlined"
                                 className="sec-1"
                                 size="small"
+                                value={info.sup_bcity}
+                                onChange={(e) =>
+                                  setInfo({
+                                    ...info,
+                                    sup_bcity: e.target.value,
+                                  })
+                                }
                               />
 
                               <TextField
@@ -434,6 +560,13 @@ const EditSup = (props) => {
                                 variant="outlined"
                                 className="sec-2"
                                 size="small"
+                                value={info.sup_bstate}
+                                onChange={(e) =>
+                                  setInfo({
+                                    ...info,
+                                    sup_bstate: e.target.value,
+                                  })
+                                }
                               />
                             </Box>
                           </Box>
@@ -448,15 +581,15 @@ const EditSup = (props) => {
                 </div>
               </Box>
             </div>
-            <div className="add-customer-btn-wrapper1 bg-white z-50">
+            <div className="add-customer-edit-btn-wrapper bg-white z-50">
               <button
                 className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-                onClick={props.snacku}
+                onClick={updateSup}
               >
                 Update Supplier
               </button>
             </div>
-          </div>
+          </form>
         </>
       ) : (
         <div></div>

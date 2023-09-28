@@ -1,5 +1,6 @@
 import {
   IconAlertCircle,
+  IconBook,
   IconBrandWhatsapp,
   IconMessage2,
 } from "@tabler/icons-react";
@@ -54,9 +55,18 @@ const SupRight = (props) => {
         </div>
       </div>
       <div className="transactions">
-        {result.map((item, index) => (
-          <SupTransaction data={item} key={index} editPay={props.editPay} />
-        ))}
+        {result.length > 0 ? (
+          result.map((item, index) => (
+            <SupTransaction data={item} key={index} editPay={props.editPay} />
+          ))
+        ) : (
+          <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">
+            <div>
+              <IconBook className="w-32 h-32 text-slate-600" />
+            </div>
+            <div>No Entries Added</div>
+          </div>
+        )}
       </div>
       <div className="btn shadow-lg">
         <button className="pay text-red-600" onClick={props.pay}>

@@ -48,15 +48,12 @@ const EditPay = (props) => {
           tran_date: response.data[0].tran_date,
         });
       });
-
     axios
       .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
       .then((response) => {
         setResult2(response.data);
       });
   }, [tranId]);
-
-  console.log(result);
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -69,12 +66,12 @@ const EditPay = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -100,12 +97,12 @@ const EditPay = (props) => {
       console.log(err);
     }
   };
-
+  const [flag, setFlag] = useState(false);
   const handleClickSubmit = async (e) => {
     e.preventDefault();
     try {
-      data.tran_date = filteredDate;
-      console.log(data);
+      flag ? (data.tran_date = filteredDate) : "";
+
       await axios.put(
         `http://localhost:8000/api/auth/updateTran/${tranId}`,
         data
@@ -353,9 +350,9 @@ const EditPay = (props) => {
                               format="LL"
                               className="w-full"
                               maxDate={todaysDate}
-                              onChange={(newValue) =>
-                                setTransactionDate(newValue)
-                              }
+                              onChange={(newValue) => {
+                                setTransactionDate(newValue), setFlag(true);
+                              }}
                             />
                           </DemoContainer>
                         </LocalizationProvider>

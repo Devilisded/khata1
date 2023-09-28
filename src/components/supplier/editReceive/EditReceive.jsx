@@ -25,7 +25,8 @@ import { useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
-const EditPay = (props) => {
+
+const EditReceive = (props) => {
   const { supId, tranId, changeChange } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -101,6 +102,7 @@ const EditPay = (props) => {
       console.log(err);
     }
   };
+
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
@@ -413,4 +415,4 @@ const EditPay = (props) => {
   );
 };
 
-export default EditPay;
+export default EditReceive;
