@@ -3,6 +3,7 @@ import "./addcustomer.scss";
 import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
+
 const AddCustomer = (props) => {
   const { changeChange } = useContext(UserContext);
   const [values, setValues] = useState({
@@ -64,10 +65,9 @@ const AddCustomer = (props) => {
     <div>
       <form method="post">
         <Box sx={{ width: 400 }} role="presentation">
-          <h1 className="text_left heading font-semibold text-2xl flex justify-between items-center">
-            Add Customer
+          <h1 className="heading font-semibold text-2xl flex justify-between items-center">
+            <div>Add Customer</div>
           </h1>
-
           <div className="section-wrapper-2">
             <div className="section-2">
               <div className="forms">
@@ -290,13 +290,12 @@ const AddCustomer = (props) => {
             </div>
           </div>
           <div className="add-customer-btn-wrapper1">
-                       {" "}
             {submitDisabled ? (
               <button
                 disabled={submitDisabled}
                 className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
               >
-                                Add Customer              {" "}
+                Add Customer
               </button>
             ) : (
               <button
@@ -304,10 +303,9 @@ const AddCustomer = (props) => {
                 disabled={submitDisabled}
                 className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
               >
-                                Add Customer              {" "}
+                Add Customer
               </button>
             )}
-                     {" "}
           </div>
         </Box>
       </form>

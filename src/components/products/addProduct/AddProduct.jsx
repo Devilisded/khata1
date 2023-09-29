@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IconX } from "@tabler/icons-react";
@@ -9,9 +9,28 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import Switch from "@mui/material/Switch";
-import "./addproduct.scss"
+import "./addproduct.scss";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 const AddProduct = (props) => {
+  const { changeChange } = useContext(UserContext);
+
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
+  const [result, setResult] = useState([]);
+  axios
+    .get(`http://localhost:8000/api/auth/fetchProductUnits`)
+    .then((response) => {
+      setResult(response.data);
+    });
+
+  const [result2, setResult2] = useState([]);
+  axios
+    .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+    .then((response) => {
+      setResult2(response.data);
+    });
+
   const units = [
     {
       value: "pieces",
@@ -145,70 +164,137 @@ const AddProduct = (props) => {
       tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
     },
   ];
-    const [isOn, setIsOn] = useState(false);
-    const handleOnChange1 = () => {
-      setIsOn(!isOn);
-    };
+  const [isOn, setIsOn] = useState(false);
+  const handleOnChange1 = () => {
+    setIsOn(!isOn);
+  };
 
-    const [isOn2, setIsOn2] = useState(false);
-    const handleOnChange2 = () => {
-      setIsOn2(!isOn2);
-    };
-
-    const [isClicked, setIsClicked] = useState(false);
-    const [isClicked2, setIsClicked2] = useState(false);
-
-    const handleOnChange3 = () => {
-      setIsClicked(!isClicked);
-      setIsClicked2(false);
-
-    };
-
-    const handleOnChange4 = () => {
-      setIsClicked2(!isClicked2);
-      setIsClicked(false);
-    };
-
-    const [gstValue1, setGstValue1] = useState("GST %");
-    const [gstValue2, setGstValue2] = useState("");
-
-    const [hsnCode, setHsnCode] = useState("HSN Code");
-    const [hsnValue1, setHsnValue1] = useState("");
-
-    const [searchValue, setSearchValue] = useState("0");
-
-    const [customGst, setcustomGst] = useState("");
-    const [customeCess, setCustomeCess] = useState("");
-    const custom_gst_details =
-      "(" +
-      customGst / 2 +
-      "% CSTS + " +
-      customGst / 2 +
-      "% SGST/UT GST ; " +
-      customGst +
-      "% IGST ; " +
-      customeCess +
-      "% CESS )";
-
-
-    const today = new Date();
-    const month = today.getMonth() + 1;
-    const year = today.getFullYear();
-    const date = today.getDate();
-    const current_date = `${month}/${date}/${year}`;
-    const value = dayjs(current_date);
-
-    const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
-    const maxFileSize = 20000;
-    const [file, setFile] = useState("File Name");
-    const [fileExists, setFileExists] = useState(false);
-
-    const [productName, setProductName] = useState("");
-    const [sellPrice, setSellPrice] = useState("");
-    const [submitDisabled, setSubmitDisabled] = useState(false);
-
+  const [isOn2, setIsOn2] = useState(false);
+  const handleOnChange2 = () => {
+    setIsOn2(!isOn2);
     
+  };
 
+  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked2, setIsClicked2] = useState(false);
+
+  const handleOnChange3 = () => {
+    setIsClicked(!isClicked);
+    setIsClicked2(false);
+  };
+
+  const handleOnChange4 = () => {
+    setIsClicked2(!isClicked2);
+    setIsClicked(false);
+  };
+
+  const [gstValue1, setGstValue1] = useState("GST %");
+  const [gstValue2, setGstValue2] = useState("");
+
+  const [hsnCode, setHsnCode] = useState("HSN Code");
+  const [hsnValue1, setHsnValue1] = useState(null);
+
+  const [searchValue, setSearchValue] = useState("0");
+
+  const [customGst, setcustomGst] = useState("");
+  const [customeCess, setCustomeCess] = useState("");
+  const custom_gst_details =
+    "(" +
+    customGst / 2 +
+    "% CSTS + " +
+    customGst / 2 +
+    "% SGST/UT GST ; " +
+    customGst +
+    "% IGST ; " +
+    customeCess +
+    "% CESS )";
+
+  const [igst, setIgst] = useState(null);
+  const [stategst, setStategst] = useState(null);
+  const [cgst, setCgst] = useState(null);
+  const [cess, setCess] = useState(null);
+
+
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = today.getDate();
+  const current_date = `${month}/${date}/${year}`;
+  const todaysDate = dayjs(current_date);
+  const [transactionDate, setTransactionDate] = useState(todaysDate);
+
+  var date1 = transactionDate.$d;
+  var filteredDate = date1.toString().slice(4, 16);
+
+  const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+  const maxFileSize = 20000;
+  const [file, setFile] = useState("File Name");
+  const [fileExists, setFileExists] = useState(false);
+
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
+  const [primaryUnitValue, setPrimaryUnitValue] = useState(null);
+  const [secondaryUnitValue , setSecondaryUnitValue] = useState(null);
+
+  const [productData, setProductData] = useState({
+    product_name: "",
+    primary_unit: null,
+    secondary_unit: "",
+    sale_price: null,
+    purchase_price: null,
+    tax: "",
+    opening_stock: 0,
+    low_stock: 0,
+    balance_stock: 0,
+    entry_date: "",
+    hsn_code: null,
+    hsn_desc: "",
+    sgst: null,
+    igst: null,
+    cess: null,
+    conversion: null,
+    cgst: null,
+  });
+  const handleChange = (e) => {
+    setProductData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  //console.log("secondaryUnitValue : ",primaryUnitValue,secondaryUnitValue)
+  const [err, setErr] = useState(null);
+  const handleClick = async (e) => {
+    e.preventDefault();
+    try {
+      productData.entry_date = filteredDate;
+      productData.sgst = stategst;
+      productData.igst = igst;
+      productData.cgst = cgst;
+      productData.hsn_desc = hsnValue1;
+      productData.hsn_code =  typeof(hsnCode) === "number" ? hsnCode : null ;
+      productData.tax = isOn2 ? "yes" : "no";
+      var arr = primaryUnitValue.split("-");
+      productData.primary_unit = arr[1];
+      productData.balance_stock = productData.opening_stock;
+      if (secondaryUnitValue !== "null" && secondaryUnitValue !== "") {
+        console.log("secondaryUnitValue : ",secondaryUnitValue , typeof(secondaryUnitValue))
+        var arr = secondaryUnitValue.split("-");
+        productData.secondary_unit = arr[1];
+      } else {
+        productData.secondary_unit = null;
+      }
+      console.log(productData.secondary_unit)
+      await axios.post(
+        "http://localhost:8000/api/auth/addProduct",
+        productData
+      );
+      console.log("values : ", productData);
+      changeChange();
+      props.snack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  
   return (
     <div>
       <div>
@@ -223,7 +309,6 @@ const AddProduct = (props) => {
             <div className="section-2">
               <Box
                 component="form"
-                
                 sx={{
                   "& > :not(style)": { m: 1, width: "97%" },
                 }}
@@ -233,17 +318,13 @@ const AddProduct = (props) => {
                 <Box className="box-sec">
                   <TextField
                     label="Product Name"
+                    name="product_name"
                     id="outlined-basic"
                     variant="outlined"
                     className="w-full"
                     size="small"
-                    onChange={(e) => {
-                      setProductName(e.target.value);
-                    }}
+                    onChange={handleChange}
                     required
-                    helperText={
-                      productName === "" ? "Product Name Required" : ""
-                    }
                   />
                 </Box>
 
@@ -313,11 +394,20 @@ const AddProduct = (props) => {
                     </>
                   )}
                 </div>
-
                 <Autocomplete
-                  options={units}
+                  // const filterOptions = createFilterOptions({
+                  //   matchFrom: 'start',
+                  //   stringify: option => option.title,
+                  // })
+                  options={result.map(
+                    (item) => item.unit_name + "- " + item.unit_code
+                  )}
                   id="disable-close-on-select"
                   className="box-sec margin-bottom-zero "
+                  onChange={(event, newValue) => {
+                    setPrimaryUnitValue(newValue);
+                  }}
+                  
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -326,9 +416,12 @@ const AddProduct = (props) => {
                       label="Units"
                       className="w-full my-0 "
                       size="small"
+                      name="primary_unit"
+                      
                     />
-                  )}
+                  )} 
                 />
+
                 <Box className="box-sec margin-top-zero margin-bottom-zero">
                   <label className="pl-3">Add Secondary Unit</label>
                   <Switch
@@ -340,7 +433,12 @@ const AddProduct = (props) => {
                 {isOn ? (
                   <Box className="box-sec margin-top-zero">
                     <Autocomplete
-                      options={units}
+                      options={result.map(
+                        (item) => item.unit_name + "- " + item.unit_code
+                      )}
+                      onChange={(event, newValue) => {
+                        setSecondaryUnitValue(newValue);
+                      }}
                       id="disable-close-on-select"
                       className="w-full sec-1 mt-0 pl-3 pb-3"
                       renderInput={(params) => (
@@ -351,6 +449,7 @@ const AddProduct = (props) => {
                           label="Units"
                           className="w-full"
                           size="small"
+                          name="secondary_unit" 
                         />
                       )}
                     />
@@ -361,6 +460,8 @@ const AddProduct = (props) => {
                         label="Conversion"
                         className="sec-2 w-full pr-3 pb-3"
                         size="small"
+                        name="conversion"
+                        onChange={handleChange}
                       />
                     </div>
                   </Box>
@@ -372,10 +473,9 @@ const AddProduct = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    label="Sell Price"
-                    onChange={(e) => {
-                      setSellPrice(e.target.value);
-                    }}
+                    label="Sale Price"
+                    name="sale_price"
+                    onChange={handleChange}
                     className="sec-1 w-full"
                     size="small"
                   />
@@ -386,6 +486,8 @@ const AddProduct = (props) => {
                     label="Purchase Price"
                     className="sec-2 w-full"
                     size="small"
+                    name="purchase_price"
+                    onChange={handleChange}
                   />
                 </Box>
                 <Box className="box-sec margin-top-zero ">
@@ -404,6 +506,8 @@ const AddProduct = (props) => {
                     label="Opening stock"
                     className="sec-1 w-full"
                     size="small"
+                    onChange={handleChange}
+                    name="opening_stock"
                   />
 
                   <TextField
@@ -412,6 +516,8 @@ const AddProduct = (props) => {
                     label="Low stock"
                     className="sec-2 w-full"
                     size="small"
+                    onChange={handleChange}
+                    name="low_stock"
                   />
                 </Box>
 
@@ -420,11 +526,12 @@ const AddProduct = (props) => {
                     <DemoContainer components={["DatePicker", "DatePicker"]}>
                       <DatePicker
                         label="Date"
-                        value={value}
+                        value={todaysDate}
                         format="LL"
                         className="w-full"
                         size="small"
-                        maxDate={value}
+                        maxDate={todaysDate}
+                        onChange={(e)=>setTransactionDate(e)}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -475,21 +582,33 @@ const AddProduct = (props) => {
                         }}
                       />
 
-                      {hsn
+                      {result2
                         .filter(
                           (code) =>
-                            code.hsn_code.startsWith(searchValue) ||
-                            code.product_name.startsWith(searchValue)
+                            code.hsn_code.toString().startsWith(searchValue) ||
+                            code.hsn_desc.startsWith(searchValue)
                         )
                         .map((filteredItem) => (
                           <div
-                          key={filteredItem.hsn_code}
+                            key={filteredItem.hsn_code}
                             className="flex card-sec"
                             onClick={() => {
-                              setHsnCode(filteredItem.hsn_code),
-                                setHsnValue1(filteredItem.product_name),
-                                setGstValue1(filteredItem.tax),
-                                setGstValue2(filteredItem.tax_details);
+                              setIgst(filteredItem.igst),
+                                setCgst(filteredItem.cgst),
+                                setStategst(filteredItem.sgst),
+                                
+                                setHsnCode(filteredItem.hsn_code),
+                                setHsnValue1(filteredItem.hsn_desc),
+                                setGstValue1(filteredItem.igst),
+                                setGstValue2(
+                                  "( " +
+                                    filteredItem.cgst +
+                                    "% CGST + " +
+                                    filteredItem.sgst +
+                                    "% SGST/UT GST ; " +
+                                    filteredItem.igst +
+                                    "% IGST )"
+                                );
                               setIsClicked(false);
                             }}
                           >
@@ -499,10 +618,10 @@ const AddProduct = (props) => {
                                   {filteredItem.hsn_code}
                                 </h2>
                                 <h2 className=" rounded bg-slate-300 px-4 py-1 ">
-                                  {filteredItem.tax}
+                                  {filteredItem.igst + "% GST"}
                                 </h2>
                               </div>
-                              <p>{filteredItem.product_name}</p>
+                              <p>{filteredItem.hsn_desc}</p>
                             </div>
                           </div>
                         ))}
@@ -528,10 +647,12 @@ const AddProduct = (props) => {
                                   id="gst_on_selected_item"
                                   name="gst"
                                   onChange={() => {
-                                    setGstOnItem(item.value),
-                                      setGstValue1(item.label1),
+                                    console.log("clicked on gst rate");
+                                    //setGstOnItem(item.value),
+                                    setGstValue1(item.label1),
                                       setGstValue2(item.label2);
                                     setIsClicked2(false);
+                                    console.log(gstValue2);
                                   }}
                                 />
                               </div>
@@ -588,9 +709,10 @@ const AddProduct = (props) => {
       </div>
       <div className="add-customer-btn-wrapper1">
         <button
-          disabled={submitDisabled}
+          //disabled={submitDisabled}
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-        onClick={props.snack}>
+          onClick={handleClick}
+        >
           Add Product
         </button>
       </div>
