@@ -57,7 +57,12 @@ const SupRight = (props) => {
       <div className="transactions">
         {result.length > 0 ? (
           result.map((item, index) => (
-            <SupTransaction data={item} key={index} editPay={props.editPay} />
+            <SupTransaction
+              data={item}
+              key={index}
+              editPay={props.editPay}
+              editReceive={props.editReceive}
+            />
           ))
         ) : (
           <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">

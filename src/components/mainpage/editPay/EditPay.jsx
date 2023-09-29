@@ -113,7 +113,14 @@ const EditPay = (props) => {
       console.log(err);
     }
   };
+  const [imgOpen, setImgOpen] = useState(false);
+  const handleImgOpen = () => {
+    setImgOpen(true);
+  };
 
+  const handleImgClose = () => {
+    setImgOpen(false);
+  };
   return (
     <>
       {result.map((item, index) => (
@@ -193,11 +200,34 @@ const EditPay = (props) => {
                               src={
                                 "http://localhost:8000/images/" + item.tran_bill
                               }
+                              width={50}
+                              height={50}
+                              onClick={handleImgOpen}
                             />
                           ) : (
                             "-"
                           )}
                         </p>
+                        <Dialog
+                          open={imgOpen}
+                          onClose={handleImgClose}
+                          aria-labelledby="alert-dialog-title"
+                          aria-describedby="alert-dialog-description"
+                          maxWidth="xl"
+                        >
+                          <div>
+                            <DialogContent>
+                              <img
+                                className="image"
+                                src={
+                                  "http://localhost:8000/images/" +
+                                  item.tran_bill
+                                }
+                                alt="no image"
+                              />
+                            </DialogContent>
+                          </div>
+                        </Dialog>
                       </div>
                     </div>
 
@@ -369,7 +399,6 @@ const EditPay = (props) => {
                               setFile(event.target.value);
                               setFileExists(true);
                               const get_file_size = event.target.files[0];
-                              console.log(get_file_size);
                               if (get_file_size.size > maxFileSize) {
                                 setFileSizeExceeded(true);
                                 return;
@@ -420,7 +449,7 @@ const EditPay = (props) => {
                         {fileSizeExceeded && (
                           <>
                             <p className="error">
-                              File size exceeded the limit of{" "}
+                              File size exceeded the limit of
                               {maxFileSize / 1000} KB
                             </p>
                           </>

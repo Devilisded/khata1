@@ -35,8 +35,14 @@ const PaySup = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
       values.sup_tran_date = filteredDate;
-      await axios.post("http://localhost:8000/api/sup/sendTran", values);
+      formData.append("image", file);
+      formData.append("sup_tran_pay", values.sup_tran_pay);
+      formData.append("sup_tran_description", values.sup_tran_description);
+      formData.append("sup_tran_cnct_id", values.sup_tran_cnct_id);
+      formData.append("sup_tran_date", values.sup_tran_date);
+      await axios.post("http://localhost:8000/api/sup/sendTran", formData);
       changeChange();
       props.snack();
     } catch (err) {
@@ -115,10 +121,10 @@ const PaySup = (props) => {
                 className="hidden sr-only w-full"
                 accept="image/x-png,image/gif,image/jpeg"
                 onChange={(event) => {
-                  setFile(event.target.value);
+                  setFile(event.target.files[0]);
                   setFileExists(true);
                   const get_file_size = event.target.files[0];
-                  console.log(get_file_size);
+
                   if (get_file_size.size > maxFileSize) {
                     setFileSizeExceeded(true);
                     return;
@@ -153,7 +159,7 @@ const PaySup = (props) => {
               <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                 <div class="flex items-center justify-between">
                   <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                    {file}
+                    {file.name}
                   </span>
 
                   <button

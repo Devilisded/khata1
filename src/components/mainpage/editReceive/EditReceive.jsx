@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import {
-  IconPhoneCall,
   IconReceipt,
   IconTrash,
   IconEdit,
@@ -80,11 +79,12 @@ const EditReceive = (props) => {
 
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
+  const [flag, setFlag] = useState(false);
+
   const handleClickSubmit = async (e) => {
     e.preventDefault();
     try {
-      data.tran_date = filteredDate;
-      console.log(data);
+      flag ? (data.tran_date = filteredDate) : "";
       await axios.put(
         `http://localhost:8000/api/auth/updateTran/${tranId}`,
         data
@@ -96,12 +96,12 @@ const EditReceive = (props) => {
     }
   };
 
-  const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -116,10 +116,18 @@ const EditReceive = (props) => {
     setOpenSupplierPay(!openSupplierPay);
     setOpenEntryDetails(!openEntryDetails);
   };
+  const [imgOpen, setImgOpen] = useState(false);
+  const handleImgOpen = () => {
+    setImgOpen(true);
+  };
+
+  const handleImgClose = () => {
+    setImgOpen(false);
+  };
   return (
     <>
       {result.map((item, index) => (
-        <Box sx={{ width: 400 }} role="presentation">
+        <Box sx={{ width: 400 }} role="presentation" key={index}>
           {openEntryDetails ? (
             <div>
               <Box sx={{ width: 400 }} className="w-full">
@@ -188,7 +196,40 @@ const EditReceive = (props) => {
                       </div>
                       <div className="customer-info-text">
                         <h2>Photo Attachment</h2>
-                        <p className=" font-medium">-</p>
+                        <p className=" font-medium">
+                          {item.tran_bill ? (
+                            <img
+                              src={
+                                "http://localhost:8000/images/" + item.tran_bill
+                              }
+                              width={50}
+                              height={50}
+                              onClick={handleImgOpen}
+                            />
+                          ) : (
+                            "-"
+                          )}
+                        </p>
+                        <Dialog
+                          open={imgOpen}
+                          onClose={handleImgClose}
+                          aria-labelledby="alert-dialog-title"
+                          aria-describedby="alert-dialog-description"
+                          maxWidth="xl"
+                        >
+                          <div>
+                            <DialogContent>
+                              <img
+                                className="image"
+                                src={
+                                  "http://localhost:8000/images/" +
+                                  item.tran_bill
+                                }
+                                alt="no image"
+                              />
+                            </DialogContent>
+                          </div>
+                        </Dialog>
                       </div>
                     </div>
 
@@ -334,9 +375,9 @@ const EditReceive = (props) => {
                               format="LL"
                               className="w-full"
                               maxDate={todaysDate}
-                              onChange={(newValue) =>
-                                setTransactionDate(newValue)
-                              }
+                              onChange={(newValue) => {
+                                setTransactionDate(newValue), setFlag(true);
+                              }}
                             />
                           </DemoContainer>
                         </LocalizationProvider>
@@ -353,7 +394,7 @@ const EditReceive = (props) => {
                               setFile(event.target.value);
                               setFileExists(true);
                               const get_file_size = event.target.files[0];
-                              console.log(get_file_size);
+
                               if (get_file_size.size > maxFileSize) {
                                 setFileSizeExceeded(true);
                                 return;

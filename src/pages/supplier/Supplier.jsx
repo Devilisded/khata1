@@ -11,6 +11,7 @@ import PaySup from "../../components/supplier/paySup/PaySup";
 import ReceiveSup from "../../components/supplier/receiveSup/ReceiveSup";
 import { useSnackbar, SnackbarProvider } from "notistack";
 import EditPay from "../../components/supplier/editPay/EditPay";
+import EditReceive from "../../components/supplier/editReceive/EditReceive";
 
 const MyApp = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -21,6 +22,7 @@ const MyApp = () => {
     pay: false,
     receive: false,
     editPay: false,
+    editReceive: false,
   });
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -47,7 +49,7 @@ const MyApp = () => {
       {anchor === "add" ? (
         <AddSupplier
           snack={() =>
-            handleClickVariant("success", "add", "Customer Has been Added")
+            handleClickVariant("success", "add", "Supplier Has been Added")
           }
         />
       ) : anchor === "edit" ? (
@@ -76,13 +78,25 @@ const MyApp = () => {
           }
         />
       ) : anchor === "editPay" ? (
-        <EditPay           snackd={() =>
-          handleClickVariant("success", "editPay", "Deleted Successfully")
-        }          snacku={() =>
-          handleClickVariant("success", "editPay", "Updated Successfully")
-        }/>
+        <EditPay
+          snackd={() =>
+            handleClickVariant("success", "editPay", "Deleted Successfully")
+          }
+          snacku={() =>
+            handleClickVariant("success", "editPay", "Updated Successfully")
+          }
+        />
+      ) : anchor === "editReceive" ? (
+        <EditReceive
+          snackd={() =>
+            handleClickVariant("success", "editReceive", "Deleted Successfully")
+          }
+          snacku={() =>
+            handleClickVariant("success", "editReceive", "Updated Successfully")
+          }
+        />
       ) : (
-        "-"
+        ""
       )}
     </Box>
   );
@@ -133,6 +147,13 @@ const MyApp = () => {
       >
         {list("editPay")}
       </Drawer>
+      <Drawer
+        anchor="right"
+        open={state["editReceive"]}
+        onClose={toggleDrawer("editReceive", false)}
+      >
+        {list("editReceive")}
+      </Drawer>
       <div className="supplier">
         <Navbar />
         <div className="scontent flex">
@@ -143,6 +164,7 @@ const MyApp = () => {
               pay={toggleDrawer("pay", true)}
               receive={toggleDrawer("receive", true)}
               editPay={toggleDrawer("editPay", true)}
+              editReceive={toggleDrawer("editReceive", true)}
               snack={() =>
                 handleClickVariant1(
                   "error",

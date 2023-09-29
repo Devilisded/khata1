@@ -12,7 +12,11 @@ const SupTransaction = (props) => {
   const AMPM = hours > 12 ? "PM" : "AM";
   const tid = (e) => {
     changeTranId(props.data.sup_tran_id);
-    props.editPay(e);
+    props.data.sup_tran_pay
+      ? props.editPay(e)
+      : props.data.sup_tran_receive
+      ? props.editReceive(e)
+      : alert("No Transactions");
   };
 
   return (

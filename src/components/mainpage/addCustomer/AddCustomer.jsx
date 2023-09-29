@@ -56,10 +56,8 @@ const AddCustomer = (props) => {
       values.amt_type !== ""
     ) {
       setSubmitDisabled(false);
-      console.log("submitDisabled : ", submitDisabled);
     } else {
       setSubmitDisabled(true);
-      console.log("submitDisabled : ", submitDisabled);
     }
   }, [values.cust_name, values.cust_number, values.cust_amt, values.amt_type]);
   return (

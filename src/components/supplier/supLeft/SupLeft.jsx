@@ -17,10 +17,6 @@ const SupLeft = (props) => {
   const handleChange = (event) => {
     setAge(event.target.value);
   };
-  const [filter, setFilter] = useState("");
-  const handleChange1 = (e) => {
-    setFilter(e.target.value);
-  };
   const [data, setData] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
@@ -49,6 +45,23 @@ const SupLeft = (props) => {
   }, 0);
   const total_pay = sum + pay;
   const total_receive = sum1 + receive;
+
+  const [sortOption, setSortOption] = useState("");
+  const handleChange1 = (e) => {
+    setSortOption(e.target.value);
+  };
+  const [filter2, setFilter2] = useState("All");
+  const [searchValue, setSearchValue] = useState("");
+  let sortedUsers = [...data];
+
+  if (sortOption === "recent") {
+    sortedUsers.sort((a, b) => b.sup_id - a.sup_id);
+  } else if (sortOption === "highestAmount") {
+    sortedUsers.sort((a, b) => b.sup_amt - a.sup_amt);
+  } else if (sortOption === "name") {
+    sortedUsers.sort((a, b) => a.sup_name.localeCompare(b.sup_name));
+  }
+
   return (
     <div className="supleft">
       <div className="heading text-xl font-semibold">
@@ -78,6 +91,7 @@ const SupLeft = (props) => {
             type="text"
             className="focus:outline-none p-1 w-56"
             placeholder="Name Or Phone Number"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
         <div className="filter1">
@@ -88,16 +102,16 @@ const SupLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={filter}
+              value={sortOption}
               label="Sort By"
               onChange={handleChange1}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>Most Recent</MenuItem>
-              <MenuItem value={20}>Highest Amount</MenuItem>
-              <MenuItem value={30}>By Name</MenuItem>
+              <MenuItem value="recent">Most Recent</MenuItem>
+              <MenuItem value="highestAmount">Highest Amount</MenuItem>
+              <MenuItem value="name">By Name</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -109,14 +123,16 @@ const SupLeft = (props) => {
               id="demo-select-small"
               value={age}
               label="Filter By"
-              onChange={handleChange}
+              onChange={(e) => {
+                setFilter2(e.target.value);
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>All</MenuItem>
-              <MenuItem value={20}>Pay</MenuItem>
-              <MenuItem value={30}>Receive</MenuItem>
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="receive">Pay</MenuItem>
+              <MenuItem value="pay">Receive</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -126,9 +142,25 @@ const SupLeft = (props) => {
         <div className="amount">Amount</div>
       </div>
       <div className="cards">
-        {data.map((item, index) => (
-          <SupCard key={index} tran={tran} data={item} />
-        ))}
+        {sortedUsers
+
+          .filter((code) => {
+            if (filter2 === "pay") {
+              return code.sup_amt_type === "receive";
+            } else if (filter2 === "receive") {
+              return code.sup_amt_type === "pay";
+            } else if (filter2 === "All") {
+              return true;
+            }
+          })
+          .filter(
+            (code) =>
+              code.sup_number.startsWith(searchValue) ||
+              code.sup_name.startsWith(searchValue)
+          )
+          .map((filteredItem, index) => (
+            <SupCard key={index} tran={tran} data={filteredItem} />
+          ))}
       </div>
     </div>
   );

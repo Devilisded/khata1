@@ -53,7 +53,7 @@ const MainLeft = (props) => {
   } else if (sortOption === "highestAmount") {
     sortedUsers.sort((a, b) => b.cust_amt - a.cust_amt);
   } else if (sortOption === "name") {
-    sortedUsers.sort((a, b) => a.cust_name.localeCompare(b.name));
+    sortedUsers.sort((a, b) => a.cust_name.localeCompare(b.cust_name));
   }
 
   return (

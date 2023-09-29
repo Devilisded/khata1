@@ -59,7 +59,7 @@ const EditReceive = (props) => {
   const [data, setData] = useState([]);
   const [tran, setTran] = useState([]);
   const [update, setUpdate] = useState({
-    sup_tran_pay: "",
+    sup_tran_receive: "",
     sup_tran_date: "",
     sup_tran_description: "",
   });
@@ -73,7 +73,7 @@ const EditReceive = (props) => {
         setTran(res.data);
         setUpdate({
           ...update,
-          sup_tran_pay: res.data[0].sup_tran_pay,
+          sup_tran_receive: res.data[0].sup_tran_receive,
           sup_tran_date: res.data[0].sup_tran_date,
           sup_tran_description: res.data[0].sup_tran_description,
         });
@@ -102,14 +102,21 @@ const EditReceive = (props) => {
       console.log(err);
     }
   };
+  const [imgOpen, setImgOpen] = useState(false);
+  const handleImgOpen = () => {
+    setImgOpen(true);
+  };
 
+  const handleImgClose = () => {
+    setImgOpen(false);
+  };
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
         tran.map((item, index) => (
-          <div>
+          <div key={index}>
             <Box sx={{ width: 400 }} className="w-full">
-              <h1 className="text_left heading">Pay Entry Details</h1>
+              <h1 className="text_left heading">Receive Entry Details</h1>
               <div className="customer-profile flex items-start px-4 py-6">
                 <img
                   className="w-12 h-12 rounded-full object-cover mr-4 shadow"
@@ -151,8 +158,8 @@ const EditReceive = (props) => {
                       <IconPhoneCall />
                     </div>
                     <div className="customer-info-text">
-                      <h2>You Pay</h2>
-                      <p className=" font-medium">₹{item.sup_tran_pay}</p>
+                      <h2>You Receive</h2>
+                      <p className=" font-medium">₹{item.sup_tran_receive}</p>
                     </div>
                   </div>
 
@@ -176,7 +183,40 @@ const EditReceive = (props) => {
                     </div>
                     <div className="customer-info-text">
                       <h2>Photo Attachment</h2>
-                      <p className=" font-medium">-</p>
+                      <p className=" font-medium">
+                        {item.sup_tran_bill ? (
+                          <img
+                            src={
+                              "http://localhost:8000/sup/" + item.sup_tran_bill
+                            }
+                            width={50}
+                            height={50}
+                            onClick={handleImgOpen}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </p>
+                      <Dialog
+                        open={imgOpen}
+                        onClose={handleImgClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                        maxWidth="xl"
+                      >
+                        <div>
+                          <DialogContent>
+                            <img
+                              className="image"
+                              src={
+                                "http://localhost:8000/sup/" +
+                                item.sup_tran_bill
+                              }
+                              alt="no image"
+                            />
+                          </DialogContent>
+                        </div>
+                      </Dialog>
                     </div>
                   </div>
 
@@ -259,7 +299,7 @@ const EditReceive = (props) => {
             </button>
           </div>
           <form className="block overflow-hidden">
-            <h1 className="text_left heading text-red-500 font-semibold text-lg">
+            <h1 className="text_left heading text-green-500 font-semibold text-lg">
               Edit Entry
             </h1>
 
@@ -278,11 +318,11 @@ const EditReceive = (props) => {
                       variant="outlined"
                       className="w-full m-0"
                       size="small"
-                      value={update.sup_tran_pay}
+                      value={update.sup_tran_receive}
                       onChange={(e) =>
                         setUpdate({
                           ...update,
-                          sup_tran_pay: e.target.value,
+                          sup_tran_receive: e.target.value,
                         })
                       }
                       required
@@ -340,7 +380,6 @@ const EditReceive = (props) => {
                           setFile(event.target.value);
                           setFileExists(true);
                           const get_file_size = event.target.files[0];
-                          console.log(get_file_size);
                           if (get_file_size.size > maxFileSize) {
                             setFileSizeExceeded(true);
                             return;
@@ -402,7 +441,10 @@ const EditReceive = (props) => {
             </div>
 
             <div className="supplier-pay-btn-wrapper bg-white">
-              <button className="add_btn2 text-red-600" onClick={updateTran}>
+              <button
+                className="text-green-600 bg-green-200 w-[100%] p-3 rounded-md hover:bg-green-600 hover:text-white transition-all duration-300"
+                onClick={updateTran}
+              >
                 Save
               </button>
             </div>

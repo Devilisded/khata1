@@ -101,11 +101,19 @@ const EditPay = (props) => {
       console.log(err);
     }
   };
+  const [imgOpen, setImgOpen] = useState(false);
+  const handleImgOpen = () => {
+    setImgOpen(true);
+  };
+
+  const handleImgClose = () => {
+    setImgOpen(false);
+  };
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
         tran.map((item, index) => (
-          <div>
+          <div key={index}>
             <Box sx={{ width: 400 }} className="w-full">
               <h1 className="text_left heading">Pay Entry Details</h1>
               <div className="customer-profile flex items-start px-4 py-6">
@@ -174,7 +182,40 @@ const EditPay = (props) => {
                     </div>
                     <div className="customer-info-text">
                       <h2>Photo Attachment</h2>
-                      <p className=" font-medium">-</p>
+                      <p className=" font-medium">
+                        {item.sup_tran_bill ? (
+                          <img
+                            src={
+                              "http://localhost:8000/sup/" + item.sup_tran_bill
+                            }
+                            width={50}
+                            height={50}
+                            onClick={handleImgOpen}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </p>
+                      <Dialog
+                        open={imgOpen}
+                        onClose={handleImgClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                        maxWidth="xl"
+                      >
+                        <div>
+                          <DialogContent>
+                            <img
+                              className="image"
+                              src={
+                                "http://localhost:8000/sup/" +
+                                item.sup_tran_bill
+                              }
+                              alt="no image"
+                            />
+                          </DialogContent>
+                        </div>
+                      </Dialog>
                     </div>
                   </div>
 
@@ -338,7 +379,6 @@ const EditPay = (props) => {
                           setFile(event.target.value);
                           setFileExists(true);
                           const get_file_size = event.target.files[0];
-                          console.log(get_file_size);
                           if (get_file_size.size > maxFileSize) {
                             setFileSizeExceeded(true);
                             return;

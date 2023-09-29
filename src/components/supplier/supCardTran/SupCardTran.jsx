@@ -17,7 +17,7 @@ const SupCardTran = (props) => {
         {result
           .filter((persons) => persons.sup_id == supId)
           .map((filteredPersons) => (
-            <div>
+            <div key={supId}>
               <div
                 className="flex justify-between space-x-6 items-center p-6"
                 key={supId}
