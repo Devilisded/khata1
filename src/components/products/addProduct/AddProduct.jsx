@@ -172,7 +172,6 @@ const AddProduct = (props) => {
   const [isOn2, setIsOn2] = useState(false);
   const handleOnChange2 = () => {
     setIsOn2(!isOn2);
-    
   };
 
   const [isClicked, setIsClicked] = useState(false);
@@ -212,8 +211,6 @@ const AddProduct = (props) => {
   const [igst, setIgst] = useState(null);
   const [stategst, setStategst] = useState(null);
   const [cgst, setCgst] = useState(null);
-  const [cess, setCess] = useState(null);
-
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -231,10 +228,8 @@ const AddProduct = (props) => {
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
-
   const [primaryUnitValue, setPrimaryUnitValue] = useState(null);
-  const [secondaryUnitValue , setSecondaryUnitValue] = useState(null);
+  const [secondaryUnitValue, setSecondaryUnitValue] = useState(null);
 
   const [productData, setProductData] = useState({
     product_name: "",
@@ -269,19 +264,23 @@ const AddProduct = (props) => {
       productData.igst = igst;
       productData.cgst = cgst;
       productData.hsn_desc = hsnValue1;
-      productData.hsn_code =  typeof(hsnCode) === "number" ? hsnCode : null ;
+      productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
       productData.tax = isOn2 ? "yes" : "no";
       var arr = primaryUnitValue.split("-");
       productData.primary_unit = arr[1];
       productData.balance_stock = productData.opening_stock;
       if (secondaryUnitValue !== "null" && secondaryUnitValue !== "") {
-        console.log("secondaryUnitValue : ",secondaryUnitValue , typeof(secondaryUnitValue))
+        console.log(
+          "secondaryUnitValue : ",
+          secondaryUnitValue,
+          typeof secondaryUnitValue
+        );
         var arr = secondaryUnitValue.split("-");
         productData.secondary_unit = arr[1];
       } else {
         productData.secondary_unit = null;
       }
-      console.log(productData.secondary_unit)
+      console.log(productData.secondary_unit);
       await axios.post(
         "http://localhost:8000/api/auth/addProduct",
         productData
@@ -294,7 +293,6 @@ const AddProduct = (props) => {
     }
   };
 
-  
   return (
     <div>
       <div>
@@ -407,7 +405,6 @@ const AddProduct = (props) => {
                   onChange={(event, newValue) => {
                     setPrimaryUnitValue(newValue);
                   }}
-                  
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -417,9 +414,8 @@ const AddProduct = (props) => {
                       className="w-full my-0 "
                       size="small"
                       name="primary_unit"
-                      
                     />
-                  )} 
+                  )}
                 />
 
                 <Box className="box-sec margin-top-zero margin-bottom-zero">
@@ -449,7 +445,7 @@ const AddProduct = (props) => {
                           label="Units"
                           className="w-full"
                           size="small"
-                          name="secondary_unit" 
+                          name="secondary_unit"
                         />
                       )}
                     />
@@ -531,7 +527,7 @@ const AddProduct = (props) => {
                         className="w-full"
                         size="small"
                         maxDate={todaysDate}
-                        onChange={(e)=>setTransactionDate(e)}
+                        onChange={(e) => setTransactionDate(e)}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -596,7 +592,6 @@ const AddProduct = (props) => {
                               setIgst(filteredItem.igst),
                                 setCgst(filteredItem.cgst),
                                 setStategst(filteredItem.sgst),
-                                
                                 setHsnCode(filteredItem.hsn_code),
                                 setHsnValue1(filteredItem.hsn_desc),
                                 setGstValue1(filteredItem.igst),
