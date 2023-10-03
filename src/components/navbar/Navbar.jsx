@@ -1,9 +1,11 @@
 import {
   IconBook2,
   IconBriefcase,
+  IconBuildingBank,
   IconHelpCircle,
   IconHome2,
   IconLogout,
+  IconMoneybag,
   IconServer,
   IconSettings,
   IconTruckLoading,
@@ -13,35 +15,40 @@ import "./navbar.scss";
 import { useState } from "react";
 import { Menu, MenuItem } from "@mui/material";
 import Fade from "@mui/material/Fade";
-import { Link,useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
-  const location=useLocation()
+  const location = useLocation();
   const items = [
     {
       name: "Customer",
       icon: <IconUser />,
-      linkto:"/"
+      linkto: "/",
     },
     {
       name: "Supplier",
       icon: <IconTruckLoading />,
-      linkto:"/supplier"
+      linkto: "/supplier",
     },
     {
       name: "Items",
       icon: <IconServer />,
-      linkto:"/products",
-      link2:"/services"
+      linkto: "/products",
+      link2: "/services",
     },
     {
-      name:"Account",
-      icon:<IconBriefcase/>,
-      linkto:"/account"
+      name: "CashBook",
+      icon: <IconBuildingBank />,
+      linkto: "/cashbook",
+    },
+    {
+      name: "Account",
+      icon: <IconBriefcase />,
+      linkto: "/account",
     },
     {
       name: "Settings",
       icon: <IconSettings />,
-      linkto:"/settings"
+      linkto: "/settings",
     },
   ];
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,14 +71,20 @@ const Navbar = () => {
       <div className="center flex ">
         <div className="items flex">
           {items.map((item, index) => (
-            <Link className={location.pathname===item.linkto||location.pathname===item.link2?"active":""} key={index} to={item.linkto}>
-            <div
-              className="item flex flex-col items-center gap-1 justify-center cursor-pointer"
-              
+            <Link
+              className={
+                location.pathname === item.linkto ||
+                location.pathname === item.link2
+                  ? "active"
+                  : ""
+              }
+              key={index}
+              to={item.linkto}
             >
-              <div className="icon1">{item.icon}</div>
-              <div className="name text-xs">{item.name}</div>
-            </div>
+              <div className="item flex flex-col items-center gap-1 justify-center cursor-pointer">
+                <div className="icon1">{item.icon}</div>
+                <div className="name text-xs">{item.name}</div>
+              </div>
             </Link>
           ))}
         </div>
@@ -92,13 +105,22 @@ const Navbar = () => {
             TransitionComponent={Fade}
           >
             <Link to="/home">
-            <MenuItem className="gap-2"><IconHome2 className="text-slate-600 w-5"/>Home</MenuItem>
+              <MenuItem className="gap-2">
+                <IconHome2 className="text-slate-600 w-5" />
+                Home
+              </MenuItem>
             </Link>
             <Link to="/contact">
-            <MenuItem className="gap-2"><IconHelpCircle className="text-slate-600 w-5"/>Contact Us</MenuItem>
+              <MenuItem className="gap-2">
+                <IconHelpCircle className="text-slate-600 w-5" />
+                Contact Us
+              </MenuItem>
             </Link>
             <Link to="/login">
-              <MenuItem className="gap-2"><IconLogout className="text-slate-600 w-5"/>Logout</MenuItem>
+              <MenuItem className="gap-2">
+                <IconLogout className="text-slate-600 w-5" />
+                Logout
+              </MenuItem>
             </Link>
           </Menu>
         </div>
