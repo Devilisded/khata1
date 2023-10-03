@@ -3,36 +3,31 @@ import { useState } from "react";
 import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Switch from "@mui/material/Switch";
-import {
-  IconX,
-  IconTrash,
-  IconSquareRoundedX,
-  IconAlertOctagonFilled,
-} from "@tabler/icons-react";
+import { IconTrash, IconAlertOctagonFilled } from "@tabler/icons-react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import "./editservice.scss";
-
+import { useContext } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
+import { useEffect } from "react";
 const EditService = (props) => {
+  const { serId, changeChange, changeService } = useContext(UserContext);
   const units = [
     {
-      value: "pieces",
-      label: "Pieces - PCS",
+      value: "PCS",
     },
     {
-      value: "numbers",
-      label: "Numbers - NOS",
+      value: "NOS",
     },
     {
-      value: "Days",
-      label: "Days - DAY",
+      value: "DAY",
     },
     {
-      value: "hours",
-      label: "Hours - HRS",
+      value: "HRS",
     },
   ];
 
@@ -206,8 +201,53 @@ const EditService = (props) => {
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
-
+  const [info, setInfo] = useState({
+    ser_unit: "",
+    ser_name: "",
+    ser_price: "",
+    ser_sac: "",
+    ser_gst: "",
+    ser_tax_included: "",
+  });
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const delData = async () => {
+    try {
+      axios.delete(`http://localhost:8000/api/ser/delData/${serId}`);
+      changeService(0);
+      changeChange();
+      props.snackd();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/ser/fetchDataid/${serId}`)
+      .then((res) => {
+        setInfo({
+          ...info,
+          ser_unit: res.data[0].ser_unit,
+          ser_name: res.data[0].ser_name,
+          ser_price: res.data[0].ser_price,
+          ser_sac: res.data[0].ser_sac,
+          ser_gst: res.data[0].ser_gst,
+          ser_tax_included: res.data[0].ser_tax_included,
+        });
+      });
+  }, [serId]);
+  const updateData = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:8000/api/ser/updateData/${serId}`,
+        info
+      );
+      changeChange();
+      props.snacku();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div>
@@ -234,14 +274,21 @@ const EditService = (props) => {
                     variant="outlined"
                     className="w-full"
                     size="small"
+                    value={info.ser_name}
+                    onChange={(e) =>
+                      setInfo({ ...info, ser_name: e.target.value })
+                    }
                     required
                   />
                 </Box>
                 <Autocomplete
-                  options={units}
+                  options={units.map((item) => item.value)}
                   id="disable-close-on-select"
-                  value={"akshit"}
+                  value={info.ser_unit}
                   className=" mt-0 w-3/4 sec-2 box-sec margin-bottom-zero "
+                  onChange={(event, newValue) => {
+                    setInfo({ ...info, ser_unit: newValue });
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -261,14 +308,19 @@ const EditService = (props) => {
                     label="Sell Price"
                     className=" w-full"
                     size="small"
+                    value={info.ser_price}
+                    onChange={(e) =>
+                      setInfo({ ...info, ser_price: e.target.value })
+                    }
                   />
                 </Box>
                 <Box className="box-sec margin-top-zero ">
                   <label className="pl-2 ">Tax included</label>
                   <Switch
-                    {...label}
+                    // {...label}
                     color="success"
-                    onChange={handleOnChange2}
+                    // onChange={handleOnChange2}
+                    // defaultChecked={checkChange}
                   />
                 </Box>
 
@@ -276,7 +328,7 @@ const EditService = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    value={hsnCode}
+                    value={info.ser_sac}
                     helperText={hsnValue1}
                     className="sec-1"
                     size="small"
@@ -291,7 +343,7 @@ const EditService = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    value={gstValue1}
+                    value={info.ser_gst}
                     helperText={gstValue2}
                     className="sec-2"
                     size="small"
@@ -329,9 +381,12 @@ const EditService = (props) => {
                             className="flex card-sec"
                             onClick={() => {
                               console.log(filteredItem.hsn_code);
-                              setHsnCode(filteredItem.hsn_code),
+                              setInfo({
+                                ...info,
+                                ser_sac: filteredItem.hsn_code,
+                                ser_gst: filteredItem.tax,
+                              }),
                                 setHsnValue1(filteredItem.product_name),
-                                setGstValue1(filteredItem.tax),
                                 setGstValue2(filteredItem.tax_details);
                               setIsClicked(false);
                               setSearchValue("0");
@@ -463,7 +518,7 @@ const EditService = (props) => {
                 </button>
                 <button
                   className="delete-btn text-red-600 pb-3 pr-3"
-                  onClick={props.snackd}
+                  onClick={delData}
                   autoFocus
                 >
                   Delete Service
@@ -474,7 +529,7 @@ const EditService = (props) => {
         </Dialog>
         <button
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={props.snacku}
+          onClick={updateData}
         >
           Update Service
         </button>
