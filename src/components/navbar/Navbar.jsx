@@ -2,6 +2,7 @@ import {
   IconBook2,
   IconBriefcase,
   IconBuildingBank,
+  IconCreditCard,
   IconHelpCircle,
   IconHome2,
   IconLogout,
@@ -39,6 +40,11 @@ const Navbar = () => {
       name: "CashBook",
       icon: <IconBuildingBank />,
       linkto: "/cashbook",
+    },
+    {
+      name: "Expenses",
+      icon: <IconCreditCard />,
+      linkto: "/expenses",
     },
     {
       name: "Account",
