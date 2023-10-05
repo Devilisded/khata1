@@ -36,9 +36,15 @@ const CashOut = (props) => {
   const handleClick = (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
       values.cash_date = filteredDate;
       values.cash_mode = payMode;
-      axios.post("http://localhost:8000/api/cash/sendData", values);
+      formData.append("image", file);
+      formData.append("cash_pay", values.cash_pay);
+      formData.append("cash_description", values.cash_description);
+      formData.append("cash_date", values.cash_date);
+      formData.append("cash_mode", values.cash_mode);
+      axios.post("http://localhost:8000/api/cash/sendData", formData);
       changeChange();
       props.snack();
     } catch (err) {

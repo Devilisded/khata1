@@ -23,11 +23,34 @@ const CashLeft = (props) => {
   const handleChange = (event) => {
     setAge(event.target.value);
   };
+  const [transactionDate, setTransactionDate] = useState(todaysDate);
+  var date1 = transactionDate.$d;
+  var filteredDate = date1.toString().slice(4, 16);
+  const [info, setInfo] = useState([]);
   useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/cash/fetchDate/${filteredDate}`)
+      .then((res) => {
+        setData(res.data);
+      });
     axios.get("http://localhost:8000/api/cash/fetchData").then((res) => {
-      setData(res.data);
+      setInfo(res.data);
     });
-  }, [change]);
+  }, [change, transactionDate]);
+  const sum_pay = data.reduce(function (prev, current) {
+    return prev + +current.cash_pay;
+  }, 0);
+  const sum_receive = data.reduce(function (prev, current) {
+    return prev + +current.cash_receive;
+  }, 0);
+  const todaysBalance = sum_pay - sum_receive;
+  const total_pay = info.reduce(function (prev, current) {
+    return prev + +current.cash_pay;
+  }, 0);
+  const total_receive = info.reduce(function (prev, current) {
+    return prev + +current.cash_receive;
+  }, 0);
+  const totalBalance = total_pay - total_receive;
   return (
     <div className="cashleft">
       <div className="text-xl font-semibold p-5 border-b border-gray-300 text-blue-600">
@@ -36,11 +59,33 @@ const CashLeft = (props) => {
       <div className="flex justify-between p-5 border-b border-gray-300 balance">
         <div className="text-gray-500 flex gap-1 items-center">
           Total Balance &nbsp;
-          <span className="text-green-500 font-bold">₹12800</span>
+          <span
+            className={
+              totalBalance < 0
+                ? "text-red-500 font-bold"
+                : "text-green-500 font-bold"
+            }
+          >
+            ₹
+            {totalBalance < 0
+              ? totalBalance * -1 + " Pay"
+              : totalBalance + " Receive"}
+          </span>
         </div>
         <div className="text-gray-500 flex gap-1 items-center">
           Today's Balance &nbsp;
-          <span className="text-red-500 font-bold text-md">₹600</span>
+          <span
+            className={
+              todaysBalance < 0
+                ? "text-red-500 font-bold text-md"
+                : "text-green-500 font-bold text-md"
+            }
+          >
+            ₹
+            {todaysBalance < 0
+              ? todaysBalance * -1 + " Pay"
+              : todaysBalance + " Receive"}
+          </span>
         </div>
         <button className="flex gap-1 items-end report rounded-md p-2 text-blue-600 hover:text-white hover:bg-blue-600">
           <IconChecklist className="w-5 h-5" /> View Report
@@ -54,6 +99,7 @@ const CashLeft = (props) => {
               value={todaysDate}
               format="LL"
               maxDate={todaysDate}
+              onChange={(newValue) => setTransactionDate(newValue)}
             />
           </DemoContainer>
         </LocalizationProvider>
@@ -83,14 +129,18 @@ const CashLeft = (props) => {
             In
           </div>
           <div className="double">
-            <div className="date text-slate-700 font-semibold">Sep 10 2023</div>
-            <div className="text-slate-500 font-semibold">7 Entries</div>
+            <div className="date text-slate-700 font-semibold">
+              {filteredDate}
+            </div>
+            <div className="text-slate-500 font-semibold">
+              {data.length} Entries
+            </div>
           </div>
           <div className="text-red-600 justify-self-end font-semibold">
-            ₹ 700
+            ₹ {sum_pay}
           </div>
           <div className="text-green-600 justify-self-end font-semibold">
-            ₹ 900
+            ₹ {sum_receive}
           </div>
         </div>
       </div>

@@ -4,9 +4,12 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { UserContext } from "../../../context/UserIdContext";
 
 const EditIn = (props) => {
+  const { cashId, change, changeChange } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -17,17 +20,51 @@ const EditIn = (props) => {
   const maxFileSize = 2000000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
-  const [transactionDate, setTransactionDate] = useState(todaysDate);
-  var date1 = transactionDate.$d;
-  var filteredDate = date1.toString().slice(4, 16);
-  const handleChange = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
-  const [payMode, setPayMode] = useState("");
   const handleClick = (e) => {
     e.preventDefault();
     props.snack();
+  };
+  const [data, setData] = useState({
+    cash_receive: "",
+    cash_mode: "",
+    cash_date: "",
+    cash_time: "",
+    cash_description: "",
+  });
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/cash/fetchDataid/${cashId}`)
+      .then((res) => {
+        setData({
+          ...data,
+          cash_receive: res.data[0].cash_receive,
+          cash_mode: res.data[0].cash_mode,
+          cash_date: res.data[0].cash_date,
+          cash_time: res.data[0].cash_time,
+          cash_description: res.data[0].cash_description,
+        });
+      });
+  }, [cashId, change]);
+  const [flag, setFlag] = useState(false);
+  const [transactionDate, setTransactionDate] = useState(todaysDate);
+  var date1 = transactionDate.$d;
+  var filteredDate = date1.toString().slice(4, 16);
+
+  const updateData = async (e) => {
+    e.preventDefault();
+    try {
+      flag ? (data.cash_date = filteredDate) : "";
+      console.log(data);
+      await axios.put(
+        `http://localhost:8000/api/cash/updateData/${cashId}`,
+        data
+      );
+      changeChange();
+      props.snack();
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <form className="block overflow-hidden" method="post">
@@ -52,8 +89,10 @@ const EditIn = (props) => {
                 variant="outlined"
                 className="w-full m-0"
                 size="small"
-                name="tran_pay"
-                onChange={handleChange}
+                value={data.cash_receive}
+                onChange={(e) =>
+                  setData({ ...data, cash_receive: e.target.value })
+                }
                 required
               />
             </Box>
@@ -70,9 +109,11 @@ const EditIn = (props) => {
                 InputProps={{
                   rows: 5,
                 }}
-                name="tran_description"
                 className="w-full"
-                onChange={handleChange}
+                value={data.cash_description}
+                onChange={(e) =>
+                  setData({ ...data, cash_description: e.target.value })
+                }
               />
             </Box>
             <Box>
@@ -80,19 +121,39 @@ const EditIn = (props) => {
                 <label>Payment Mode</label>
               </div>
               <div className="flex gap-2 p-2">
-                <input
-                  type="radio"
-                  id="cash"
-                  name="payment_mode"
-                  onChange={(e) => setPayMode("cash")}
-                />
+                {data.cash_mode === "cash" ? (
+                  <input
+                    type="radio"
+                    id="cash"
+                    name="payment_mode"
+                    onClick={(e) => setData({ ...data, cash_mode: "cash" })}
+                    defaultChecked
+                  />
+                ) : (
+                  <input
+                    type="radio"
+                    id="cash"
+                    name="payment_mode"
+                    onClick={(e) => setData({ ...data, cash_mode: "cash" })}
+                  />
+                )}
                 <label htmlFor="cash">Cash</label>
-                <input
-                  type="radio"
-                  id="online"
-                  name="payment_mode"
-                  onClick={(e) => setPayMode("online")}
-                />
+                {data.cash_mode === "online" ? (
+                  <input
+                    type="radio"
+                    id="online"
+                    name="payment_mode"
+                    onClick={(e) => setData({ ...data, cash_mode: "online" })}
+                    defaultChecked
+                  />
+                ) : (
+                  <input
+                    type="radio"
+                    id="online"
+                    name="payment_mode"
+                    onClick={(e) => setData({ ...data, cash_mode: "online" })}
+                  />
+                )}
                 <label htmlFor="online">Online</label>
               </div>
             </Box>
@@ -101,8 +162,10 @@ const EditIn = (props) => {
                 <DemoContainer components={["DatePicker", "DatePicker"]}>
                   <DatePicker
                     label="Date"
-                    value={transactionDate}
-                    onChange={(newValue) => setTransactionDate(newValue)}
+                    value={dayjs(data.cash_date)}
+                    onChange={(newValue) => {
+                      setTransactionDate(newValue), setFlag(true);
+                    }}
                     format="LL"
                     className="w-full"
                     maxDate={todaysDate}
@@ -181,7 +244,7 @@ const EditIn = (props) => {
       <div className="cashout-btn-wrapper">
         <button
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
+          onClick={updateData}
         >
           In
         </button>

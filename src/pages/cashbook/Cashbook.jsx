@@ -4,17 +4,17 @@ import CashLeft from "../../components/cashbook/cashLeft/CashLeft";
 import CashRight from "../../components/cashbook/cashRight/CashRight";
 import Navbar from "../../components/navbar/Navbar";
 import { useState } from "react";
-import { IconUsers } from "@tabler/icons-react";
 import CashOut from "../../components/cashbook/cashOut/CashOut";
 import CashIn from "../../components/cashbook/cashIn/CashIn";
 import EditOut from "../../components/cashbook/editOut/EditOut";
 import EditIn from "../../components/cashbook/editIn/EditIn";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { UserContext } from "../../context/UserIdContext";
+import NoSelected from "../../components/cashbook/noSelected/NoSelected";
 const MyApp = () => {
   const { cashId, change } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
 
   const [state, setState] = useState({
     out: false,
@@ -83,7 +83,7 @@ const MyApp = () => {
   };
   useEffect(() => {
     check();
-  }, [change, cashId]);
+  }, [cashId, change]);
   return (
     <React.Fragment>
       <Drawer
@@ -123,14 +123,18 @@ const MyApp = () => {
           />
           {active ? (
             <CashRight
+              snack={() =>
+                handleClickVariant(
+                  "success",
+                  "",
+                  "Transaction Has been Deleted"
+                )
+              }
               editOut={toggleDrawer("editOut", true)}
               editIn={toggleDrawer("editIn", true)}
             />
           ) : (
-            <div className="w-full bg-slate-50 flex h-[100vh - 85px] flex-col justify-center items-center">
-              <IconUsers className=" w-28 h-28 text-slate-600" />
-              No Transaction Selected
-            </div>
+            <NoSelected />
           )}
         </div>
       </div>
