@@ -6,25 +6,26 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 
 const ProRight = (props) => {
-  const { pId , change } = useContext(UserContext);
+  const { pId, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
-  
+
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
         setResult(response.data);
-        
       });
     axios
       .get(`http://localhost:8000/api/auth/fetchStockInTran/${pId}`)
       .then((response) => {
         setResult2(response.data);
+        //setQtySold(response.data.qty_sold)
       });
   }, [pId, change]);
 
-  
+  console.log(result2);
+
   return (
     <div className="proright">
       {result.map((item, index) => (
@@ -35,6 +36,7 @@ const ProRight = (props) => {
               product_name={
                 item.product_name ? item.product_name : "Product Name"
               }
+              data={item}
               edit={props.edit}
             />
           </div>
@@ -60,26 +62,25 @@ const ProRight = (props) => {
               <div className="flex flex-col items-center">
                 {item.balance_stock <= item.low_stock ? (
                   <>
-                  <div className="font-semibold text-lg text-red-600">
-                    {item.balance_stock}
-                  </div>
-                  <div className="text-xs text-red-600">Stock Quantity</div>
+                    <div className="font-semibold text-lg text-red-600">
+                      {item.balance_stock}
+                    </div>
+                    <div className="text-xs text-red-600">Stock Quantity</div>
                   </>
                 ) : (
                   <>
-                  <div className="font-semibold text-lg text-slate-800">
-                    {item.balance_stock}
-                  </div>
-                  <div className="text-xs text-slate-600">Stock Quantity</div>
+                    <div className="font-semibold text-lg text-slate-800">
+                      {item.balance_stock.toFixed(2)}
+                    </div>
+                    <div className="text-xs text-slate-600">Stock Quantity</div>
                   </>
                 )}
-                
               </div>
             </div>
             <div className="grItems">
               <div className="flex flex-col items-center">
                 <div className="font-semibold text-lg text-slate-800">
-                  ₹{item.sale_price * item.opening_stock}
+                  ₹{(item.sale_price * item.balance_stock).toFixed(2)}
                 </div>
                 <div className="text-xs text-slate-600">Stock Value</div>
               </div>
@@ -98,7 +99,7 @@ const ProRight = (props) => {
               <div className="grItems">
                 <div className="flex flex-col items-center">
                   <div className="font-semibold text-lg text-slate-800">
-                    {item.primary_unit}
+                    {item.primary_unit ? item.primary_unit : "-"}
                   </div>
                   <div className="text-xs text-slate-600">Units</div>
                 </div>
@@ -123,7 +124,9 @@ const ProRight = (props) => {
             <div className="grItems">
               <div className="flex flex-col items-center">
                 <div className="font-semibold text-lg text-slate-800">
-                  {item.igst ? "GST @ " + item.igst + "%" : "-"}
+                  {item.igst >= 0 && item.igst !== null
+                    ? "GST @ " + item.igst + "%"
+                    : "-"}
                 </div>
                 <div className="text-xs text-slate-600">GST%</div>
               </div>

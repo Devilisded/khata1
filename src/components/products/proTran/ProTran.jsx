@@ -1,6 +1,7 @@
 import { IconPointFilled } from "@tabler/icons-react";
 
 const ProTran = (props) => {
+  
   return (
     <div className="transaction cursor-pointer">
       
@@ -11,7 +12,7 @@ const ProTran = (props) => {
           10:40 AM
         </div>
         <div className="text-sm text-slate-600">
-          Balance : {props.balance_stock}
+          Balance : {props.data.balance_stock}
         </div>
       </div>
       <div className="flex gap-56 mr-24">

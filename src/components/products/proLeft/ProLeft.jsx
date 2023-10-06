@@ -3,28 +3,31 @@ import "./proleft.scss";
 import { useLocation, Link } from "react-router-dom";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ProCard from "../proCard/ProCard";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { UserContext } from "../../../context/UserIdContext";
 
 const ProLeft = (props) => {
+  const { change, pId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/auth/fetchProductData")
+      .then((response) => {
+        setResult(response.data);
+      });
 
-  axios
-    .get("http://localhost:8000/api/auth/fetchProductData")
-    .then((response) => {
-      setResult(response.data);
+    axios
+      .get(`http://localhost:8000/api/auth/fetchTotalStockValue`)
+      .then((response) => {
+        setResult2(response.data);
+      });
+    axios.get("http://localhost:8000/api/ser/fetchData").then((res) => {
+      setData(res.data);
     });
-
-   
-      axios
-    .get(`http://localhost:8000/api/auth/fetchTotalStockValue`)
-    .then((response) => {
-      setResult2(response.data);
-    });
-   
-    
-    
+  }, [change, pId]);
 
   const [age, setAge] = useState("");
 
@@ -59,30 +62,31 @@ const ProLeft = (props) => {
             }
           >
             Services
-            <p className=" text-sky-600 num font-semibold">1</p>
+            <p className=" text-sky-600 num font-semibold">{data.length}</p>
           </div>
         </Link>
       </div>
 
-        <div className="info flex justify-between items-center" >
+      {result2.map((item, index) => (
+        <div className="info flex justify-between items-center">
           <div className="total text-slate-400 text-lg font-semibold">
-            Total Stock Value :{" "}
+            Total Stock Value :
             <span className="text-black font-semibold">
-              {/* ₹ {result2[0].stockValue ? result2[0].stockValue : ""} */}
+              {item.stockValue ? item.stockValue.toFixed(2) : "0"}
             </span>
           </div>
           <div className="low text-slate-400 text-lg font-semibold">
             Low Stock Products :{" "}
             <span className="text-red-600 font-semibold">
-              {/* {result2[1].stockValue ? result2[1].stockValue : ""}  */}
+              {item.lowStockProducts}
             </span>
           </div>
           <button className="flex gap-1" onClick={props.add}>
-            {" "}
             <IconPlus className="w-5" />
             Add Product
           </button>
         </div>
+      ))}
 
       <div className="filters flex items-center justify-between">
         <div className="searchbar1 flex h-10 rounded p-1 w-72 items-center gap-2 border border-slate-400 hover:border-black">

@@ -113,9 +113,9 @@ const CashLeft = (props) => {
             label="All"
             onChange={handleChange}
           >
-            <MenuItem value={10}>All</MenuItem>
-            <MenuItem value={20}>Cash</MenuItem>
-            <MenuItem value={30}>Online</MenuItem>
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="cash">Cash</MenuItem>
+            <MenuItem value="online">Online</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -145,9 +145,11 @@ const CashLeft = (props) => {
         </div>
       </div>
       <div className="transactions">
-        {data.map((item, index) => (
-          <CashTran key={index} data={item} />
-        ))}
+        {age === ""
+          ? data.map((item, index) => <CashTran key={index} data={item} />)
+          : data
+              .filter((persons) => persons.cash_mode === age)
+              .map((item, index) => <CashTran key={index} data={item} />)}
       </div>
       <div className="outin flex p-3 gap-4">
         <button

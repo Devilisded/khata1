@@ -21,10 +21,16 @@ const SerLeft = (props) => {
   const location = useLocation();
 
   const [result, setResult] = useState([]);
+  const [data, setData] = useState([]);
   useEffect(() => {
     axios.get("http://localhost:8000/api/ser/fetchData").then((res) => {
       setResult(res.data);
     });
+    axios
+      .get("http://localhost:8000/api/auth/fetchProductData")
+      .then((response) => {
+        setData(response.data);
+      });
   }, [change]);
   return (
     <div className="serleft">
@@ -38,7 +44,7 @@ const SerLeft = (props) => {
             }
           >
             Products
-            <p className=" text-sky-600 num font-semibold">{products.length}</p>
+            <p className=" text-sky-600 num font-semibold">{data.length}</p>
           </div>
         </Link>
         <div

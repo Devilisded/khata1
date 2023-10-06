@@ -3,7 +3,7 @@ import "./exleft.scss";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ExTran from "../exTran/ExTran";
 
-const ExLeft = () => {
+const ExLeft = (props) => {
   return (
     <div className="exleft">
       <div className="border-b border-slate-300 p-4 font-semibold text-blue-600 text-xl">
@@ -83,7 +83,10 @@ const ExLeft = () => {
         <ExTran />
       </div>
       <div className="expbtn px-6 py-4">
-        <button className="rounded-lg p-2 w-full text-emerald-600 hover:text-white hover:bg-emerald-600">
+        <button
+          className="rounded-lg p-2 w-full text-emerald-600 hover:text-white hover:bg-emerald-600"
+          onClick={props.add}
+        >
           Add Expense
         </button>
       </div>

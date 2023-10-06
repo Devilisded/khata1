@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IconX } from "@tabler/icons-react";
@@ -30,6 +30,73 @@ const AddProduct = (props) => {
     .then((response) => {
       setResult2(response.data);
     });
+  const gst = [
+    // {
+    //   value: "taxExempted",
+    //   label1: "Tax Exempted",
+    //   label2: "(NO GST)",
+    // },
+    {
+      value: "gst0",
+      label1: 0,
+      label2: 0,
+      label3: 0,
+    },
+    {
+      value: "gst0_1", // 0_1 => 0.1
+      label1: 0.1,
+      label2: 0.05,
+      label3: 0.05,
+    },
+    {
+      value: "gst0_25", // 0_25 => 0.25
+      label1: 0.25,
+      label2: 0.125,
+      label3: 0.125,
+    },
+    {
+      value: "gst3",
+      label1: 3,
+      label2: 1.5,
+      label3: 1.5,
+    },
+    {
+      value: "gst5",
+      label1: 5,
+      label2: 2.5,
+      label3: 2.5,
+    },
+    {
+      value: "gst6",
+      label1: 6,
+      label2: 3,
+      label3: 3,
+    },
+    {
+      value: "gst7_5", // 7_5  =>  7.5
+      label1: 7.5,
+      label2: 3.75,
+      label3: 3.75,
+    },
+    {
+      value: "gst12",
+      label1: 12,
+      label2: 6,
+      label3: 6,
+    },
+    {
+      value: "gst18",
+      label1: 18,
+      label2: 9,
+      label3: 9,
+    },
+    {
+      value: "gst28",
+      label1: 28,
+      label2: 14,
+      label3: 14,
+    },
+  ];
 
   const units = [
     {
@@ -49,63 +116,63 @@ const AddProduct = (props) => {
       label: "Hours - HRS",
     },
   ];
-  const gst = [
-    {
-      value: "taxExempted",
-      label1: "Tax Exempted",
-      label2: "(NO GST)",
-    },
-    {
-      value: "gst0",
-      label1: "GST@ 0%",
-      label2: "(NO GST)",
-    },
-    {
-      value: "gst0_1", // 0_1 => 0.1
-      label1: "GST@ 0.1%",
-      label2: "(0.05% CSGT + 0.05% SGST/UT GST ; 0.1% IGST )",
-    },
-    {
-      value: "gst0_25", // 0_25 => 0.25
-      label1: "GST@ 0.25%",
-      label2: "(0.125% CSGT + 0.125% SGST/UT GST ; 0.25% IGST )",
-    },
-    {
-      value: "gst3",
-      label1: "GST@ 3%",
-      label2: "(1.5% CSGT + 1.5% SGST/UT GST ; 3% IGST )",
-    },
-    {
-      value: "gst5",
-      label1: "GST@ 5%",
-      label2: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      value: "gst6",
-      label1: "GST@ 6%",
-      label2: "(3% CSGT + 3% SGST/UT GST ; 6% IGST )",
-    },
-    {
-      value: "gst7_5", // 7_5  =>  7.5
-      label1: "GST@ 7.5%",
-      label2: "(3.75% CSGT + 3.75% SGST/UT GST ; 7.5% IGST )",
-    },
-    {
-      value: "gst12",
-      label1: "GST@ 12%",
-      label2: "(6% CSGT + 6% SGST/UT GST ; 12% IGST )",
-    },
-    {
-      value: "gst18",
-      label1: "GST@ 18%",
-      label2: "(9% CSGT + 9% SGST/UT GST ; 18% IGST )",
-    },
-    {
-      value: "gst28",
-      label1: "GST@ 28%",
-      label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
-    },
-  ];
+
+  //   {
+  //     value: "taxExempted",
+  //     label1: "Tax Exempted",
+  //     label2: "(NO GST)",
+  //   },
+  //   {
+  //     value: "gst0",
+  //     label1: "GST@ 0%",
+  //     label2: "(NO GST)",
+  //   },
+  //   {
+  //     value: "gst0_1", // 0_1 => 0.1
+  //     label1: "GST@ 0.1%",
+  //     label2: "(0.05% CSGT + 0.05% SGST/UT GST ; 0.1% IGST )",
+  //   },
+  //   {
+  //     value: "gst0_25", // 0_25 => 0.25
+  //     label1: "GST@ 0.25%",
+  //     label2: "(0.125% CSGT + 0.125% SGST/UT GST ; 0.25% IGST )",
+  //   },
+  //   {
+  //     value: "gst3",
+  //     label1: "GST@ 3%",
+  //     label2: "(1.5% CSGT + 1.5% SGST/UT GST ; 3% IGST )",
+  //   },
+  //   {
+  //     value: "gst5",
+  //     label1: "GST@ 5%",
+  //     label2: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
+  //   },
+  //   {
+  //     value: "gst6",
+  //     label1: "GST@ 6%",
+  //     label2: "(3% CSGT + 3% SGST/UT GST ; 6% IGST )",
+  //   },
+  //   {
+  //     value: "gst7_5", // 7_5  =>  7.5
+  //     label1: "GST@ 7.5%",
+  //     label2: "(3.75% CSGT + 3.75% SGST/UT GST ; 7.5% IGST )",
+  //   },
+  //   {
+  //     value: "gst12",
+  //     label1: "GST@ 12%",
+  //     label2: "(6% CSGT + 6% SGST/UT GST ; 12% IGST )",
+  //   },
+  //   {
+  //     value: "gst18",
+  //     label1: "GST@ 18%",
+  //     label2: "(9% CSGT + 9% SGST/UT GST ; 18% IGST )",
+  //   },
+  //   {
+  //     value: "gst28",
+  //     label1: "GST@ 28%",
+  //     label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
+  //   },
+  // ];
   const hsn = [
     {
       hsn_code: "21",
@@ -196,7 +263,7 @@ const AddProduct = (props) => {
   const [searchValue, setSearchValue] = useState("0");
 
   const [customGst, setcustomGst] = useState("");
-  const [customeCess, setCustomeCess] = useState("");
+  const [customeCess, setCustomeCess] = useState(null);
   const custom_gst_details =
     "(" +
     customGst / 2 +
@@ -211,6 +278,7 @@ const AddProduct = (props) => {
   const [igst, setIgst] = useState(null);
   const [stategst, setStategst] = useState(null);
   const [cgst, setCgst] = useState(null);
+  const [cess, setCess] = useState(null);
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -223,7 +291,7 @@ const AddProduct = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
@@ -238,7 +306,7 @@ const AddProduct = (props) => {
     sale_price: null,
     purchase_price: null,
     tax: "",
-    opening_stock: 0,
+    opening_stock: null,
     low_stock: 0,
     balance_stock: 0,
     entry_date: "",
@@ -254,37 +322,44 @@ const AddProduct = (props) => {
     setProductData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  //console.log("secondaryUnitValue : ",primaryUnitValue,secondaryUnitValue)
+  productData.entry_date = filteredDate;
+  productData.sgst = stategst;
+  productData.igst = igst;
+  productData.cgst = cgst;
+  productData.cess = customeCess;
+  productData.hsn_desc = hsnValue1;
+  productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
+  productData.tax = isOn2 ? "yes" : "no";
   const [err, setErr] = useState(null);
+
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      productData.entry_date = filteredDate;
-      productData.sgst = stategst;
-      productData.igst = igst;
-      productData.cgst = cgst;
-      productData.hsn_desc = hsnValue1;
-      productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
-      productData.tax = isOn2 ? "yes" : "no";
-      var arr = primaryUnitValue.split("-");
-      productData.primary_unit = arr[1];
+      const formData = new FormData();
+
       productData.balance_stock = productData.opening_stock;
-      if (secondaryUnitValue !== "null" && secondaryUnitValue !== "") {
-        console.log(
-          "secondaryUnitValue : ",
-          secondaryUnitValue,
-          typeof secondaryUnitValue
-        );
-        var arr = secondaryUnitValue.split("-");
-        productData.secondary_unit = arr[1];
-      } else {
-        productData.secondary_unit = null;
-      }
-      console.log(productData.secondary_unit);
-      await axios.post(
-        "http://localhost:8000/api/auth/addProduct",
-        productData
-      );
+      productData.primary_unit = primaryUnitValue;
+      productData.secondary_unit = secondaryUnitValue;
+      formData.append("image", file);
+      formData.append("product_name", productData.product_name);
+      formData.append("primary_unit", productData.primary_unit);
+      formData.append("secondary_unit", productData.secondary_unit);
+      formData.append("sale_price", productData.sale_price);
+      formData.append("purchase_price", productData.purchase_price);
+      formData.append("tax", productData.tax);
+      formData.append("opening_stock", productData.opening_stock);
+      formData.append("low_stock", productData.low_stock);
+      formData.append("balance_stock", productData.balance_stock);
+      formData.append("entry_date", productData.entry_date);
+      formData.append("hsn_code", productData.hsn_code);
+      formData.append("hsn_desc", productData.hsn_desc);
+      formData.append("sgst", productData.sgst);
+      formData.append("igst", productData.igst);
+      formData.append("cess", productData.cess);
+      formData.append("conversion", productData.conversion);
+      formData.append("cgst", productData.cgst);
+
+      await axios.post("http://localhost:8000/api/auth/addProduct", formData);
       console.log("values : ", productData);
       changeChange();
       props.snack();
@@ -292,6 +367,31 @@ const AddProduct = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      productData.product_name !== "" &&
+      primaryUnitValue !== null &&
+      primaryUnitValue !== "" &&
+      productData.sale_price !== null &&
+      productData.sale_price !== "" &&
+      productData.purchase_price !== null &&
+      productData.purchase_price !== "" &&
+      productData.opening_stock !== null &&
+      productData.opening_stock !== ""
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [
+    productData.product_name,
+    primaryUnitValue,
+    productData.sale_price,
+    productData.purchase_price,
+    productData.opening_stock,
+  ]);
 
   return (
     <div>
@@ -334,7 +434,7 @@ const AddProduct = (props) => {
                       className="hidden sr-only w-full"
                       accept="image/x-png,image/gif,image/jpeg"
                       onChange={(event) => {
-                        setFile(event.target.value);
+                        setFile(event.target.files[0]);
                         setFileExists(true);
                         const get_file_size = event.target.files[0];
                         if (get_file_size.size > maxFileSize) {
@@ -367,7 +467,7 @@ const AddProduct = (props) => {
                     <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                       <div class="flex items-center justify-between">
                         <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                          {file}
+                          {file.name}
                         </span>
                         <button
                           class="text-[#07074D]"
@@ -397,9 +497,10 @@ const AddProduct = (props) => {
                   //   matchFrom: 'start',
                   //   stringify: option => option.title,
                   // })
-                  options={result.map(
-                    (item) => item.unit_name + "- " + item.unit_code
-                  )}
+                  // options={result.map(
+                  //   (item) => item.unit_name + "- " + item.unit_code
+                  // )}
+                  options={result.map((item) => item.unit_code)}
                   id="disable-close-on-select"
                   className="box-sec margin-bottom-zero "
                   onChange={(event, newValue) => {
@@ -414,6 +515,7 @@ const AddProduct = (props) => {
                       className="w-full my-0 "
                       size="small"
                       name="primary_unit"
+                      required
                     />
                   )}
                 />
@@ -429,9 +531,10 @@ const AddProduct = (props) => {
                 {isOn ? (
                   <Box className="box-sec margin-top-zero">
                     <Autocomplete
-                      options={result.map(
-                        (item) => item.unit_name + "- " + item.unit_code
-                      )}
+                      // options={result.map(
+                      //   (item) => item.unit_name + "- " + item.unit_code
+                      // )}
+                      options={result.map((item) => item.unit_code)}
                       onChange={(event, newValue) => {
                         setSecondaryUnitValue(newValue);
                       }}
@@ -457,6 +560,7 @@ const AddProduct = (props) => {
                         className="sec-2 w-full pr-3 pb-3"
                         size="small"
                         name="conversion"
+                        required
                         onChange={handleChange}
                       />
                     </div>
@@ -474,6 +578,7 @@ const AddProduct = (props) => {
                     onChange={handleChange}
                     className="sec-1 w-full"
                     size="small"
+                    required
                   />
 
                   <TextField
@@ -483,6 +588,7 @@ const AddProduct = (props) => {
                     className="sec-2 w-full"
                     size="small"
                     name="purchase_price"
+                    required
                     onChange={handleChange}
                   />
                 </Box>
@@ -504,6 +610,7 @@ const AddProduct = (props) => {
                     size="small"
                     onChange={handleChange}
                     name="opening_stock"
+                    required
                   />
 
                   <TextField
@@ -589,6 +696,16 @@ const AddProduct = (props) => {
                             key={filteredItem.hsn_code}
                             className="flex card-sec"
                             onClick={() => {
+                              // setProductData({
+                              //   ...productData ,
+
+                              //   igst: filteredItem.igst,
+                              //   cgst: filteredItem.cgst,
+                              //   sgst: filteredItem.sgst,
+                              //   hsn_code:  typeof(filteredItem.hsn_code) === "number" ? filteredItem.hsn_code : null,
+                              //   hsn_desc: filteredItem.hsn_desc,
+                              // })
+                              // {console.log(productData)}
                               setIgst(filteredItem.igst),
                                 setCgst(filteredItem.cgst),
                                 setStategst(filteredItem.sgst),
@@ -633,8 +750,18 @@ const AddProduct = (props) => {
                           {gst.map((item, index) => (
                             <div className="flex card-sec" key={index}>
                               <div className="gst-card-text">
-                                <h2 className=" font-medium">{item.label1}</h2>
-                                <p>{item.label2}</p>
+                                <h2 className=" font-medium">
+                                  {"GST@ " + item.label1 + "%"}
+                                </h2>
+                                <p className=" text-sm">
+                                  {"( " +
+                                    item.label2 +
+                                    "% CGST ; " +
+                                    item.label3 +
+                                    "% SGST/UT GST ; " +
+                                    item.label1 +
+                                    "% IGST )"}
+                                </p>
                               </div>
                               <div className="customer-info-icon-wrapper">
                                 <input
@@ -645,9 +772,20 @@ const AddProduct = (props) => {
                                     console.log("clicked on gst rate");
                                     //setGstOnItem(item.value),
                                     setGstValue1(item.label1),
-                                      setGstValue2(item.label2);
+                                      setGstValue2(
+                                        "( " +
+                                          item.label1 +
+                                          "% CGST + " +
+                                          item.label2 +
+                                          "% SGST/UT GST ; " +
+                                          item.label3 +
+                                          "% IGST )"
+                                      );
                                     setIsClicked2(false);
-                                    console.log(gstValue2);
+                                    setIgst(item.label1),
+                                      setCgst(item.label2),
+                                      setStategst(item.label3),
+                                      console.log(gstValue2);
                                   }}
                                 />
                               </div>
@@ -688,6 +826,13 @@ const AddProduct = (props) => {
                             setGstValue1(customGst),
                             setGstValue2(custom_gst_details);
                           setIsClicked2(false);
+                          setIgst(customGst),
+                            setCgst(customGst / 2),
+                            setStategst(customGst / 2),
+                            setCustomeCess(customeCess);
+                          {
+                            console.log(productData);
+                          }
                         }}
                       >
                         Add Custome Gst
@@ -703,13 +848,22 @@ const AddProduct = (props) => {
         </Box>
       </div>
       <div className="add-customer-btn-wrapper1">
-        <button
-          //disabled={submitDisabled}
-          className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          Add Product
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            Add Product
+          </button>
+        ) : (
+          <button
+            onClick={handleClick}
+            disabled={submitDisabled}
+            className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+          >
+            Add Product
+          </button>
+        )}
       </div>
     </div>
   );

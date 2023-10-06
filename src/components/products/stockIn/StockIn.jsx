@@ -13,47 +13,49 @@ import axios from "axios";
 
 const StockIn = (props) => {
   const { pId, changeChange } = useContext(UserContext);
-  const [result, setResult] = useState([]);
   const [primaryUnit, setPrimaryUnit] = useState("");
   const [secondaryUnit, setSecondaryUnit] = useState("");
   const [unit, setUnit] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [conversion, setConversion] = useState(0);
-  const [currentStock , setCurrentStock] = useState(0)
+  const [currentStock, setCurrentStock] = useState(0);
   const [values, setValues] = useState({
     product_stock_in: null,
+    balance_stock: null,
     primary_unit: "",
     secondary_unit: "",
-    purchase_price: "",
+    purchase_price: 0,
     product_desc: "",
     entry_date: "",
     cnct_id: pId,
-    selected_unit: ""
+    selected_unit: "",
   });
 
-  
-  const [convertedPrice , setConvertedPrice] = useState(null);
+  const [convertedPrice, setConvertedPrice] = useState(null);
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
-        setResult(response.data);
         setPrimaryUnit(response.data[0].primary_unit);
         setSecondaryUnit(response.data[0].secondary_unit);
         setUnit(response.data[0].primary_unit);
         setConversion(response.data[0].conversion);
-        setCurrentStock(response.data[0].opening_stock);
+        setCurrentStock(response.data[0].balance_stock);
         setValues({
           ...values,
           primary_unit: response.data[0].primary_unit,
           secondary_unit: response.data[0].secondary_unit,
           purchase_price: response.data[0].purchase_price,
-          
         });
-        setConvertedPrice(parseFloat(response.data[0].purchase_price/response.data[0].conversion));
+        setConvertedPrice(
+          response.data[0].conversion
+            ? parseFloat(
+                response.data[0].purchase_price / response.data[0].conversion
+              )
+            : null
+        );
       });
   }, [pId]);
-
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -70,28 +72,66 @@ const StockIn = (props) => {
   };
 
   const [values2, setValues2] = useState({
-    updatedStockQty: null
+    updatedStockQty: null,
   });
 
   const handleClick = async (e) => {
     e.preventDefault();
     values.entry_date = filteredDate;
     try {
-      var coverted_qty = isActive ? parseFloat(values.product_stock_in) : parseFloat(values.product_stock_in/conversion);
+      var coverted_qty = isActive
+        ? parseFloat(values.product_stock_in)
+        : parseFloat(values.product_stock_in / conversion);
       values2.updatedStockQty = currentStock + coverted_qty;
-      values.purchase_price =  isActive ? parseFloat(values.purchase_price) : convertedPrice ;
+
+      values.purchase_price = isActive
+        ? parseFloat(values.purchase_price)
+        : convertedPrice;
       values.selected_unit = unit ? unit : primaryUnit;
+      values.balance_stock = coverted_qty + currentStock;
+
       await axios.post("http://localhost:8000/api/auth/addStockIn", values);
-      await axios.put(`http://localhost:8000/api/auth/updateStockQty/${pId}`, values2);  
+      await axios.put(
+        `http://localhost:8000/api/auth/updateStockQty/${pId}`,
+        values2
+      );
       changeChange();
       props.snack();
     } catch (err) {
       console.log(err);
     }
-
-
   };
 
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  if (convertedPrice !== null) {
+    useEffect(() => {
+      if (
+        convertedPrice > 0 &&
+        convertedPrice !== "" &&
+        //values.purchase_price !== "" &&
+        //values.purchase_price > 0 &&
+        values.product_stock_in !== null &&
+        values.product_stock_in !== ""
+      ) {
+        setSubmitDisabled(false);
+      } else {
+        setSubmitDisabled(true);
+      }
+    }, [values.product_stock_in, convertedPrice]);
+  } else {
+    useEffect(() => {
+      if (
+        values.product_stock_in !== null &&
+        values.product_stock_in !== "" &&
+        values.purchase_price !== "" &&
+        values.purchase_price > 0
+      ) {
+        setSubmitDisabled(false);
+      } else {
+        setSubmitDisabled(true);
+      }
+    }, [values.product_stock_in, values.purchase_price]);
+  }
   return (
     <Box sx={{ width: 400 }} role="presentation">
       <div>
@@ -156,19 +196,23 @@ const StockIn = (props) => {
                   onChange={handleChange}
                 />
               </Box>
-                <Box className="box-sec">
-                  <TextField
-                    label="Purchase Price"
-                    value={isActive ? parseFloat(values.purchase_price) : convertedPrice}
-                    id="outlined-basic"
-                    variant="outlined"
-                    className="w-full m-0"
-                    size="small"
-                    required
-                    name="purchase_price"
-                    onChange={isActive ? handleChange : (e)=>setConvertedPrice(e.target.value)}
-                  />
-                </Box>
+              <Box className="box-sec">
+                <TextField
+                  label="Purchase Price"
+                  value={isActive ? values.purchase_price : convertedPrice}
+                  id="outlined-basic"
+                  variant="outlined"
+                  className="w-full m-0"
+                  size="small"
+                  required
+                  name="purchase_price"
+                  onChange={
+                    isActive
+                      ? handleChange
+                      : (e) => setConvertedPrice(e.target.value)
+                  }
+                />
+              </Box>
               <Box>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker", "DatePicker"]}>
@@ -206,12 +250,22 @@ const StockIn = (props) => {
         </div>
 
         <div className="product-stock-in-btn-wrapper">
-          <button
-            className=" text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-            onClick={handleClick}
-          >
-            Stock In
-          </button>
+          {submitDisabled ? (
+            <button
+              disabled={submitDisabled}
+              className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+            >
+              Stock In
+            </button>
+          ) : (
+            <button
+              onClick={handleClick}
+              disabled={submitDisabled}
+              className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+            >
+              Stock In
+            </button>
+          )}
         </div>
       </div>
     </Box>

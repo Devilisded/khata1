@@ -18,39 +18,54 @@ const StockOut = (props) => {
   const [isActive, setIsActive] = useState(true);
   const [conversion, setConversion] = useState(0);
   const [currentStock, setCurrentStock] = useState(0);
+  const [result , setResult] = useState([])
+  const [result2 , setResult2] = useState([])
   const [values, setValues] = useState({
     product_stock_out: null,
+    balance_stock: null,
     primary_unit: "",
     secondary_unit: "",
     sale_price: "",
     product_desc: "",
     entry_date: "",
     cnct_id: pId,
+    
+    total_profit: null,
   });
 
+  const [price1 , setPrice1] = useState("hgfh")
   const [convertedPrice, setConvertedPrice] = useState(null);
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
+        setResult(response.data)
         setPrimaryUnit(response.data[0].primary_unit);
         setSecondaryUnit(response.data[0].secondary_unit);
         setUnit(response.data[0].primary_unit);
         setConversion(response.data[0].conversion);
         setCurrentStock(response.data[0].balance_stock);
+        setPrice1(response.data[0].sale_price)
         setValues({
           ...values,
           primary_unit: response.data[0].primary_unit,
           secondary_unit: response.data[0].secondary_unit,
           sale_price: response.data[0].sale_price,
         });
+        
         setConvertedPrice(
-          parseFloat(response.data[0].sale_price / response.data[0].conversion)
+          parseFloat(response.data[0].purchase_price / response.data[0].conversion)
         );
+      });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchStockInTran/${pId}`)
+      .then((response) => {
+        setResult2(response.data);
       });
   }, [pId]);
 
-  console.log("currentStock : ",currentStock)
+
+  console.log("values.sale price : ", values.sale_price, price1 , result, values.primary_unit , currentStock );
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -73,17 +88,16 @@ const StockOut = (props) => {
     ? parseFloat(values.product_stock_out)
     : parseFloat(values.product_stock_out / conversion);
   values2.updatedStockQty = currentStock - coverted_qty;
-  //console.log(values2.updatedStockQty, coverted_qty, currentStock);
 
   const [valueErr, setValueErr] = useState(false);
-  useEffect(()=>{
+  useEffect(() => {
     if (coverted_qty > currentStock) {
-      setValueErr(true)
+      setValueErr(true);
     } else {
-      setValueErr(false)
+      setValueErr(false);
     }
-  }, [handleChange])
-  
+  }, [handleChange]);
+
   const handleClick = async (e) => {
     e.preventDefault();
     values.entry_date = filteredDate;
@@ -92,6 +106,7 @@ const StockOut = (props) => {
         ? parseFloat(values.sale_price)
         : convertedPrice;
       values.selected_unit = unit ? unit : primaryUnit;
+      values.balance_stock = currentStock - coverted_qty;
       await axios.post("http://localhost:8000/api/auth/addStockIn", values);
       await axios.put(
         `http://localhost:8000/api/auth/updateStockQty/${pId}`,
@@ -104,7 +119,39 @@ const StockOut = (props) => {
     }
   };
 
-  //console.log("isActive : ", isActive);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  if (convertedPrice !== null) {
+    useEffect(() => {
+      if (
+        convertedPrice > 0 &&
+        convertedPrice !== "" &&
+        //values.purchase_price !== "" &&
+        //values.purchase_price > 0 &&
+        values.product_stock_out !== null &&
+        values.product_stock_out !== "" &&
+        coverted_qty <= currentStock
+      ) {
+        setSubmitDisabled(false);
+      } else {
+        setSubmitDisabled(true);
+      }
+    }, [values.product_stock_out, convertedPrice]);
+  } else {
+    useEffect(() => {
+      if (
+        values.product_stock_out !== null &&
+        values.product_stock_out !== "" &&
+        values.purchase_price !== "" &&
+        values.purchase_price > 0 &&
+        coverted_qty <= currentStock
+      ) {
+        setSubmitDisabled(false);
+      } else {
+        setSubmitDisabled(true);
+      }
+    }, [values.product_stock_out, values.purchase_price]);
+  }
+
   return (
     <Box sx={{ width: 400 }} role="presentation">
       <div>
@@ -178,13 +225,11 @@ const StockOut = (props) => {
                   className="w-full m-0"
                   size="small"
                   required
-                  value={
-                    isActive ? parseFloat(values.sale_price) : convertedPrice
-                  }
+                  value={isActive ? values.sale_price : convertedPrice}
                   name="sale_price"
                   onChange={
                     isActive
-                      ? handleChange
+                      ? handleChange || 0
                       : (e) => setConvertedPrice(e.target.value)
                   }
                 />
@@ -227,12 +272,28 @@ const StockOut = (props) => {
         </div>
 
         <div className="product-stock-in-btn-wrapper">
-          <button
+          {/* <button
             className=" text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
             onClick={handleClick}
           >
             Stock Out
-          </button>
+          </button> */}
+          {submitDisabled ? (
+            <button
+              disabled={submitDisabled}
+              className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+            >
+              Stock Out
+            </button>
+          ) : (
+            <button
+              onClick={handleClick}
+              disabled={submitDisabled}
+              className="text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+            >
+              Stock Out
+            </button>
+          )}
         </div>
       </div>
     </Box>

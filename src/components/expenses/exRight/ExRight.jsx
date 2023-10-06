@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { IconAlertOctagonFilled } from "@tabler/icons-react";
-const ExRight = () => {
+const ExRight = (props) => {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -33,7 +33,10 @@ const ExRight = () => {
             </div>
           </div>
           <div className="editndel flex justify-center gap-20 self-center">
-            <button className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700">
+            <button
+              className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+              onClick={props.edit}
+            >
               <IconEdit className="w-5 h-5" /> Edit
             </button>
             <button

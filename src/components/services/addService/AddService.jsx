@@ -3,7 +3,6 @@ import { useState } from "react";
 import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Switch from "@mui/material/Switch";
-import { IconX } from "@tabler/icons-react";
 import "./addservice.scss";
 import axios from "axios";
 import { useContext } from "react";
@@ -144,9 +143,6 @@ const AddService = (props) => {
   ];
 
   const [isOn2, setIsOn2] = useState(false);
-  const handleOnChange2 = () => {
-    setIsOn2(!isOn2);
-  };
 
   const [isClicked, setIsClicked] = useState(false);
   const [isClicked2, setIsClicked2] = useState(false);
@@ -182,11 +178,6 @@ const AddService = (props) => {
     "% IGST ; " +
     customeCess +
     "% CESS )";
-
-  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-  const maxFileSize = 20000;
-  const [file, setFile] = useState("File Name");
-  const [fileExists, setFileExists] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState({
@@ -203,9 +194,7 @@ const AddService = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      data.ser_sac = hsnCode;
       data.ser_gst = gstValue1;
-      console.log(data);
       await axios.post("http://localhost:8000/api/ser/sendData", data);
       changeChange();
       props.snack();
@@ -219,7 +208,6 @@ const AddService = (props) => {
       : setData({ ...data, ser_tax_included: 1 });
     flag ? setFlag(false) : setFlag(true);
   };
-  console.log(data);
   return (
     <div>
       <div>
@@ -346,6 +334,10 @@ const AddService = (props) => {
                             key={filteredItem.hsn_code}
                             className="flex card-sec"
                             onClick={() => {
+                              setData({
+                                ...data,
+                                ser_sac: filteredItem.hsn_code,
+                              });
                               setHsnCode(filteredItem.hsn_code),
                                 setHsnValue1(filteredItem.product_name),
                                 setGstValue1(filteredItem.tax),

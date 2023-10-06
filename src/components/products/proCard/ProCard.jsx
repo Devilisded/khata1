@@ -6,7 +6,7 @@ const ProCard = (props) => {
   return (
     <div
       className={
-        pId === props.data.pId
+        pId === props.data.product_id
           ? "bg-[#e8f0fe] cardItem cursor-pointer shadow"
           : "cardItem cursor-pointer"
       }
@@ -18,14 +18,23 @@ const ProCard = (props) => {
       >
         <div className="flex items-center gap-4 w-[200px]">
           <div className="icon">
-            <img src={Img} className="w-7" />
+            <img
+              src={
+                props.data.product_image
+                  ? "http://localhost:8000/product/" + props.data.product_image
+                  : Img
+              }
+              className="w-7 object-cover"
+            />
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-lg text-slate-700">
               {props.data.product_name}{" "}
             </span>
             {props.data.balance_stock <= props.data.low_stock ? (
-              <span className=" bg-red-200 text-red-700 text-sm px-2">Low Stock</span>
+              <span className=" bg-red-200 text-red-700 text-sm px-2">
+                Low Stock
+              </span>
             ) : (
               <div></div>
             )}
@@ -37,7 +46,9 @@ const ProCard = (props) => {
           </div>
         </div>
         <div className="w-[70px]">
-          <div className="qty text-slate-800 text-lg">{props.data.balance_stock}</div>
+          <div className="qty text-slate-800 text-lg">
+            {props.data.balance_stock}
+          </div>
         </div>
       </div>
     </div>
