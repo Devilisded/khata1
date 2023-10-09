@@ -23,9 +23,9 @@ const MainRight = (props) => {
       </div>
       <div className="heading text-slate-600">
         <div className="entry">Entries</div>
-        <div className="flex gap-40 mr-24">
-          <div className="gave">You'll Pay</div>
-          <div className="get">You'll Receive</div>
+        <div className="flex gap-40 mr-32">
+          <div className="gave">Paid</div>
+          <div className="get">Received</div>
         </div>
       </div>
       <div className="transactions">

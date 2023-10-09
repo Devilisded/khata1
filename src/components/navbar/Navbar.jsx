@@ -6,18 +6,20 @@ import {
   IconHelpCircle,
   IconHome2,
   IconLogout,
-  IconMoneybag,
   IconServer,
   IconSettings,
   IconTruckLoading,
   IconUser,
 } from "@tabler/icons-react";
 import "./navbar.scss";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Menu, MenuItem } from "@mui/material";
 import Fade from "@mui/material/Fade";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../../context/UserIdContext";
 const Navbar = () => {
+  const { change } = useContext(UserContext);
   const location = useLocation();
   const items = [
     {
@@ -65,13 +67,23 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const [info, setInfo] = useState({
+    business_name: "",
+  });
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/act/fetchData").then((res) => {
+      res.data.length > 0
+        ? setInfo({ ...info, business_name: res.data[0].business_name })
+        : "";
+    });
+  }, [change]);
   return (
     <div className="navbar flex items-center w-full justify-between shadow-md">
       <div className="left flex items-center">
         <IconBook2 className="text-[#008cff] h-16 w-16" />
         <div className="text-[50px] text-[#008cff]">
-          Acc<span className="font-bold">Book</span>
+          {info.business_name ? info.business_name : "Acc"}
+          <span className="font-bold">Book</span>
         </div>
       </div>
       <div className="center flex ">

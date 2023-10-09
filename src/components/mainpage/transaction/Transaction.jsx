@@ -27,7 +27,12 @@ const Transaction = (props) => {
           <IconPointFilled className="w-3 h-3" />
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
-        <div className="text-sm text-slate-600">Balance : -500</div>
+        <div className="text-sm text-slate-600">
+          Description :
+          {props.transactions.tran_description
+            ? "   " + props.transactions.tran_description
+            : " -"}
+        </div>
       </div>
       <div className="flex gap-56 mr-36">
         <div className="text-red-600">
