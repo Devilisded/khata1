@@ -2,8 +2,22 @@ import { IconSearch } from "@tabler/icons-react";
 import "./exleft.scss";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ExTran from "../exTran/ExTran";
+import { UserContext } from "../../../context/UserIdContext";
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 const ExLeft = (props) => {
+  const { change, expId } = useContext(UserContext);
+  const [result, setResult] = useState([]);
+  //const [result2, setResult2] = useState([]);
+  //const [data, setData] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/exp/fetchExpensesData")
+      .then((response) => {
+        setResult(response.data);
+      });
+  }, [change, expId]);
   return (
     <div className="exleft">
       <div className="border-b border-slate-300 p-4 font-semibold text-blue-600 text-xl">
@@ -24,11 +38,7 @@ const ExLeft = (props) => {
               <div className="flex gap-3">Sort By</div>
             </InputLabel>
 
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              label="Sort By"
-            >
+            <Select label="Sort By" value={""}>
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
@@ -46,6 +56,7 @@ const ExLeft = (props) => {
               labelId="demo-select-small-label"
               id="demo-select-small"
               label="Filter By"
+              value={""}
             >
               <MenuItem>
                 <em>None</em>
@@ -62,25 +73,9 @@ const ExLeft = (props) => {
         <div className="amount">Amount</div>
       </div>
       <div className="transactions border-b border-slate-300">
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
-        <ExTran />
+        {result.map((item, index) => (
+          <ExTran key={index} data={item} />
+        ))}
       </div>
       <div className="expbtn px-6 py-4">
         <button

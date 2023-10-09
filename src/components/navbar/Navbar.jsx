@@ -67,22 +67,12 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const [info, setInfo] = useState({
-    business_name: "",
-  });
-  useEffect(() => {
-    axios.get("http://localhost:8000/api/act/fetchData").then((res) => {
-      res.data.length > 0
-        ? setInfo({ ...info, business_name: res.data[0].business_name })
-        : "";
-    });
-  }, [change]);
   return (
     <div className="navbar flex items-center w-full justify-between shadow-md">
       <div className="left flex items-center">
         <IconBook2 className="text-[#008cff] h-16 w-16" />
         <div className="text-[50px] text-[#008cff]">
-          {info.business_name ? info.business_name : "Acc"}
+          Acc
           <span className="font-bold">Book</span>
         </div>
       </div>

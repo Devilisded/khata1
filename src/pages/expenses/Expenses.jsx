@@ -3,9 +3,18 @@ import "./expenses.scss";
 import Navbar from "../../components/navbar/Navbar";
 import ExLeft from "../../components/expenses/exLeft/ExLeft";
 import ExRight from "../../components/expenses/exRight/ExRight";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Box, Drawer } from "@mui/material";
-const Expenses = () => {
+import AddExpense from "../../components/expenses/exAdd/ExAdd";
+import { SnackbarProvider, useSnackbar } from "notistack";
+import { UserContext } from "../../context/UserIdContext";
+import NoSelected from "../../components/cashbook/noSelected/NoSelected";
+import EditExpenses from "../../components/expenses/editExpenses/editExpenses";
+
+const MyApp = () => {
+  const { expId, change } = useContext(UserContext);
+  const [active, setActive] = useState(false);
+
   const [state, setState] = useState({
     add: false,
     edit: false,
@@ -19,11 +28,46 @@ const Expenses = () => {
     }
     setState({ ...state, [anchor]: open });
   };
+
+  const { enqueueSnackbar } = useSnackbar();
+  const handleClickVariant = (variant, anchor1, msg) => {
+    // variant could be success, error, warning, info, or default
+    toggleDrawer(anchor1, false);
+    enqueueSnackbar(msg, { variant });
+  };
+
   const list = (anchor) => (
-    <Box sx={{ width: 400 }} role="presentation">
-      {anchor === "add" ? "ADD" : "EDIT"}
+    <Box sx={{ width: 500 }} role="presentation">
+      {anchor === "add" ? (
+        <AddExpense
+          snack={() =>
+            handleClickVariant("success", "add", "Transaction Has been Added")
+          }
+        />
+      ) : anchor === "edit" ? (
+        <EditExpenses
+          snack={() =>
+            handleClickVariant(
+              "success",
+              "edit",
+              "Transaction Has been Updated"
+            )
+          }
+        />
+      ) : (
+        ""
+      )}
     </Box>
   );
+
+  const check = () => {
+    expId === 0 ? setActive(false) : setActive(true);
+  };
+  useEffect(() => {
+    check();
+  }, [expId, change]);
+
+  console.log("expId : ", expId);
   return (
     <React.Fragment>
       <Drawer
@@ -44,10 +88,32 @@ const Expenses = () => {
         <Navbar />
         <div className="content flex">
           <ExLeft add={toggleDrawer("add", true)} />
-          <ExRight edit={toggleDrawer("edit", true)} />
+
+          {active ? (
+            <ExRight
+              snack={() =>
+                handleClickVariant(
+                  "success",
+                  "",
+                  "Transaction Has been Deleted"
+                )
+              }
+              edit={toggleDrawer("edit", true)}
+            />
+          ) : (
+            <NoSelected />
+          )}
         </div>
       </div>
     </React.Fragment>
+  );
+};
+
+const Expenses = () => {
+  return (
+    <SnackbarProvider maxSnack={1}>
+      <MyApp />
+    </SnackbarProvider>
   );
 };
 

@@ -31,6 +31,10 @@ export const UserContextProvider = ({ children }) => {
   const changeCashId = (cashId) => {
     setCashId(cashId);
   };
+  const [expId, setExpId] = useState(0);
+  const changeExpId = (expid) => {
+    setExpId(expid);
+  };
   return (
     <UserContext.Provider
       value={{
@@ -48,6 +52,8 @@ export const UserContextProvider = ({ children }) => {
         changeChange,
         cashId,
         changeCashId,
+        expId,
+        changeExpId,
       }}
     >
       {children}
