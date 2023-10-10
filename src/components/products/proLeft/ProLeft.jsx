@@ -68,7 +68,7 @@ const ProLeft = (props) => {
       </div>
 
       {result2.map((item, index) => (
-        <div className="info flex justify-between items-center">
+        <div className="info flex justify-between items-center" key={index}>
           <div className="total text-slate-400 text-lg font-semibold">
             Total Stock Value :
             <span className="text-black font-semibold">

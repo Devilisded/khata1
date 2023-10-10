@@ -73,7 +73,7 @@ const ExRight = (props) => {
     .reduce((acc, current) => {
       return acc + current;
     }, 0);
-
+  console.log(result2);
   return (
     <div className="exright">
       <div className="exCard">

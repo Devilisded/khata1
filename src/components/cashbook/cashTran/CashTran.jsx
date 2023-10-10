@@ -2,16 +2,27 @@ import { IconNotes } from "@tabler/icons-react";
 import "./cashtran.scss";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
-
+import { useNavigate } from "react-router-dom";
 const CashTran = (props) => {
-  const { changeCashId, cashId } = useContext(UserContext);
+  const { changeCashId, cashId, changeExpId, expId } = useContext(UserContext);
+  const navigate = useNavigate();
   const time1 = new Date(props.data.cash_time);
   const hours = time1.getHours();
   const minutes = time1.getMinutes();
   const fminutes = minutes < 10 ? "0" + minutes : minutes;
   const fhours = hours > 12 ? hours - 12 : hours;
   const AMPM = hours > 12 ? "PM" : "AM";
-
+  const changeE = () => {
+    changeExpId(parseInt(props.data.cash_mode));
+    navigate("/expenses");
+  };
+  const checkNavigate = () => {
+    if (props.data.cash_mode === "cash" || props.data.cash_mode === "online") {
+      changeCashId(props.data.cash_id);
+    } else {
+      changeE();
+    }
+  };
   return (
     <div
       className={
@@ -19,7 +30,7 @@ const CashTran = (props) => {
           ? "grid grid-cols-4 cursor-pointer p-4 border-b border-slate-100 cashtran bg-[#fff9e1]"
           : "grid grid-cols-4 cursor-pointer p-4 border-b border-slate-100 cashtran"
       }
-      onClick={() => changeCashId(props.data.cash_id)}
+      onClick={checkNavigate}
     >
       <div className="flex col-span-2 gap-3">
         <div className="notes rounded-full bg-yellow-200 p-3">

@@ -28,11 +28,13 @@ const MyApp = () => {
     }
     setState({ ...state, [anchor]: open });
   };
-
+  const toggleDrawer1 = (anchor, open) => {
+    setState({ ...state, [anchor]: open });
+  };
   const { enqueueSnackbar } = useSnackbar();
   const handleClickVariant = (variant, anchor1, msg) => {
     // variant could be success, error, warning, info, or default
-    toggleDrawer(anchor1, false);
+    toggleDrawer1(anchor1, false);
     enqueueSnackbar(msg, { variant });
   };
 

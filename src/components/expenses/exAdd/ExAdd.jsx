@@ -8,6 +8,9 @@ import {
   IconChevronLeft,
   IconCategory,
   IconPlus,
+  IconEdit,
+  IconTrash,
+  IconTrashFilled,
 } from "@tabler/icons-react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -16,6 +19,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import "./exadd.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 const AddExpense = (props) => {
   const prefixSuggestions = [
     {
@@ -66,7 +70,6 @@ const AddExpense = (props) => {
   var filteredDate = date1.toString().slice(4, 16);
 
   const [categoryName, setCategoryName] = useState("Choose Category");
-  //console.log("categoryName : ", categoryName, result);
   const [addNewCategories, setAddNewCategories] = useState(false);
   const [newCategoryValue, setNewCategoryValue] = useState("");
   const [editCategories, setEditCategories] = useState(false);
@@ -95,7 +98,10 @@ const AddExpense = (props) => {
   const [values2, setValues2] = useState({
     category_name: null,
   });
-
+  const { enqueueSnackbar } = useSnackbar();
+  const handleClickVariant = (variant, anchor1, msg) => {
+    enqueueSnackbar(msg, { variant });
+  };
   values2.category_name = newCategoryValue;
   const handleClick2 = async (e) => {
     e.preventDefault();
@@ -105,7 +111,8 @@ const AddExpense = (props) => {
         values2
       );
       changeChange();
-      props.snack();
+      handleClickVariant("success", "", "Category has been added");
+      setNewCategoryValue("");
     } catch (err) {
       console.log(err);
     }
@@ -120,12 +127,11 @@ const AddExpense = (props) => {
   values3.price = price;
 
   const handleClick3 = async () => {
-    //e.preventDefault();
     console.log(values3);
     try {
       await axios.post("http://localhost:8000/api/exp/addExpenselist", values3);
       changeChange();
-      //props.snack();
+      handleClickVariant("success", "", "Added Successfully");
     } catch (err) {
       console.log(err);
     }
@@ -144,7 +150,7 @@ const AddExpense = (props) => {
         values4
       );
       changeChange();
-      //props.snack();
+      handleClickVariant("success", "", "Updated Successfully");
     } catch (err) {
       console.log(err);
     }
@@ -162,7 +168,7 @@ const AddExpense = (props) => {
         values5
       );
       changeChange();
-      //props.snack();
+      handleClickVariant("success", "", "Updated Successfully");
     } catch (err) {
       console.log(err);
     }
@@ -175,6 +181,8 @@ const AddExpense = (props) => {
         `http://localhost:8000/api/exp/delExpenseItemFromList/${expenseItemId}`
       );
       changeChange();
+      handleClickVariant("success", "", "Deleted Successfully");
+
       //props.snackd();
     } catch (err) {
       console.log(err);
@@ -188,6 +196,7 @@ const AddExpense = (props) => {
         `http://localhost:8000/api/exp/delExpenseCategory/${expenseCategoryId}`
       );
       changeChange();
+      handleClickVariant("success", "", "Deleted Successfully");
       //props.snackd();
     } catch (err) {
       console.log(err);
@@ -281,7 +290,6 @@ const AddExpense = (props) => {
         "http://localhost:8000/api/exp/addExpenses",
         expenseData
       );
-
       changeChange();
       props.snack();
     } catch (err) {
@@ -500,6 +508,7 @@ const AddExpense = (props) => {
                                 id="outlined-basic"
                                 variant="outlined"
                                 className="w-full "
+                                value={newCategoryValue}
                                 size="small"
                                 onChange={(e) =>
                                   setNewCategoryValue(e.target.value)
@@ -648,7 +657,8 @@ const AddExpense = (props) => {
                           </p>
                           {selectedItems ? (
                             <p
-                              className="text-blue-600 font-semibold text-lg pb-3"
+                              className="text-blue-600 font-semibold text-lg p-2 cursor-pointer rounded hover:bg-blue-100"
+                              style={{ transition: "all 400ms ease-in-out" }}
                               onClick={() => setAddExpenseItems(true)}
                             >
                               Edit List
@@ -679,8 +689,9 @@ const AddExpense = (props) => {
                               ))
                           : ""}
                         <p
-                          className="text-green-600 border rounded-[10px] text-lg py-2 text-center mt-3"
+                          className="text-green-600 border rounded-[10px] text-lg py-2 text-center mt-3 cursor-pointer hover:bg-green-100"
                           onClick={() => setAddExpenseItems(true)}
+                          style={{ transition: "all 400ms ease-in-out" }}
                         >
                           Select Expense Items
                         </p>
@@ -696,7 +707,7 @@ const AddExpense = (props) => {
                       <TextField
                         label="Amount Paid"
                         name="amount_paid"
-                        value={sum > 0 ? sum : "-"}
+                        value={sum > 0 ? sum : "0"}
                         id="outlined-basic"
                         variant="outlined"
                         className="w-full"
@@ -751,17 +762,19 @@ const AddExpense = (props) => {
                   </button>
                 </div>
                 <div>
-                  <p>Select Expense Items</p>
+                  <p className="font-semibold text-blue-500">
+                    Select Expense Items
+                  </p>
                 </div>
               </div>
-              <div className=" bg-slate-100 p-4 text-sm text-center">
+              <div className=" bg-blue-100 p-4 text-sm text-center bg-opacity-50">
                 <p>
                   𝒊 Expense Items will not affect your regular inventory items
                 </p>
               </div>
 
               <div className="add-expense-section-wrapper">
-                <div className="section-2">
+                <div className="section-2 ">
                   <Box
                     component="form"
                     sx={{
@@ -774,7 +787,6 @@ const AddExpense = (props) => {
                       <TextField
                         id="outlined-basic"
                         variant="outlined"
-                        className=" my-0 z-0"
                         size="small"
                         placeholder="Search for an expense item "
                         onChange={(e) => {
@@ -782,9 +794,16 @@ const AddExpense = (props) => {
                         }}
                       />
                     </Box>
-                    <Box className="  border rounded-[4px] p-3">
-                      <p onClick={() => setNewAddExpenseItems(true)}>
-                        Add an expense item
+                    <Box
+                      className="  border rounded-[4px] p-2"
+                      style={{ transition: "all 400ms ease-in-out" }}
+                    >
+                      <p
+                        onClick={() => setNewAddExpenseItems(true)}
+                        className="p-1 hover:bg-blue-200 text-blue-600 inline text-sm cursor-pointer rounded bg-opacity-30"
+                        style={{ transition: "all 400ms ease-in-out" }}
+                      >
+                        Add Expense Item
                       </p>
 
                       {addNewExpenseItems ? (
@@ -792,7 +811,6 @@ const AddExpense = (props) => {
                           <Box className="box-sec ">
                             <TextField
                               label="Enter Name of Expense"
-                              //name="enter-category-name"
                               id="outlined-basic"
                               variant="outlined"
                               className="w-full "
@@ -804,7 +822,6 @@ const AddExpense = (props) => {
                           <Box className="box-sec ">
                             <TextField
                               label="Enter Price"
-                              //name="enter-category-name"
                               id="outlined-basic"
                               variant="outlined"
                               className="w-full "
@@ -813,7 +830,7 @@ const AddExpense = (props) => {
                               required
                             />
                           </Box>
-                          <div className="w-full flex py-3 pt-5">
+                          <div className="w-full flex pt-3 pb-1">
                             <div
                               className=" pr-6"
                               onClick={() => {
@@ -824,7 +841,8 @@ const AddExpense = (props) => {
                                 onClick={() => {
                                   handleClick3(), setNewAddExpenseItems(false);
                                 }}
-                                className="text-green-600 bg-green-200 w-full py-3 px-5 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                                className="text-green-600  w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                                style={{ border: "1px solid #16a34a" }}
                               >
                                 Save
                               </button>
@@ -833,7 +851,10 @@ const AddExpense = (props) => {
                               className=""
                               onClick={() => setNewAddExpenseItems(false)}
                             >
-                              <button className="text-red-600 bg-red-200 w-full py-3 px-5 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in">
+                              <button
+                                className="text-red-600 w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+                                style={{ border: "1px solid #dc2626" }}
+                              >
                                 Cancel
                               </button>
                             </div>
@@ -865,7 +886,32 @@ const AddExpense = (props) => {
                                     ₹ {filteredItem.price}
                                   </p>
                                 </div>
-                                <div className="flex gap-4">
+                              </div>
+                              <div className="flex flex-col gap-2">
+                                <span className="border border-blue-600 py-1 px-2 rounded">
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault(),
+                                        handleDecrease(filteredItem.id);
+                                    }}
+                                    className="px-3 text-blue-600  hover:bg-blue-200 transition-all ease-in"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="px-2">
+                                    {filteredItem.qty}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleIncrease(filteredItem.id);
+                                    }}
+                                    className="px-3 text-blue-600 hover:bg-blue-200 transition-all ease-in"
+                                  >
+                                    +
+                                  </button>
+                                </span>
+                                <div className="flex gap-3">
                                   <button
                                     onClick={(e) => {
                                       e.preventDefault(),
@@ -878,9 +924,15 @@ const AddExpense = (props) => {
                                       );
                                       setSearchValue(filteredItem.expense_name);
                                     }}
-                                    className="text-blue-600 bg-blue-200  py-3 px-5 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
+                                    className="text-blue-600  py-2 px-4 rounded-[5px]  hover:bg-blue-200 transition-all ease-in"
+                                    style={{ border: "1px solid #2563eb" }}
                                   >
-                                    Edit
+                                    <IconEdit
+                                      style={{
+                                        position: "inherit",
+                                        background: "inherit",
+                                      }}
+                                    />
                                   </button>
                                   <button
                                     onClick={(e) => {
@@ -889,52 +941,18 @@ const AddExpense = (props) => {
                                           filteredItem.id
                                         );
                                     }}
-                                    className="text-red-600 bg-red-200  py-3 px-5 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+                                    className="text-red-600  py-2 px-4 rounded-[5px] hover:bg-red-200 transition-all ease-in"
+                                    style={{ border: "1px solid #dc2626" }}
                                   >
-                                    Delete
+                                    <IconTrashFilled
+                                      style={{
+                                        position: "inherit",
+                                        background: "inherit",
+                                      }}
+                                    />
                                   </button>
                                 </div>
                               </div>
-                              {/* {addBtnActice === false ? ( */}
-
-                              {/* {/* <div>
-                                   <button */}
-                              {/* onClick={(e) => {
-                                      e.preventDefault(), setAddBtnActice(true);
-                                    }}
-                                    className="add-expense-btn text-blue-600 py-3 px-5 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
-                                  >
-                                    Add
-                                  </button>
-                                  
-                                </div>
-                              ) : ( * */}
-                              <div>
-                                <span className="border border-blue-600 py-3 ">
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault(),
-                                        handleDecrease(filteredItem.id);
-                                    }}
-                                    className=" text-blue-600   py-3 px-5  hover:text-white hover:bg-blue-600 transition-all ease-in"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="   py-3 px-5  hover:text-white  transition-all ease-in">
-                                    {filteredItem.qty}
-                                  </span>
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleIncrease(filteredItem.id);
-                                    }}
-                                    className=" remove-left-border  text-blue-600   py-3 px-5  hover:text-white hover:bg-blue-600 transition-all ease-in"
-                                  >
-                                    +
-                                  </button>
-                                </span>
-                              </div>
-                              {/* )} */}
                             </div>
                             {editExpenseItems ? (
                               <>
@@ -982,7 +1000,8 @@ const AddExpense = (props) => {
                                         updateExpenseItemData(filteredItem.id);
                                         setSearchValue("");
                                       }}
-                                      className="text-green-600 bg-green-200 w-full py-3 px-5 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                                      className="text-green-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                                      style={{ border: "1px solid #47bc72" }}
                                     >
                                       Update
                                     </button>
@@ -1001,7 +1020,8 @@ const AddExpense = (props) => {
                                           setSearchValue(""),
                                           setEditExpenseItems(false);
                                       }}
-                                      className="text-red-600 bg-red-200 w-full py-3 px-5 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+                                      className="text-red-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+                                      style={{ border: "1px solid #dc2626" }}
                                     >
                                       Cancel
                                     </button>
@@ -1028,7 +1048,8 @@ const AddExpense = (props) => {
                 onClick={() => {
                   setSelectedItems(true), setAddExpenseItems(false);
                 }}
-                className="text-blue-600 bg-blue-200  py-3 px-5 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
+                className="text-blue-600  py-2 px-4 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
+                style={{ border: "1px solid rgb(37, 99, 235)" }}
               >
                 Continue
               </button>
