@@ -152,7 +152,7 @@ const MainLeft = (props) => {
           .filter(
             (code) =>
               code.cust_number.startsWith(searchValue) ||
-              code.cust_name.startsWith(searchValue)
+              code.cust_name.toLowerCase().startsWith(searchValue.toLowerCase())
           )
           .map((filteredItem, index) => (
             <CardItem
