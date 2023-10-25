@@ -246,7 +246,7 @@ const EditPay = (props) => {
                           {item.tran_bill ? (
                             <img
                               src={
-                                import.meta.VITE_BACKEND +
+                                import.meta.env.VITE_BACKEND +
                                 "/images/" +
                                 item.tran_bill
                               }
@@ -270,7 +270,7 @@ const EditPay = (props) => {
                               <img
                                 className="image"
                                 src={
-                                  import.meta.VITE_BACKEND +
+                                  import.meta.env.VITE_BACKEND +
                                   "/images/" +
                                   item.tran_bill
                                 }

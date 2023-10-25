@@ -247,7 +247,7 @@ const EditReceive = (props) => {
                           {item.tran_bill ? (
                             <img
                               src={
-                                import.meta.VITE_BACKEND +
+                                import.meta.env.VITE_BACKEND +
                                 "/images/" +
                                 item.tran_bill
                               }
@@ -271,7 +271,7 @@ const EditReceive = (props) => {
                               <img
                                 className="image"
                                 src={
-                                  import.meta.VITE_BACKEND +
+                                  import.meta.env.VITE_BACKEND +
                                   "/images/" +
                                   item.tran_bill
                                 }
