@@ -247,7 +247,9 @@ const EditReceive = (props) => {
                           {item.tran_bill ? (
                             <img
                               src={
-                                "http://localhost:8000/images/" + item.tran_bill
+                                import.meta.VITE_BACKEND +
+                                "/images/" +
+                                item.tran_bill
                               }
                               width={50}
                               height={50}
@@ -269,7 +271,8 @@ const EditReceive = (props) => {
                               <img
                                 className="image"
                                 src={
-                                  "http://localhost:8000/images/" +
+                                  import.meta.VITE_BACKEND +
+                                  "/images/" +
                                   item.tran_bill
                                 }
                                 alt="no image"
