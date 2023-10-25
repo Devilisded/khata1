@@ -47,7 +47,7 @@ const MyApp = () => {
           }
         />
       ) : anchor === "edit" ? (
-        <EditExpenses
+        <EditExpense
           snack={() =>
             handleClickVariant(
               "success",
