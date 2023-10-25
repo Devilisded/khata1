@@ -99,6 +99,13 @@ const Edit = (props) => {
       console.log(err);
     }
   };
+  data.cust_bflat = data.cust_sflat,
+  data.cust_barea = data.cust_sarea,
+  data.cust_bpin = data.cust_spin,
+  data.cust_bcity = data.cust_scity,
+  data.cust_bstate = data.cust_sstate;
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
@@ -109,6 +116,20 @@ const Edit = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      data.cust_name !== "" &&
+      data.cust_number !== "" &&
+      data.cust_amt !== "" 
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [data.cust_name, data.cust_number, data.cust_amt]);
+
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
@@ -322,6 +343,7 @@ const Edit = (props) => {
                     >
                       <div className="box-sec">
                         <TextField
+                          
                           label="Name"
                           id="outlined-basic"
                           variant="outlined"
@@ -337,15 +359,17 @@ const Edit = (props) => {
 
                       <div className="box-sec">
                         <TextField
+                        
                           id="outlined-basic"
                           variant="outlined"
                           label="Phone Number"
                           type="tel"
                           className="w-full"
                           size="small"
+                          inputProps={{ maxLength: 10}}
                           value={data.cust_number}
                           onChange={(e) =>
-                            setData({ ...data, cust_number: e.target.value })
+                            setData({ ...data, cust_number: e.target.value.replace(/\D/g, "") })
                           }
                           required
                         />
@@ -353,18 +377,20 @@ const Edit = (props) => {
 
                       <div className="box-sec ">
                         <TextField
+                        disabled
                           id="outlined-basic"
                           variant="outlined"
                           label="Enter amount"
                           className="sec-1"
                           size="small"
                           value={data.cust_amt}
-                          onChange={(e) =>
-                            setData({ ...data, cust_amt: e.target.value })
-                          }
+                          // onChange={(e) =>
+                          //   setData({ ...data, cust_amt: e.target.value.replace(/\D/g, "") })
+                          // }
                           required
                         />
                         <select
+                        disabled
                           className={
                             data.amt_type === "receive"
                               ? "text-green-600 bg-white p-1 border border-slate-400 rounded"
@@ -591,12 +617,21 @@ const Edit = (props) => {
               </Box>
             </div>
             <div className="add-customer-edit-btn-wrapper bg-white">
-              <button
-                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-                onClick={handleSubmit}
-              >
-                Update Customer
-              </button>
+              {submitDisabled ? (
+                <button
+                  disabled={submitDisabled}
+                  className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+                >
+                  Update Customer
+                </button>
+              ) : (
+                <button
+                  className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                  onClick={handleSubmit}
+                >
+                  Update Customer
+                </button>
+              )}
             </div>
           </form>
         </div>

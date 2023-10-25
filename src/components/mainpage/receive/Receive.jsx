@@ -5,7 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const Receive = (props) => {
@@ -23,11 +23,32 @@ const Receive = (props) => {
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
+
+  const [res, setRes] = useState([]);
+  const [bal, setBal] = useState(null);
+  const [amtType , setAmtType] = useState("");
+  const [custAmt, setCustAmt] = useState(0);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .then((response) => {
+        setCustAmt(response.data[0].cust_amt);
+        setAmtType(response.data[0].amt_type);
+      });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .then((response) => {
+        setRes(response.data);
+        setBal(response.data[0].balance);
+      });
+  }, [userId]);
+
   const [values, setValues] = useState({
     tran_date: "",
     tran_receive: "",
     tran_description: "",
     cnct_id: userId,
+    balance: "",
   });
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -35,6 +56,20 @@ const Receive = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      if (amtType === "pay") {
+        if (bal === null) {
+          values.balance = custAmt - parseInt(values.tran_receive);
+        } else {
+          values.balance = bal - parseInt(values.tran_receive);
+        }
+      } else if (amtType === "receive") {
+        if (bal === null) {
+          values.balance = custAmt + parseInt(values.tran_receive);
+        } else {
+          values.balance = bal + parseInt(values.tran_receive);
+        }
+      }
+      
       const formData = new FormData();
       values.tran_date = filteredDate;
       formData.append("image", file);
@@ -42,6 +77,7 @@ const Receive = (props) => {
       formData.append("tran_description", values.tran_description);
       formData.append("cnct_id", values.cnct_id);
       formData.append("tran_date", values.tran_date);
+      formData.append("balance", values.balance);
       await axios.post("http://localhost:8000/api/auth/sendTran", formData);
       changeChange();
       props.snack();
@@ -49,6 +85,16 @@ const Receive = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (values.tran_receive !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.tran_receive]);
+
   return (
     <form className="block overflow-hidden">
       <h1 className="text_left heading text-green-500 font-semibold text-lg">
@@ -73,7 +119,14 @@ const Receive = (props) => {
                 className="w-full"
                 size="small"
                 name="tran_receive"
-                onChange={handleChange}
+                value={values.tran_receive}
+                onChange={(e) =>
+                  setValues({
+                    ...values,
+                    tran_receive: e.target.value.replace(/\D/g, ""),
+                  })
+                }
+                //onChange={handleChange}
                 required
               />
             </Box>
@@ -182,12 +235,21 @@ const Receive = (props) => {
       </div>
 
       <div className="add-customer-btn-wrapper1">
-        <button
-          className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          You Receive
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            You Receive
+          </button>
+        ) : (
+          <button
+            className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+            onClick={handleClick}
+          >
+            You Receive
+          </button>
+        )}
       </div>
     </form>
   );

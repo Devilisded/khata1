@@ -27,17 +27,31 @@ const ProLeft = (props) => {
     axios.get("http://localhost:8000/api/ser/fetchData").then((res) => {
       setData(res.data);
     });
-  }, [change, pId]);
+  }, [change]);
 
-  const [age, setAge] = useState("");
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-  const [filter, setFilter] = useState("");
+  const [sortOption, setSortOption] = useState("");
   const handleChange1 = (e) => {
-    setFilter(e.target.value);
+    setSortOption(e.target.value);
   };
+  const [filter2, setFilter2] = useState("All");
+  const [searchValue, setSearchValue] = useState("");
+  let sortedUsers = [...result];
+
+  if (sortOption === "recent") {
+    sortedUsers.sort((a, b) => b.product_id - a.product_id);
+  } else if (sortOption === "highestAmount") {
+    sortedUsers.sort((a, b) => b.sale_price - a.sale_price);
+  } else if (sortOption === "name") {
+    sortedUsers.sort((a, b) => a.product_name.localeCompare(b.product_name));
+  } else if (sortOption === "stockHighToLow") {
+    sortedUsers.sort((a, b) => b.balance_stock  - a.balance_stock );
+  }
+  else if (sortOption === "stockLowToHigh") {
+    sortedUsers.sort((a, b) => a.balance_stock  - b.balance_stock );
+  }
+
+  
+  
   const location = useLocation();
 
   return (
@@ -95,6 +109,7 @@ const ProLeft = (props) => {
             type="text"
             className="focus:outline-none p-1 w-56"
             placeholder="Search By Product Name"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
         <div className="filter1">
@@ -105,16 +120,18 @@ const ProLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={filter}
+              //value={filter}
               label="Sort By"
+              
               onChange={handleChange1}
+
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Most Recent</MenuItem>
-              <MenuItem value={20}>Highest Amount</MenuItem>
-              <MenuItem value={30}>By Name</MenuItem>
+              
+              <MenuItem value="recent">Most Recent</MenuItem>
+              <MenuItem value="highestAmount">Highest Amount</MenuItem>
+              <MenuItem value="name">By Name</MenuItem>
+              <MenuItem value="stockLowToHigh">Stock Low - High</MenuItem>
+              <MenuItem value="stockHighToLow">Stock High - Low</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -124,17 +141,16 @@ const ProLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={age}
+              //value={age}
               label="Filter By"
-              onChange={handleChange}
+              onChange={(e) => {
+                setFilter2(e.target.value);
+              }}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>All</MenuItem>
-              <MenuItem value={20}>Pay</MenuItem>
-              <MenuItem value={30}>Receive</MenuItem>
-            </Select>
+              
+               <MenuItem value="All">All</MenuItem>
+              <MenuItem value="lowStock">Low Stock</MenuItem>
+              </Select>
           </FormControl>
         </div>
       </div>
@@ -143,10 +159,25 @@ const ProLeft = (props) => {
         <div className="sprice text-slate-600">Sales Price</div>
         <div className="qty text-slate-600">Stock Qty</div>
       </div>
+      
       <div className="cards">
-        {result.map((item, index) => (
-          <ProCard key={index} data={item} />
-        ))}
+        {console.log("searchValue : ",searchValue)}
+        {sortedUsers
+
+          .filter((code) => {
+            if (filter2 === "lowStock") {
+              return code.balance_stock <= code.low_stock;
+            } else if (filter2 === "All") {
+              return true;
+            }
+          })
+          .filter(
+            (code) =>
+              code.product_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          )
+          .map((filteredItem, index) => (
+            <ProCard key={index} data={filteredItem} />
+          ))}
       </div>
     </div>
   );

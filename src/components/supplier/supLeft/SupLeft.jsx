@@ -156,7 +156,7 @@ const SupLeft = (props) => {
           .filter(
             (code) =>
               code.sup_number.startsWith(searchValue) ||
-              code.sup_name.startsWith(searchValue)
+              code.sup_name.toLowerCase().startsWith(searchValue.toLowerCase())
           )
           .map((filteredItem, index) => (
             <SupCard key={index} tran={tran} data={filteredItem} />

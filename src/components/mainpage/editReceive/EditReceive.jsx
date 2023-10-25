@@ -27,35 +27,44 @@ import axios from "axios";
 
 const EditReceive = (props) => {
   const { userId, changeChange } = useContext(UserContext);
+  const [prevTranRecieve, setPrevTranRecieve] = useState(null);
+  const [prevBalance, setPrevBalance] = useState(null);
   const { tranId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
+  const [amtType , setAmtType] = useState("");
   const [data, setData] = useState({
     tran_description: "",
     tran_date: "",
     tran_receive: "",
+    balance: "",
   });
   useEffect(() => {
-    {
-      axios
-        .get(`http://localhost:8000/api/auth/fetchTranid/${tranId}`)
-        .then((response) => {
-          setResult(response.data);
-          setData({
-            ...data,
-            tran_receive: response.data[0].tran_receive,
-            tran_description: response.data[0].tran_description,
-            tran_date: response.data[0].tran_date,
-          });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchTranid/${tranId}`)
+      .then((response) => {
+        setResult(response.data);
+        setData({
+          ...data,
+          tran_receive: response.data[0].tran_receive,
+          tran_description: response.data[0].tran_description,
+          tran_date: response.data[0].tran_date,
+          balance: response.data[0].balance,
         });
-    }
-    {
-      axios
-        .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
-        .then((response) => {
-          setResult2(response.data);
-        });
-    }
+      });
+
+    axios
+      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .then((response) => {
+        setAmtType(response.data[0].amt_type);
+        setResult2(response.data);
+      });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .then((response) => {
+        setPrevTranRecieve(response.data[0].tran_receive);
+        setPrevBalance(response.data[0].balance);
+      });
   }, [tranId]);
 
   const handleDelete = async (e) => {
@@ -81,13 +90,46 @@ const EditReceive = (props) => {
   var filteredDate = date1.toString().slice(4, 16);
   const [flag, setFlag] = useState(false);
 
+  const [file, setFile] = useState("File Name");
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
+  const maxFileSize = 20000;
+  const [fileExists, setFileExists] = useState(false);
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+
   const handleClickSubmit = async (e) => {
     e.preventDefault();
     try {
+     
+      if (amtType === "pay") {
+        if (data.tran_receive > prevTranRecieve) {
+          data.balance = prevBalance - (parseInt(data.tran_receive) - prevTranRecieve) ;
+          
+        } else if (data.tran_receive < prevTranRecieve) {
+          data.balance = prevBalance + (prevTranRecieve - parseInt(data.tran_receive)); 
+        }
+      } else if (amtType === "receive") {
+        if (data.tran_receive > prevTranRecieve) {          
+          data.balance = prevBalance + (parseInt(data.tran_receive) - prevTranRecieve);
+        } else if (data.tran_receive < prevTranRecieve) {
+          data.balance = prevBalance - (prevTranRecieve - parseInt(data.tran_receive));
+        }
+      }
+
       flag ? (data.tran_date = filteredDate) : "";
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("tran_receive", data.tran_receive);
+      formData.append("tran_description", data.tran_description);
+      formData.append("tran_date", data.tran_date);
+      formData.append("balance", data.balance);
+      console.log("formData : ", formData);
       await axios.put(
         `http://localhost:8000/api/auth/updateTran/${tranId}`,
-        data
+        formData
       );
       changeChange();
       props.snacku();
@@ -96,16 +138,7 @@ const EditReceive = (props) => {
     }
   };
 
-  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-  const maxFileSize = 20000;
-  const [file, setFile] = useState("File Name");
-  const [fileExists, setFileExists] = useState(false);
-
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+  
   const handleClose = () => {
     setOpen(false);
   };
@@ -124,6 +157,16 @@ const EditReceive = (props) => {
   const handleImgClose = () => {
     setImgOpen(false);
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (data.tran_receive !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [data.tran_receive]);
+  console.log("filr : ", file);
   return (
     <>
       {result.map((item, index) => (
@@ -329,7 +372,7 @@ const EditReceive = (props) => {
                       <Box className="box-sec">
                         <TextField
                           onChange={(e) =>
-                            setData({ ...data, tran_receive: e.target.value })
+                            setData({ ...data, tran_receive: e.target.value.replace(/\D/g, "") })
                           }
                           value={data.tran_receive}
                           label="Amount"
@@ -391,7 +434,7 @@ const EditReceive = (props) => {
                             className="hidden sr-only w-full"
                             accept="image/x-png,image/gif,image/jpeg"
                             onChange={(event) => {
-                              setFile(event.target.value);
+                              setFile(event.target.files[0]);
                               setFileExists(true);
                               const get_file_size = event.target.files[0];
 
@@ -425,7 +468,7 @@ const EditReceive = (props) => {
                           <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                             <div class="flex items-center justify-between">
                               <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                                {file}
+                                {file.name}
                               </span>
                               <button
                                 class="text-[#07074D]"
@@ -456,12 +499,21 @@ const EditReceive = (props) => {
                 </div>
 
                 <div className="receive-edit-btn-wrapper bg-white">
-                  <button
-                    className="  text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-                    onClick={handleClickSubmit}
-                  >
-                    Save
-                  </button>
+                  {submitDisabled ? (
+                    <button
+                      disabled={submitDisabled}
+                      className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      className="  text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                      onClick={handleClickSubmit}
+                    >
+                      Save
+                    </button>
+                  )}
                 </div>
               </div>
             </>

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Box, TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -22,11 +22,31 @@ const Pay = (props) => {
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
+
+  const [custAmt, setCustAmt] = useState(0);
+  const [amtType , setAmtType] = useState("");
+  const [bal, setBal] = useState(null);
+  console.log("file : ", file);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .then((response) => {
+        setCustAmt(response.data[0].cust_amt);
+        setAmtType(response.data[0].amt_type);
+      });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .then((response) => {
+        setBal(response.data[0].balance);
+      });
+  }, [userId]);
+
   const [values, setValues] = useState({
     tran_date: "",
     tran_pay: "",
     tran_description: "",
     cnct_id: userId,
+    balance: "",
   });
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,6 +54,20 @@ const Pay = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      if (amtType === "pay") {
+        if (bal === null) {
+          values.balance = custAmt + parseInt(values.tran_pay);
+        } else {
+          values.balance = bal + parseInt(values.tran_pay);
+        }
+      } else if (amtType === "receive") {
+        if (bal === null) {
+          values.balance = custAmt - parseInt(values.tran_pay);
+        } else {
+          values.balance = bal - parseInt(values.tran_pay);
+        }
+      }
+      
       const formData = new FormData();
       values.tran_date = filteredDate;
       formData.append("image", file);
@@ -41,6 +75,7 @@ const Pay = (props) => {
       formData.append("tran_description", values.tran_description);
       formData.append("cnct_id", values.cnct_id);
       formData.append("tran_date", values.tran_date);
+      formData.append("balance", values.balance);
       await axios.post("http://localhost:8000/api/auth/sendTran", formData);
       changeChange();
       props.snack();
@@ -48,6 +83,16 @@ const Pay = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (values.tran_pay !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.tran_pay]);
+
   return (
     <form className="block overflow-hidden" method="post">
       <h1 className="text_left heading text-red-500 font-semibold text-lg">
@@ -72,7 +117,14 @@ const Pay = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="tran_pay"
-                onChange={handleChange}
+                //onChange={handleChange}
+                value={values.tran_pay}
+                onChange={(e) =>
+                  setValues({
+                    ...values,
+                    tran_pay: e.target.value.replace(/\D/g, ""),
+                  })
+                }
                 required
               />
             </Box>
@@ -178,9 +230,18 @@ const Pay = (props) => {
       </div>
 
       <div className="add-customer-btn-wrapper1">
-        <button className="add_btn2 text-red-600" onClick={handleClick}>
-          You Pay
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            You Pay
+          </button>
+        ) : (
+          <button className="add_btn2 text-red-600" onClick={handleClick}>
+            You Pay
+          </button>
+        )}
       </div>
     </form>
   );

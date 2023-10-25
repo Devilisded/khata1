@@ -4,7 +4,11 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IconX, IconTrash, IconAlertOctagonFilled } from "@tabler/icons-react";
 import Autocomplete from "@mui/material/Autocomplete";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import {
+  DatePicker,
+  LocalizationProvider,
+  yearCalendarClasses,
+} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -17,6 +21,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import "./editproduct.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
+
 const EditProduct = (props) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -92,15 +97,12 @@ const EditProduct = (props) => {
     setOpen(false);
   };
 
+  const [isOn2, setIsOn2] = useState(false);
+
   const [isOn, setIsOn] = useState(false);
   const handleOnChange1 = () => {
     setIsOn(!isOn);
     console.log("isOn : ", isOn);
-  };
-
-  const [isOn2, setIsOn2] = useState(false);
-  const handleOnChange2 = () => {
-    setIsOn2(!isOn2);
   };
 
   const [isClicked, setIsClicked] = useState(false);
@@ -150,10 +152,12 @@ const EditProduct = (props) => {
     conversion: null,
     cgst: null,
   });
+  const [isTaxIncluded, setIsTaxIncluded] = useState("");
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
+        setIsTaxIncluded(response.data[0].tax);
         setData({
           ...data,
           product_name: response.data[0].product_name,
@@ -177,8 +181,14 @@ const EditProduct = (props) => {
           conversion: response.data[0].conversion,
           cgst: response.data[0].cgst,
         });
+        setIsOn(response.data[0].secondary_unit !== "" ? true : false);
+        setIsOn2(response.data[0].tax === "yes" ? true : false);
       });
   }, [change, pId]);
+
+  const handleOnChange2 = () => {
+    setIsOn2(isOn2 === true ? false : true);
+  };
 
   const deleteProduct = async () => {
     try {
@@ -223,11 +233,33 @@ const EditProduct = (props) => {
     data.secondary_unit = secondaryUnitValue;
   }
 
-  data.tax = isOn2 ? "yes" : "no";
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      axios.put(`http://localhost:8000/api/auth/updateProduct/${pId}`, data);
+      data.tax = isOn2 ? "yes" : "no";
+      console.log("data.tax : ", data.tax);
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("product_name", data.product_name);
+      formData.append("primary_unit", data.primary_unit);
+      formData.append("secondary_unit", data.secondary_unit);
+      formData.append("sale_price", data.sale_price);
+      formData.append("purchase_price", data.purchase_price);
+      formData.append("tax", data.tax);
+      formData.append("low_stock", data.low_stock);
+      formData.append("balance_stock", data.balance_stock);
+      formData.append("entry_date", data.entry_date);
+      formData.append("hsn_code", data.hsn_code);
+      formData.append("hsn_desc", data.hsn_desc);
+      formData.append("sgst", data.sgst);
+      formData.append("igst", data.igst);
+      formData.append("cess", data.cess);
+      formData.append("conversion", data.conversion);
+      formData.append("cgst", data.cgst);
+      axios.put(
+        `http://localhost:8000/api/auth/updateProduct/${pId}`,
+        formData
+      );
       changeChange();
       props.snack();
     } catch (err) {
@@ -304,7 +336,7 @@ const EditProduct = (props) => {
                       className="hidden sr-only w-full"
                       accept="image/x-png,image/gif,image/jpeg"
                       onChange={(event) => {
-                        setFile(event.target.value);
+                        setFile(event.target.files[0]);
                         setFileExists(true);
                         const get_file_size = event.target.files[0];
                         console.log(get_file_size);
@@ -338,7 +370,7 @@ const EditProduct = (props) => {
                     <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                       <div class="flex items-center justify-between">
                         <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                          {file}
+                          {file.name}
                         </span>
                         <button
                           class="text-[#07074D]"
@@ -384,14 +416,29 @@ const EditProduct = (props) => {
                     />
                   )}
                 />
-                <Box className="box-sec margin-top-zero margin-bottom-zero">
-                  <label className="pl-3">Add Secondary Unit</label>
-                  <Switch
-                    {...label}
-                    color="success"
-                    onChange={handleOnChange1}
-                  />
-                </Box>
+
+                {isOn ? (
+                  <Box className="box-sec margin-top-zero margin-bottom-zero">
+                    {""}
+                    <label className="pl-3">Add Secondary Unit</label>
+                    <Switch
+                      {...label}
+                      defaultChecked
+                      color="success"
+                      onChange={handleOnChange1}
+                    />
+                  </Box>
+                ) : (
+                  <Box className="box-sec margin-top-zero margin-bottom-zero">
+                    <label className="pl-3">Add Secondary Unit</label>
+                    <Switch
+                      {...label}
+                      color="success"
+                      onChange={handleOnChange1}
+                    />
+                  </Box>
+                )}
+
                 {isOn ? (
                   <Box className="box-sec margin-top-zero">
                     <Autocomplete
@@ -440,7 +487,7 @@ const EditProduct = (props) => {
                     size="small"
                     onChange={handleChange}
                     name="sale_price"
-                    value={data.sale_price}
+                    value={parseInt(data.sale_price)}
                   />
 
                   <TextField
@@ -451,17 +498,33 @@ const EditProduct = (props) => {
                     size="small"
                     onChange={handleChange}
                     name="purchase_price"
-                    value={data.purchase_price}
+                    value={parseInt(data.purchase_price)}
+                    //value={2}
                   />
                 </Box>
-                <Box className="box-sec margin-top-zero ">
-                  <label className="pl-2 ">Tax included</label>
-                  <Switch
-                    {...label}
-                    color="success"
-                    onChange={handleOnChange2}
-                  />
-                </Box>
+
+                {isTaxIncluded === "yes" ? (
+                  <Box className="box-sec margin-top-zero ">
+                    {""}
+                    <label className="pl-2">Tax included</label>
+
+                    <Switch
+                      {...label}
+                      defaultChecked
+                      color="success"
+                      onChange={handleOnChange2}
+                    />
+                  </Box>
+                ) : (
+                  <Box className="box-sec margin-top-zero ">
+                    <label className="pl-2">Tax included</label>
+                    <Switch
+                      {...label}
+                      color="success"
+                      onChange={handleOnChange2}
+                    />
+                  </Box>
+                )}
 
                 <Box className="box-sec">
                   <TextField
@@ -509,7 +572,11 @@ const EditProduct = (props) => {
                 <Box className="box-sec box-sex-1 ">
                   <TextField
                     id="outlined-read-only-input"
-                    value={data.hsn_code}
+                    value={
+                      data.hsn_code !== null && data.hsn_code !== ""
+                        ? data.hsn_code
+                        : "HSN Code"
+                    }
                     helperText={data.hsn_desc}
                     className="sec-1 w-full"
                     size="small"
@@ -525,8 +592,8 @@ const EditProduct = (props) => {
                     id="outlined-read-only-input"
                     value={data.igst !== null ? data.igst + " GST %" : "GST %"}
                     helperText={
-                      data.igst !== null
-                        ? data.cess !== null
+                      data.igst !== null && data.cess !== ""
+                        ? data.cess !== null && data.cess !== ""
                           ? "(" +
                             data.cgst +
                             "% CGST + " +

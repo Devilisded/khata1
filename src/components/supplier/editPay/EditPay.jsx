@@ -56,15 +56,20 @@ const EditPay = (props) => {
   };
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState([]);
+  const [subAmtType, setSubAmtType] = useState("");
+  const [prevSubTranPay , setPrevSubTranPay] = useState(0);
+  const [prevSubBalance , setPrevSubBalance] = useState(0);
   const [tran, setTran] = useState([]);
   const [update, setUpdate] = useState({
     sup_tran_pay: "",
     sup_tran_date: "",
     sup_tran_description: "",
+    sup_balance: ""
   });
   useEffect(() => {
     axios.get(`http://localhost:8000/api/sup/fetchSup/${supId}`).then((res) => {
       setData(res.data);
+      setSubAmtType(res.data[0].sup_amt_type);
     });
     axios
       .get(`http://localhost:8000/api/sup/fetchTranid/${tranId}`)
@@ -75,7 +80,14 @@ const EditPay = (props) => {
           sup_tran_pay: res.data[0].sup_tran_pay,
           sup_tran_date: res.data[0].sup_tran_date,
           sup_tran_description: res.data[0].sup_tran_description,
+          sup_balance: res.data[0].sup_balance
         });
+      });
+    axios
+      .get(`http://localhost:8000/api/sup/fetchSupLastTran/${supId}`)
+      .then((response) => {
+        setPrevSubTranPay(response.data[0].sup_tran_pay);
+        setPrevSubBalance(response.data[0].sup_balance);
       });
   }, [tranId]);
   const delTran = async () => {
@@ -90,11 +102,33 @@ const EditPay = (props) => {
   const updateTran = async (e) => {
     e.preventDefault();
     try {
+      if (subAmtType === "pay") {
+        if (update.sup_tran_pay > prevSubTranPay) {
+          update.sup_balance = prevSubBalance + (update.sup_tran_pay - prevSubTranPay);
+        } else if (update.sup_tran_pay < prevSubTranPay) {
+          update.sup_balance = prevSubBalance - (prevSubTranPay - update.sup_tran_pay);
+        }
+      } else if (subAmtType === "receive") {
+        if (update.sup_tran_pay > prevSubTranPay) {
+          update.sup_balance = prevSubBalance - (update.sup_tran_pay - prevSubTranPay);
+        } else if (update.sup_tran_pay < prevSubTranPay) {
+          update.sup_balance = prevSubTranPay - update.sup_tran_pay + prevSubBalance;
+        }
+      }
       flag ? (update.sup_tran_date = filteredDate) : "";
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("sup_tran_pay", update.sup_tran_pay);
+      formData.append("sup_tran_description", update.sup_tran_description);
+      //formData.append("sup_tran_cnct_id", update.sup_tran_cnct_id);
+      formData.append("sup_tran_date", update.sup_tran_date);
+      formData.append("sup_balance", update.sup_balance);
+      console.log("filr : ", file, formData);
       await axios.put(
         `http://localhost:8000/api/sup/updateTran/${tranId}`,
-        update
+        formData
       );
+
       changeChange();
       props.snacku();
     } catch (err) {
@@ -109,6 +143,7 @@ const EditPay = (props) => {
   const handleImgClose = () => {
     setImgOpen(false);
   };
+  console.log("filr : ", file);
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
@@ -321,7 +356,7 @@ const EditPay = (props) => {
                       onChange={(e) =>
                         setUpdate({
                           ...update,
-                          sup_tran_pay: e.target.value,
+                          sup_tran_pay: e.target.value.replace(/\D/g, ""),
                         })
                       }
                       required
@@ -376,7 +411,7 @@ const EditPay = (props) => {
                         className="hidden sr-only w-full"
                         accept="image/x-png,image/gif,image/jpeg"
                         onChange={(event) => {
-                          setFile(event.target.value);
+                          setFile(event.target.files[0]);
                           setFileExists(true);
                           const get_file_size = event.target.files[0];
                           if (get_file_size.size > maxFileSize) {
@@ -409,7 +444,7 @@ const EditPay = (props) => {
                       <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                         <div class="flex items-center justify-between">
                           <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                            {file}
+                            {file.name}
                           </span>
                           <button
                             class="text-[#07074D]"

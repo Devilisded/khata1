@@ -39,7 +39,7 @@ const MyApp = () => {
   };
 
   const list = (anchor) => (
-    <Box sx={{ width: 500 }} role="presentation">
+    <Box sx={{ width: 450 }} role="presentation">
       {anchor === "add" ? (
         <AddExpense
           snack={() =>

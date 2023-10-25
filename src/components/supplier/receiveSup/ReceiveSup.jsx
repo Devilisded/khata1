@@ -4,11 +4,30 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { IconX } from "@tabler/icons-react";
-import { useContext, useState } from "react";
+import { useContext, useState , useEffect } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const ReceiveSup = (props) => {
   const { supId, changeChange } = useContext(UserContext);
+
+  const [supAmt, setSupAmt] = useState(0);
+  const [supAmtType, setSupAmtType] = useState("");
+  const [supBal, setSupBal] = useState(null);
+  
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/sup/fetchSupDataUsingId/${supId}`)
+      .then((response) => {
+        setSupAmt(response.data[0].sup_amt);
+        setSupAmtType(response.data[0].sup_amt_type);
+      });
+    axios
+      .get(`http://localhost:8000/api/sup/fetchSupLastTran/${supId}`)
+      .then((response) => {
+        setSupBal(response.data[0].sup_balance);
+      });
+  }, [supId]);
+
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -27,6 +46,7 @@ const ReceiveSup = (props) => {
     sup_tran_description: "",
     sup_tran_date: "",
     sup_tran_cnct_id: supId,
+    sup_balance: "",
   });
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,6 +54,19 @@ const ReceiveSup = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      if (supAmtType === "pay") {
+        if (supBal === null) {
+          values.sup_balance = supAmt - parseInt(values.sup_tran_receive);
+        } else {
+          values.sup_balance = supBal - parseInt(values.sup_tran_receive);
+        }
+      } else if (supAmtType === "receive") {
+        if (supBal === null) {
+          values.sup_balance = supAmt + parseInt(values.sup_tran_receive);
+        } else {
+          values.sup_balance = supBal + parseInt(values.sup_tran_receive);
+        }
+      }
       const formData = new FormData();
       values.sup_tran_date = filteredDate;
       formData.append("image", file);
@@ -41,6 +74,7 @@ const ReceiveSup = (props) => {
       formData.append("sup_tran_description", values.sup_tran_description);
       formData.append("sup_tran_cnct_id", values.sup_tran_cnct_id);
       formData.append("sup_tran_date", values.sup_tran_date);
+      formData.append("sup_balance", values.sup_balance);
       await axios.post("http://localhost:8000/api/sup/sendTran", formData);
       changeChange();
       props.snack();
@@ -48,6 +82,18 @@ const ReceiveSup = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      values.sup_tran_receive !== "" 
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.sup_tran_receive]);
+
   return (
     <form className="block overflow-hidden">
       <h1 className="text_left heading text-green-500 font-semibold text-lg">
@@ -70,7 +116,14 @@ const ReceiveSup = (props) => {
                 className="w-full"
                 size="small"
                 name="sup_tran_receive"
-                onChange={handleChange}
+                //onChange={handleChange}
+                value={values.sup_tran_receive}
+                onChange={(e) =>
+                  setValues({
+                    ...values,
+                    sup_tran_receive: e.target.value.replace(/\D/g, ""),
+                  })
+                }
                 required
               />
             </Box>
@@ -185,12 +238,21 @@ const ReceiveSup = (props) => {
       </div>
 
       <div className="add-customer-btn-wrapper1">
-        <button
-          className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          You Receive
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            You Receive
+          </button>
+        ) : (
+          <button
+            className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+            onClick={handleClick}
+          >
+            You Receive
+          </button>
+        )}
       </div>
     </form>
   );

@@ -4,7 +4,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useContext, useState } from "react";
+import { useContext, useState , useEffect} from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const CashOut = (props) => {
@@ -21,9 +21,9 @@ const CashOut = (props) => {
   const [fileExists, setFileExists] = useState(false);
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
-  var filteredDate = date1.toString().slice(4, 16);
+  var filteredDate = date1.toString().slice(4, 15);
 
-  const [payMode, setPayMode] = useState("");
+  const [payMode, setPayMode] = useState("cash");
   const [values, setValues] = useState({
     cash_pay: "",
     cash_date: "",
@@ -33,6 +33,7 @@ const CashOut = (props) => {
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  
   const handleClick = (e) => {
     e.preventDefault();
     try {
@@ -51,6 +52,15 @@ const CashOut = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (values.cash_pay !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.cash_pay]);
 
   return (
     <form className="block overflow-hidden" method="post">
@@ -76,7 +86,11 @@ const CashOut = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="cash_pay"
-                onChange={handleChange}
+                //onChange={handleChange}
+                onChange={(e) =>
+                  setValues({ ...values, cash_pay: e.target.value.replace(/\D/g, "") })
+                }
+                value={values.cash_pay}
                 required
               />
             </Box>
@@ -108,6 +122,7 @@ const CashOut = (props) => {
                   id="cash"
                   name="cash_mode"
                   className="cursor-pointer"
+                  checked
                   onChange={(e) => setPayMode("cash")}
                 />
                 <label htmlFor="cash">Cash</label>
@@ -204,12 +219,21 @@ const CashOut = (props) => {
       </div>
 
       <div className="cashout-btn-wrapper">
-        <button
-          className="text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          Out
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            Out
+          </button>
+        ) : (
+          <button
+            className="text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+            onClick={handleClick}
+          >
+            Out
+          </button>
+        )}
       </div>
     </form>
   );

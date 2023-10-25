@@ -9,7 +9,7 @@ const Transaction = (props) => {
   const fminutes = minutes < 10 ? "0" + minutes : minutes;
   const fhours = hours > 12 ? hours - 12 : hours;
   const AMPM = hours > 12 ? "PM" : "AM";
-  const { changeTranId } = useContext(UserContext);
+  const { changeTranId, tranId, change } = useContext(UserContext);
   const tid = (e) => {
     changeTranId(props.transactions.tran_id),
       props.transactions.tran_pay
@@ -27,12 +27,7 @@ const Transaction = (props) => {
           <IconPointFilled className="w-3 h-3" />
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
-        <div className="text-sm text-slate-600">
-          Description :
-          {props.transactions.tran_description
-            ? "   " + props.transactions.tran_description
-            : " -"}
-        </div>
+        <div className="text-sm text-slate-600">Balance : {props.transactions.balance}</div>
       </div>
       <div className="flex gap-56 mr-36">
         <div className="text-red-600">

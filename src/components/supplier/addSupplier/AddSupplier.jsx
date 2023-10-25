@@ -1,6 +1,6 @@
 import { Box, TextField } from "@mui/material";
 import axios from "axios";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 
 const AddSupplier = (props) => {
@@ -46,6 +46,21 @@ const AddSupplier = (props) => {
       setErr(err.response.data);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      values.sup_name !== "" &&
+      values.sup_number !== "" &&
+      values.sup_amt !== "" &&
+      values.sup_amt_type !== ""
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.sup_name, values.sup_number, values.sup_amt, values.sup_amt_type]);
+
   return (
     <form>
       <div>
@@ -84,7 +99,12 @@ const AddSupplier = (props) => {
                     className="w-full"
                     size="small"
                     name="sup_number"
-                    onChange={handleChange}
+                    
+                    onChange={(e) =>
+                      setValues({ ...values, sup_number : e.target.value.replace(/\D/g, "") })
+                    }
+                    value={values.sup_number}
+                    inputProps={{ maxLength: 10 }}
                     required
                   />
                   <span className="text-red-600 text-xs ml-2 mt-1">
@@ -100,7 +120,11 @@ const AddSupplier = (props) => {
                     className="sec-1"
                     size="small"
                     name="sup_amt"
-                    onChange={handleChange}
+                    //onChange={handleChange}
+                    onChange={(e) =>
+                      setValues({ ...values, sup_amt : e.target.value.replace(/\D/g, "") })
+                    }
+                    value={values.sup_amt}
                     required
                   />
                   <select
@@ -296,12 +320,21 @@ const AddSupplier = (props) => {
         </Box>
       </div>
       <div className="add-customer-btn-wrapper1">
-        <button
-          className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          Add Supplier
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            Add Supplier
+          </button>
+        ) : (
+          <button
+            className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+            onClick={handleClick}
+          >
+            Add Supplier
+          </button>
+        )}
       </div>
     </form>
   );

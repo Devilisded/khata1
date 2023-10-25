@@ -23,6 +23,7 @@ const CashTran = (props) => {
       changeE();
     }
   };
+
   return (
     <div
       className={
@@ -40,7 +41,10 @@ const CashTran = (props) => {
           <div className="date font-semibold flex items-center gap-2 text-slate-600">
             {fhours + ":" + fminutes + " " + AMPM}
             <div className="cashonline p-[2px] text-[10px] text-blue-600 bg-blue-100 rounded font-semibold uppercase">
-              {props.data.cash_mode}
+              {props.data.cash_mode === "cash" ||
+              props.data.cash_mode === "online"
+                ? props.data.cash_mode
+                : "Expenses"}
             </div>
           </div>
           <div className="text-sm text-slate-500 font-semibold">

@@ -23,10 +23,16 @@ const SerTran = (props) => {
           <IconPointFilled className="w-3 h-3" />
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
-        <div className="text-sm text-slate-600">Balance : -500</div>
+        {/* <div className="text-sm text-slate-600">Balance : -500</div> */}
       </div>
-      <div className="text-blue-600 mr-60">
-        ₹ {props.data.ser_tran_price * props.data.ser_quantity}
+      <div className=" mr-60">
+       <div>
+        Sale {props.data.ser_quantity} {props.ser_unit}
+       </div>
+       <div className="text-blue-600 ">
+       ₹ {props.data.ser_tran_price * props.data.ser_quantity}
+       </div>
+       
       </div>
     </div>
   );

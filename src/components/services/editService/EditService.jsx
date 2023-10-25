@@ -33,120 +33,81 @@ const EditService = (props) => {
 
   const gst = [
     {
-      value: "taxExempted",
-      label1: "Tax Exempted",
-      label2: "(NO GST)",
-    },
-    {
       value: "gst0",
-      label1: "GST@ 0%",
-      label2: "(NO GST)",
+      label1: 0,
+      label2: 0,
+      label3: 0,
     },
     {
       value: "gst0_1", // 0_1 => 0.1
-      label1: "GST@ 0.1%",
-      label2: "(0.05% CSGT + 0.05% SGST/UT GST ; 0.1% IGST )",
+      label1: 0.1,
+      label2: 0.05,
+      label3: 0.05,
     },
     {
       value: "gst0_25", // 0_25 => 0.25
-      label1: "GST@ 0.25%",
-      label2: "(0.125% CSGT + 0.125% SGST/UT GST ; 0.25% IGST )",
+      label1: 0.25,
+      label2: 0.125,
+      label3: 0.125,
     },
     {
       value: "gst3",
-      label1: "GST@ 3%",
-      label2: "(1.5% CSGT + 1.5% SGST/UT GST ; 3% IGST )",
+      label1: 3,
+      label2: 1.5,
+      label3: 1.5,
     },
     {
       value: "gst5",
-      label1: "GST@ 5%",
-      label2: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
+      label1: 5,
+      label2: 2.5,
+      label3: 2.5,
     },
     {
       value: "gst6",
-      label1: "GST@ 6%",
-      label2: "(3% CSGT + 3% SGST/UT GST ; 6% IGST )",
+      label1: 6,
+      label2: 3,
+      label3: 3,
     },
     {
       value: "gst7_5", // 7_5  =>  7.5
-      label1: "GST@ 7.5%",
-      label2: "(3.75% CSGT + 3.75% SGST/UT GST ; 7.5% IGST )",
+      label1: 7.5,
+      label2: 3.75,
+      label3: 3.75,
     },
     {
       value: "gst12",
-      label1: "GST@ 12%",
-      label2: "(6% CSGT + 6% SGST/UT GST ; 12% IGST )",
+      label1: 12,
+      label2: 6,
+      label3: 6,
     },
     {
       value: "gst18",
-      label1: "GST@ 18%",
-      label2: "(9% CSGT + 9% SGST/UT GST ; 18% IGST )",
+      label1: 18,
+      label2: 9,
+      label3: 9,
     },
     {
       value: "gst28",
-      label1: "GST@ 28%",
-      label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
+      label1: 28,
+      label2: 14,
+      label3: 14,
     },
   ];
 
-  const hsn = [
-    {
-      hsn_code: "21",
-      product_name:
-        "LITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "5 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "212",
-      product_name:
-        "AITE BITE FOODS PVT LTD Classic ab cd  ef Vegetable Momo's 09 Pcs 9 Each",
-      tax: "6 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "213",
-      product_name:
-        "MITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "7 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "226",
-      product_name:
-        "BITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "8 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "271",
-      product_name:
-        "EITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "9 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "22",
-      product_name:
-        "BITE BITE FOODS PVT LTD Classic ab cd  ef Vegetable Momo's 09 Pcs 9 Each",
-      tax: "10 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "23",
-      product_name:
-        "MITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "11 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "27",
-      product_name:
-        "LITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "12 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-  ];
+  const [productUnits, setProductUnits] = useState([]);
+  axios
+    .get(`http://localhost:8000/api/auth/fetchProductUnits`)
+    .then((response) => {
+      setProductUnits(response.data);
+    });
+
+  const [productHsnCodes, setProductHsnCodes] = useState([]);
+  axios
+    .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+    .then((response) => {
+      setProductHsnCodes(response.data);
+    });
+
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -159,7 +120,6 @@ const EditService = (props) => {
   const [isOn2, setIsOn2] = useState(false);
   const handleOnChange2 = () => {
     setIsOn2(!isOn2);
-    //console.log("isOn2 : ", isOn2);
   };
 
   const [isClicked, setIsClicked] = useState(false);
@@ -197,19 +157,22 @@ const EditService = (props) => {
     customeCess +
     "% CESS )";
 
-  const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
-  const maxFileSize = 20000;
-  const [file, setFile] = useState("File Name");
-  const [fileExists, setFileExists] = useState(false);
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const [flag, setFlag] = useState(false);
   const [info, setInfo] = useState({
     ser_unit: "",
     ser_name: "",
-    ser_price: "",
-    ser_sac: "",
-    ser_gst: "",
-    ser_tax_included: "",
+    ser_price: 0,
+    ser_sac: 0,
+    ser_tax_included: 0,
+    ser_sac_desc: "",
+    ser_sgst: "",
+    ser_igst: null,
+    ser_cess: null,
+    ser_cgst: null,
+    
   });
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
   const delData = async () => {
     try {
       axios.delete(`http://localhost:8000/api/ser/delData/${serId}`);
@@ -220,21 +183,33 @@ const EditService = (props) => {
       console.log(err);
     }
   };
+  const [isTaxIncluded, setIsTaxIncluded] = useState("");
+  
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/ser/fetchDataid/${serId}`)
       .then((res) => {
+        setIsTaxIncluded(res.data[0].ser_tax_included);
         setInfo({
           ...info,
           ser_unit: res.data[0].ser_unit,
           ser_name: res.data[0].ser_name,
           ser_price: res.data[0].ser_price,
-          ser_sac: res.data[0].ser_sac,
-          ser_gst: res.data[0].ser_gst,
           ser_tax_included: res.data[0].ser_tax_included,
+          ser_sac:
+            res.data[0].ser_sac !== null
+              ? res.data[0].ser_sac
+              : "SAC Code",
+          ser_sac_desc: res.data[0].ser_sac_desc,
+          ser_sgst: res.data[0].ser_sgst,
+          ser_igst: res.data[0].ser_igst,
+          ser_cess: res.data[0].ser_cess,
+          ser_cgst: res.data[0].ser_cgst,
         });
+        setFlag(res.data[0].ser_tax_included === 1 ? true : false)
       });
   }, [serId]);
+ 
   const updateData = async (e) => {
     e.preventDefault();
     try {
@@ -248,6 +223,32 @@ const EditService = (props) => {
       console.log(err);
     }
   };
+
+  const checkFlag = () => {
+    flag
+      ? setInfo({ ...info, ser_tax_included: 0 })
+      : setInfo({ ...info, ser_tax_included: 1 });
+    flag ? setFlag(false) : setFlag(true);
+  };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      info.ser_name !== "" &&
+      info.ser_unit !== null &&
+      info.ser_unit !== "" &&
+      info.ser_price !== null &&
+      info.ser_price !== "" 
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [
+    info.ser_name,
+    info.ser_unit,
+    info.ser_price,
+  ]);
 
   return (
     <div>
@@ -310,26 +311,41 @@ const EditService = (props) => {
                     size="small"
                     value={info.ser_price}
                     onChange={(e) =>
-                      setInfo({ ...info, ser_price: e.target.value })
+                      setInfo({ ...info, ser_price: e.target.value.replace(/\D/g, "") })
                     }
                   />
                 </Box>
-                <Box className="box-sec margin-top-zero ">
-                  <label className="pl-2 ">Tax included</label>
-                  <Switch
-                    // {...label}
-                    color="success"
-                    // onChange={handleOnChange2}
-                    // defaultChecked={checkChange}
-                  />
-                </Box>
+
+              
+                {isTaxIncluded === "1" ? (
+                  <Box className="box-sec margin-top-zero ">
+                    {""}
+                    <label className="pl-2">Tax included</label>
+
+                    <Switch
+                      {...label}
+                      defaultChecked
+                      color="success"
+                      onChange={checkFlag}
+                    />
+                  </Box>
+                ) : (
+                  <Box className="box-sec margin-top-zero ">
+                    <label className="pl-2">Tax included</label>
+                    <Switch
+                      {...label}
+                      color="success"
+                      onChange={checkFlag}
+                    />
+                  </Box>
+                )}
 
                 <Box className="box-sec box-sex-1">
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
                     value={info.ser_sac}
-                    helperText={hsnValue1}
+                    helperText={info.ser_sac_desc}
                     className="sec-1"
                     size="small"
                     InputProps={{
@@ -343,8 +359,26 @@ const EditService = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    value={info.ser_gst}
-                    helperText={gstValue2}
+                    value={info.ser_igst !== null ? info.ser_igst + " GST %" : "GST %"}
+                    helperText={info.ser_igst !== null
+                      ? info.ser_cess !== null
+                        ? "(" +
+                        info.ser_cgst +
+                          "% CGST + " +
+                          info.ser_sgst +
+                          "% SGST/UT GST ; " +
+                          info.ser_igst +
+                          "% IGST ; " +
+                          info.ser_cess +
+                          "% CESS )"
+                        : "(" +
+                        info.ser_cgst +
+                          "% CGST + " +
+                          info.ser_sgst +
+                          "% SGST/UT GST ; " +
+                          info.ser_igst +
+                          "% IGST ; )"
+                      : ""}
                     className="sec-2"
                     size="small"
                     InputProps={{
@@ -370,11 +404,11 @@ const EditService = (props) => {
                         }}
                       />
 
-                      {hsn
+                      {productHsnCodes
                         .filter(
                           (code) =>
-                            code.hsn_code.startsWith(searchValue) ||
-                            code.product_name.startsWith(searchValue)
+                            code.hsn_code.toString().startsWith(searchValue) ||
+                            code.hsn_desc.startsWith(searchValue)
                         )
                         .map((filteredItem) => (
                           <div
@@ -384,10 +418,11 @@ const EditService = (props) => {
                               setInfo({
                                 ...info,
                                 ser_sac: filteredItem.hsn_code,
-                                ser_gst: filteredItem.tax,
+                                ser_sac_desc: filteredItem.hsn_desc,
+                                ser_igst: filteredItem.igst,
+                                ser_cgst: filteredItem.cgst,
+                                ser_sgst: filteredItem.sgst,
                               }),
-                                setHsnValue1(filteredItem.product_name),
-                                setGstValue2(filteredItem.tax_details);
                               setIsClicked(false);
                               setSearchValue("0");
                             }}
@@ -398,10 +433,10 @@ const EditService = (props) => {
                                   {filteredItem.hsn_code}
                                 </h2>
                                 <h2 className=" rounded bg-slate-300 px-4 py-1 ">
-                                  {filteredItem.tax}
+                                  {filteredItem.igst + "% GST"}
                                 </h2>
                               </div>
-                              <p>{filteredItem.product_name}</p>
+                              <p>{filteredItem.hsn_desc}</p>
                             </div>
                           </div>
                         ))}
@@ -413,8 +448,8 @@ const EditService = (props) => {
                 {isClicked2 ? (
                   <>
                     <Box className="box-sec">
-                      <div className="gst-section-wrapper">
-                        <div className="gst-section">
+                      
+                        {/* <div className="gst-section">
                           {gst.map((item, index) => (
                             <div className="flex card-sec" key={index}>
                               <div className="gst-card-text">
@@ -437,8 +472,50 @@ const EditService = (props) => {
                               </div>
                             </div>
                           ))}
+                        </div> */}
+                        <div className="gst-section-wrapper">
+                        <div className="gst-section">
+                          {gst.map((item, index) => (
+                            <div className="flex card-sec" key={index}>
+                              <div className="gst-card-text">
+                                <h2 className=" font-medium">
+                                  {"GST@ " + item.label1 + "%"}
+                                </h2>
+                                <p className=" text-sm">
+                                  {"( " +
+                                    item.label2 +
+                                    "% CGST" +
+                                    item.label3 +
+                                    "% SGST/UT GST ;" +
+                                    item.label1 +
+                                    "% IGST )"}
+                                </p>
+                              </div>
+                              <div className="customer-info-icon-wrapper">
+                                <input
+                                  type="radio"
+                                  id="gst_on_selected_item"
+                                  name="gst"
+                                  onChange={() => {
+                                    setIsClicked2(false);
+                                    setCustomeCess(0);
+                                    setInfo({
+                                      ...info,
+                                      // igst: item.label1,
+                                      // cgst: item.label2,
+                                      // sgst: item.label3,
+                                      ser_igst: filteredItem.label1,
+                                      ser_cgst: filteredItem.label2,
+                                      ser_sgst: filteredItem.label3,
+                                    });
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
+                      
                     </Box>
                     <div>Custom Tax %</div>
                     <Box className="box-sec">
@@ -469,8 +546,13 @@ const EditService = (props) => {
                       <button
                         onClick={(e) => {
                           e.preventDefault(),
-                            setGstValue1(customGst),
-                            setGstValue2(custom_gst_details);
+                          setInfo({
+                            ...info,
+                            ser_igst: customGst,
+                            ser_cgst: customGst / 2,
+                            ser_sgst: customGst / 2,
+                            ser_cess : customeCess,
+                          });
                         }}
                       >
                         Add Custome Gst
@@ -527,12 +609,20 @@ const EditService = (props) => {
             </div>
           </div>
         </Dialog>
+        {submitDisabled ? 
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            Update Services
+          </button> : 
         <button
           className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
           onClick={updateData}
         >
-          Update Service
+          Update Services
         </button>
+}
       </div>
     </div>
   );

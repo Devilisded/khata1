@@ -61,6 +61,16 @@ const EditOut = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (data.cash_pay !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [data.cash_pay]);
+
   return (
     <form className="block overflow-hidden" method="post">
       <h1 className="text_left heading text-red-500 font-semibold text-lg">
@@ -235,12 +245,21 @@ const EditOut = (props) => {
       </div>
 
       <div className="cashout-btn-wrapper">
-        <button
-          className="text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
-          onClick={updateData}
-        >
-          Update
-        </button>
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            className="text-red-600 bg-red-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
+            onClick={updateData}
+          >
+            Update
+          </button>
+        )}
       </div>
     </form>
   );

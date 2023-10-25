@@ -39,7 +39,7 @@ const MainLeft = (props) => {
     return prev + +current.tran_receive;
   }, 0);
   const total_pay = sum + pay;
-  const total_receive = sum1 + receive;
+  const total_receive = (sum1 + receive);
   const [sortOption, setSortOption] = useState("");
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
@@ -64,12 +64,12 @@ const MainLeft = (props) => {
       </div>
       <div className="giveget flex justify-between">
         <div className="give text-gray-500 flex gap-1 items-center">
-          You'll Give :
-          <span className="text-gray-700 font-bold">₹ {total_receive}</span>
+          Total Paid :
+          <span className="text-gray-700 font-bold">₹ {total_receive }</span>
           <IconArrowUpRight className="text-red-600" />
         </div>
         <div className="give text-gray-500 flex gap-1 items-center">
-          You'll Get:
+        Total Recieved:
           <span className="text-gray-700 font-bold">₹ {total_pay}</span>
           <IconArrowDownLeft className="text-green-600" />
         </div>

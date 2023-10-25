@@ -63,9 +63,12 @@ export default function Account() {
     }
   };
   const [info, setInfo] = useState([]);
+  console.log("data : ", data)
   useEffect(() => {
+    console.log("data : ", data)
     axios.get("http://localhost:8000/api/act/fetchData").then((res) => {
       setInfo(res.data);
+      console.log("info : ", info)
     });
   }, [change]);
   const deleteAc = async () => {

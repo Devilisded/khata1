@@ -27,13 +27,17 @@ import axios from "axios";
 
 const EditPay = (props) => {
   const { userId, changeChange } = useContext(UserContext);
+  const [prevTranPay, setPrevTranPay] = useState(null);
+  const [prevBalance, setPrevBalance] = useState(null);
   const { tranId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
+  const [amtType , setAmtType] = useState("");
   const [data, setData] = useState({
     tran_pay: "",
     tran_description: "",
     tran_date: "",
+    balance: "",
   });
 
   useEffect(() => {
@@ -46,12 +50,21 @@ const EditPay = (props) => {
           tran_pay: response.data[0].tran_pay,
           tran_description: response.data[0].tran_description,
           tran_date: response.data[0].tran_date,
+          balance: response.data[0].balance,
         });
       });
+      
     axios
       .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
       .then((response) => {
+        setAmtType(response.data[0].amt_type);
         setResult2(response.data);
+      });
+    axios
+      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .then((response) => {
+        setPrevTranPay(response.data[0].tran_pay);
+        setPrevBalance(response.data[0].balance);
       });
   }, [tranId]);
 
@@ -101,11 +114,31 @@ const EditPay = (props) => {
   const handleClickSubmit = async (e) => {
     e.preventDefault();
     try {
-      flag ? (data.tran_date = filteredDate) : "";
+      if (amtType === "pay") {
+        if (data.tran_pay > prevTranPay) {
+          data.balance = prevBalance + (data.tran_pay - prevTranPay);
+        } else if (data.tran_pay < prevTranPay) {
+          data.balance = prevBalance - (prevTranPay - data.tran_pay) ;
+        }
+      } else if (amtType === "receive") {
+        if (data.tran_pay > prevTranPay) {
+          data.balance = prevBalance - (data.tran_pay - prevTranPay);
+        } else if (data.tran_pay < prevTranPay) {
+          data.balance = prevTranPay - data.tran_pay + prevBalance;
+        }
+      }
 
+      flag ? (data.tran_date = filteredDate) : "";
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("tran_pay", data.tran_pay);
+      formData.append("tran_description", data.tran_description);
+      formData.append("tran_date", data.tran_date);
+      formData.append("balance", data.balance);
+      console.log("formData : ", formData);
       await axios.put(
         `http://localhost:8000/api/auth/updateTran/${tranId}`,
-        data
+        formData
       );
       changeChange();
       props.snacku();
@@ -121,6 +154,17 @@ const EditPay = (props) => {
   const handleImgClose = () => {
     setImgOpen(false);
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (data.tran_pay !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [data.tran_pay]);
+
+  console.log("filr : ", file);
   return (
     <>
       {result.map((item, index) => (
@@ -330,9 +374,8 @@ const EditPay = (props) => {
                           label="Amount"
                           name="tran_pay"
                           value={data.tran_pay}
-                          // onChange={handleChange}
                           onChange={(e) =>
-                            setData({ ...data, tran_pay: e.target.value })
+                            setData({ ...data, tran_pay: e.target.value.replace(/\D/g, "") })
                           }
                           id="outlined-basic"
                           variant="outlined"
@@ -395,10 +438,12 @@ const EditPay = (props) => {
                             id="file-1"
                             className="hidden sr-only w-full"
                             accept="image/x-png,image/gif,image/jpeg"
+                           
                             onChange={(event) => {
-                              setFile(event.target.value);
+                              setFile(event.target.files[0]);
                               setFileExists(true);
                               const get_file_size = event.target.files[0];
+
                               if (get_file_size.size > maxFileSize) {
                                 setFileSizeExceeded(true);
                                 return;
@@ -429,7 +474,7 @@ const EditPay = (props) => {
                           <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                             <div class="flex items-center justify-between">
                               <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                                {file}
+                                {file.name}
                               </span>
                               <button
                                 class="text-[#07074D]"
@@ -460,12 +505,21 @@ const EditPay = (props) => {
                 </div>
 
                 <div className="supplier-pay-btn-wrapper bg-white">
-                  <button
-                    className="add_btn2 text-red-600"
-                    onClick={handleClickSubmit}
-                  >
-                    Save
-                  </button>
+                  {submitDisabled ? (
+                    <button
+                      disabled={submitDisabled}
+                      className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      className="add_btn2 text-red-600"
+                      onClick={handleClickSubmit}
+                    >
+                      Save
+                    </button>
+                  )}
                 </div>
               </div>
             </>

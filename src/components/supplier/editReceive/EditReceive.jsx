@@ -57,6 +57,9 @@ const EditReceive = (props) => {
   };
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState([]);
+  const [subAmtType, setSubAmtType] = useState("");
+  const [prevSubTranReceive , setPrevSubTranReceive] = useState(0);
+  const [prevSubBalance , setPrevSubBalance] = useState(0);
   const [tran, setTran] = useState([]);
   const [update, setUpdate] = useState({
     sup_tran_receive: "",
@@ -66,6 +69,7 @@ const EditReceive = (props) => {
   useEffect(() => {
     axios.get(`http://localhost:8000/api/sup/fetchSup/${supId}`).then((res) => {
       setData(res.data);
+      setSubAmtType(res.data[0].sup_amt_type);
     });
     axios
       .get(`http://localhost:8000/api/sup/fetchTranid/${tranId}`)
@@ -76,7 +80,14 @@ const EditReceive = (props) => {
           sup_tran_receive: res.data[0].sup_tran_receive,
           sup_tran_date: res.data[0].sup_tran_date,
           sup_tran_description: res.data[0].sup_tran_description,
+          sup_balance: res.data[0].sup_balance,
         });
+      });
+    axios
+      .get(`http://localhost:8000/api/sup/fetchSupLastTran/${supId}`)
+      .then((response) => {
+        setPrevSubTranReceive(response.data[0].sup_tran_receive);
+        setPrevSubBalance(response.data[0].sup_balance);
       });
   }, [tranId]);
   const delTran = async () => {
@@ -91,10 +102,35 @@ const EditReceive = (props) => {
   const updateTran = async (e) => {
     e.preventDefault();
     try {
+      if (subAmtType === "pay") {
+        if (update.sup_tran_receive > prevSubTranReceive) {
+          update.sup_balance =
+            prevSubBalance - (update.sup_tran_receive - prevSubTranReceive);
+        } else if (update.sup_tran_receive < prevSubTranReceive) {
+          update.sup_balance =
+            prevSubBalance + (prevSubTranReceive - update.sup_tran_receive);
+        }
+      } else if (subAmtType === "receive") {
+        if (update.sup_tran_receive > prevSubTranReceive) {
+          update.sup_balance =
+            prevSubBalance - (update.sup_tran_receive - prevSubTranReceive);
+        } else if (update.sup_tran_receive < prevSubTranReceive) {
+          update.sup_balance =
+            prevSubTranReceive - update.sup_tran_receive + prevSubBalance;
+        }
+      }
       flag ? (update.sup_tran_date = filteredDate) : "";
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("sup_tran_receive", update.sup_tran_receive);
+      formData.append("sup_tran_description", update.sup_tran_description);
+      //formData.append("sup_tran_cnct_id", update.sup_tran_cnct_id);
+      formData.append("sup_tran_date", update.sup_tran_date);
+      formData.append("sup_balance", update.sup_balance);
+      console.log("filr : ", file, formData);
       await axios.put(
         `http://localhost:8000/api/sup/updateTran/${tranId}`,
-        update
+        formData
       );
       changeChange();
       props.snacku();
@@ -110,6 +146,7 @@ const EditReceive = (props) => {
   const handleImgClose = () => {
     setImgOpen(false);
   };
+  //console.log("file : " , file , formData)
   return (
     <Box sx={{ width: 400 }} role="presentation">
       {openEntryDetails ? (
@@ -322,7 +359,7 @@ const EditReceive = (props) => {
                       onChange={(e) =>
                         setUpdate({
                           ...update,
-                          sup_tran_receive: e.target.value,
+                          sup_tran_receive: e.target.value.replace(/\D/g, ""),
                         })
                       }
                       required
@@ -377,7 +414,7 @@ const EditReceive = (props) => {
                         className="hidden sr-only w-full"
                         accept="image/x-png,image/gif,image/jpeg"
                         onChange={(event) => {
-                          setFile(event.target.value);
+                          setFile(event.target.files[0]);
                           setFileExists(true);
                           const get_file_size = event.target.files[0];
                           if (get_file_size.size > maxFileSize) {
@@ -410,7 +447,7 @@ const EditReceive = (props) => {
                       <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                         <div class="flex items-center justify-between">
                           <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                            {file}
+                            {file.name}
                           </span>
                           <button
                             class="text-[#07074D]"

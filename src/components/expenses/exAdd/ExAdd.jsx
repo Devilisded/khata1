@@ -36,6 +36,8 @@ const AddExpense = (props) => {
   const { changeChange, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
+  const [expensesPrefixData, setExpensesPrefixData] = useState([]);
+  const [defaultPrefixNo, setDefaultPrefixNo] = useState(0);
 
   useEffect(() => {
     axios
@@ -48,6 +50,12 @@ const AddExpense = (props) => {
       .get(`http://localhost:8000/api/exp/fetchExpenseList`)
       .then((response) => {
         setResult2(response.data);
+      });
+    axios
+      .get(`http://localhost:8000/api/exp/fetchExpensesPrefixData`)
+      .then((response) => {
+        setExpensesPrefixData(response.data);
+        setDefaultPrefixNo(response.data[0].prefix_no);
       });
   }, [change]);
 
@@ -78,7 +86,7 @@ const AddExpense = (props) => {
   const [ecid, setEcid] = useState(0);
 
   const [addPrefix, setAddPrefix] = useState(false);
-  const [prefixValue, setPrefixValue] = useState("Add Prefix");
+  const [prefixValue, setPrefixValue] = useState("");
   const [temp, setTemp] = useState("");
 
   const [addExpenseItems, setAddExpenseItems] = useState(false);
@@ -94,6 +102,11 @@ const AddExpense = (props) => {
   const prefixSelectorHandler = () => {
     setprefixSelected(!prefixSelected);
   };
+
+  const [addNewCategoryError, setAddNewCategoryError] = useState(false);
+  const [editCategoryError, setEditCategoryError] = useState(false);
+  const [addNewExpensesItemError, setAddNewExpensesItemError] = useState(false);
+  const [editExpensesItemError, setEditExpensesItemError] = useState(false);
 
   const [values2, setValues2] = useState({
     category_name: null,
@@ -231,7 +244,7 @@ const AddExpense = (props) => {
       );
   };
 
-  const [list, setList] = useState({
+  let [list, setList] = useState({
     id: "",
     expense_name: "",
     price: "",
@@ -240,6 +253,13 @@ const AddExpense = (props) => {
   });
 
   const handleContinue = () => {
+    setList({
+      id: "",
+      expense_name: "",
+      price: "",
+      qty: "",
+      total_price: 0,
+    });
     setList((list) =>
       result2.map((item) =>
         item.qty > 0
@@ -265,9 +285,11 @@ const AddExpense = (props) => {
   for (var i = 0; i < list.length; i++) {
     sum = parseInt(list[i].total_price) + parseInt(sum);
   }
+  console.log("sum : ", sum, list);
 
   const [expenseData, setExpenseData] = useState({
-    prefix_name: "",
+    exp_prefix: "",
+    exp_prefix_no: "",
     expense_date: "",
     category_name: "",
     amount_paid: sum,
@@ -278,13 +300,29 @@ const AddExpense = (props) => {
     setExpenseData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const [prefixNo, setPrefixNo] = useState(1);
+  useEffect(() => {
+    expensesPrefixData
+      .filter((code) => code.exp_prefix === prefixValue)
+      .map(
+        (item) => setPrefixNo(item.prefix_no + 1)
+        //setPrefixValue("Expenses")
+      );
+  }, [addPrefix]);
+
   const handleClick = async (e) => {
     e.preventDefault();
     try {
       (expenseData.list = result3), (expenseData.amount_paid = sum);
       expenseData.expense_date = filteredDate;
-      expenseData.prefix_name = temp;
+      prefixValue === ""
+        ? ((expenseData.exp_prefix = "Expenses"),
+          (expenseData.exp_prefix_no = defaultPrefixNo + 1))
+        : ((expenseData.exp_prefix = temp),
+          (expenseData.exp_prefix_no = prefixNo));
+      //expenseData.prefix_name = temp;
       expenseData.category_name = categoryName;
+      //expenseData.prefix_no = prefixNo;
       console.log("values : ", expenseData, list);
       await axios.post(
         "http://localhost:8000/api/exp/addExpenses",
@@ -299,15 +337,14 @@ const AddExpense = (props) => {
 
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
-    if (
-      (expenseData.amount_paid !== "" || expenseData.amount_paid !== null,
-      expenseData.amount_paid !== 0)
-    ) {
+    if (sum !== "" && sum !== 0 && categoryName !== "Choose Category") {
       setSubmitDisabled(false);
     } else {
-      setSubmitDisabled(false);
+      setSubmitDisabled(true);
     }
-  }, [expenseData.amount_paid]);
+  }, [sum, categoryName]);
+
+  console.log("prefixNo : ", expenseData.prefix_no, prefixNo, prefixValue);
 
   return (
     <div>
@@ -332,7 +369,7 @@ const AddExpense = (props) => {
                         <TextField
                           id="outlined-basic"
                           variant="outlined"
-                          value={prefixValue}
+                          value={prefixValue === "" ? "Expenses" : prefixValue}
                           name="prefix_name"
                           className=" w-[65%]"
                           required
@@ -341,7 +378,11 @@ const AddExpense = (props) => {
                         <TextField
                           id="outlined-basic"
                           variant="outlined"
-                          value={12}
+                          value={
+                            prefixValue === "" || prefixValue === undefined
+                              ? defaultPrefixNo + 1
+                              : prefixNo
+                          }
                           name="prefix_number"
                           onChange={handleChange}
                           className=" w-[35%]"
@@ -378,7 +419,9 @@ const AddExpense = (props) => {
                               variant="outlined"
                               className="w-full "
                               size="small"
-                              onChange={(e) => setTemp(e.target.value)}
+                              onChange={(e) => {
+                                setTemp(e.target.value), setPrefixNo(1);
+                              }}
                               required
                             />
                           </div>
@@ -386,19 +429,19 @@ const AddExpense = (props) => {
                           <div>
                             <p className="py-3">Select from added prefixes </p>
                             <div className="flex gap-3">
-                              {prefixSuggestions.map((item) => (
+                              {expensesPrefixData.map((item) => (
                                 <p
                                   className={`border cursor-pointer rounded-[10px] py-2 px-3 ${
-                                    temp === item.option
+                                    temp === item.exp_prefix
                                       ? "selected_prefix"
                                       : ""
                                   }`}
                                   onClick={() => {
-                                    setTemp(item.option);
+                                    setTemp(item.exp_prefix);
                                     setPrefixValue(prefixSelectorHandler);
                                   }}
                                 >
-                                  {item.option}
+                                  {item.exp_prefix}
                                 </p>
                               ))}
                             </div>
@@ -511,23 +554,40 @@ const AddExpense = (props) => {
                                 value={newCategoryValue}
                                 size="small"
                                 onChange={(e) =>
-                                  setNewCategoryValue(e.target.value)
+                                  setNewCategoryValue(
+                                    result.find(
+                                      (category) =>
+                                        category.category_name.toLowerCase() ===
+                                        e.target.value.toLowerCase()
+                                    )
+                                      ? setAddNewCategoryError(true)
+                                      : (setAddNewCategoryError(false),
+                                        e.target.value)
+                                  )
                                 }
-                                required
+                                helperText={
+                                  addNewCategoryError
+                                    ? "Category Already Exists"
+                                    : ""
+                                }
                               />
 
-                              <div
+                              <button
                                 className="pl-3 icon_check"
                                 onClick={handleClick2}
+                                disabled={addNewCategoryError ? true : false}
                               >
                                 <IconCheck
                                   size={60}
                                   className=" text-green-600 fill-inherit cursor-pointer"
                                 />
-                              </div>
+                              </button>
                               <div
                                 className="pl-3 icon_check"
-                                onClick={() => setAddNewCategories(false)}
+                                onClick={() => {
+                                  setAddNewCategories(false),
+                                    setAddNewCategoryError(false);
+                                }}
                               >
                                 <IconX
                                   size={60}
@@ -550,18 +610,37 @@ const AddExpense = (props) => {
                                 size="small"
                                 value={updatedExpenseCategoryName}
                                 onChange={(e) =>
-                                  setUpdatedExpenseCategoryName(e.target.value)
+                                  setUpdatedExpenseCategoryName(
+                                    result.find(
+                                      (category) =>
+                                        category.category_name ===
+                                        e.target.value
+                                    )
+                                      ? setEditCategoryError(true)
+                                      : (setEditCategoryError(false),
+                                        e.target.value)
+                                  )
                                 }
-                                required
+                                helperText={
+                                  editCategoryError
+                                    ? "Category Already Exists"
+                                    : ""
+                                }
                               />
 
-                              <div className="pl-3 icon_check">
+                              <button
+                                className="pl-3 icon_check"
+                                disabled={editCategoryError ? true : false}
+                              >
                                 <IconCheck
                                   size={60}
                                   className="text-green-600 fill-inherit cursor-pointer"
-                                  onClick={() => updateExpenseCategoryData()}
+                                  onClick={(e) => {
+                                    e.preventDefault(),
+                                      updateExpenseCategoryData();
+                                  }}
                                 />
-                              </div>
+                              </button>
                               <div
                                 className="pl-3 icon_check"
                                 onClick={() => setEditCategories(false)}
@@ -748,7 +827,7 @@ const AddExpense = (props) => {
           <div>
             <Box
               sx={{
-                width: 500,
+                width: 450,
               }}
             >
               <div className="flex justify-between p-3 text-center items-center ">
@@ -815,8 +894,23 @@ const AddExpense = (props) => {
                               variant="outlined"
                               className="w-full "
                               size="small"
-                              onChange={(e) => setExpenseList(e.target.value)}
-                              required
+                              //onChange={(e) => setExpenseList(e.target.value)}
+                              onChange={(e) =>
+                                setExpenseList(
+                                  result2.find(
+                                    (item) =>
+                                      item.expense_name === e.target.value
+                                  )
+                                    ? setAddNewExpensesItemError(true)
+                                    : (setAddNewExpensesItemError(false),
+                                      e.target.value)
+                                )
+                              }
+                              helperText={
+                                addNewExpensesItemError
+                                  ? "Expenses Item Already Exists"
+                                  : ""
+                              }
                             />
                           </Box>
                           <Box className="box-sec ">
@@ -838,9 +932,14 @@ const AddExpense = (props) => {
                               }}
                             >
                               <button
-                                onClick={() => {
-                                  handleClick3(), setNewAddExpenseItems(false);
+                                onClick={(e) => {
+                                  e.preventDefault(),
+                                    handleClick3(),
+                                    setNewAddExpenseItems(false);
                                 }}
+                                disabled={
+                                  addNewExpensesItemError ? true : false
+                                }
                                 className="text-green-600  w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
                                 style={{ border: "1px solid #16a34a" }}
                               >
@@ -849,7 +948,10 @@ const AddExpense = (props) => {
                             </div>
                             <div
                               className=""
-                              onClick={() => setNewAddExpenseItems(false)}
+                              onClick={() => {
+                                setNewAddExpenseItems(false),
+                                  setAddNewExpensesItemError(false);
+                              }}
                             >
                               <button
                                 className="text-red-600 w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
@@ -864,12 +966,13 @@ const AddExpense = (props) => {
                         ""
                       )}
                     </Box>
-
+                    {console.log("seacrch value : ", searchValue)}
                     <Box>
                       {result2
                         .filter(
-                          (code) => code.expense_name.startsWith(searchValue)
-                          // || code.id.startsWith(searchValue)
+                          (code) =>
+                            code.expense_name.startsWith(searchValue) ||
+                            code.id === searchValue
                         )
                         .map((filteredItem) => (
                           <div key={filteredItem.id} className="category">
@@ -922,7 +1025,7 @@ const AddExpense = (props) => {
                                       setUpdatedExpensePrice(
                                         filteredItem.price
                                       );
-                                      setSearchValue(filteredItem.expense_name);
+                                      setSearchValue(filteredItem.id);
                                     }}
                                     className="text-blue-600  py-2 px-4 rounded-[5px]  hover:bg-blue-200 transition-all ease-in"
                                     style={{ border: "1px solid #2563eb" }}
@@ -966,9 +1069,21 @@ const AddExpense = (props) => {
                                     className="w-full "
                                     size="small"
                                     onChange={(e) =>
-                                      setupdatedExpenseItemName(e.target.value)
+                                      setupdatedExpenseItemName(
+                                        result2.find(
+                                          (item) =>
+                                            item.expense_name === e.target.value
+                                        )
+                                          ? setEditExpensesItemError(true)
+                                          : (setEditExpensesItemError(false),
+                                            e.target.value)
+                                      )
                                     }
-                                    required
+                                    helperText={
+                                      editExpensesItemError
+                                        ? "Expenses Item Already Exists"
+                                        : ""
+                                    }
                                   />
                                 </Box>
                                 <Box className="box-sec ">
@@ -1000,6 +1115,9 @@ const AddExpense = (props) => {
                                         updateExpenseItemData(filteredItem.id);
                                         setSearchValue("");
                                       }}
+                                      disabled={
+                                        editExpensesItemError ? true : false
+                                      }
                                       className="text-green-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
                                       style={{ border: "1px solid #47bc72" }}
                                     >
@@ -1019,6 +1137,7 @@ const AddExpense = (props) => {
                                         e.preventDefault(),
                                           setSearchValue(""),
                                           setEditExpenseItems(false);
+                                        setEditExpensesItemError(false);
                                       }}
                                       className="text-red-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
                                       style={{ border: "1px solid #dc2626" }}

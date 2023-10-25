@@ -21,7 +21,7 @@ const ExTran = (props) => {
           <div className="category font-semibold text-slate-700">
             {props.data.exp_category}
             <div className="text-xs p-[2px] border border-slate-200 rounded text-slate-600 mr-4">
-              Stationary #13
+            {props.data.exp_prefix} #{props.data.exp_prefix_no}
             </div>
           </div>
           <div className="text-sm text-slate-500 font-semibold">

@@ -108,6 +108,16 @@ const EditSup = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (info.sup_name !== "" && info.sup_number !== "" && info.sup_amt !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [info.sup_name, info.sup_number, info.sup_amt]);
+
   return (
     <div>
       {openEntryDetails ? (
@@ -316,7 +326,7 @@ const EditSup = (props) => {
                           size="small"
                           value={info.sup_number}
                           onChange={(e) =>
-                            setInfo({ ...info, sup_number: e.target.value })
+                            setInfo({ ...info, sup_number: e.target.value.replace(/\D/g, "") })
                           }
                           required
                         />
@@ -324,18 +334,20 @@ const EditSup = (props) => {
 
                       <Box className="box-sec ">
                         <TextField
+                          disabled
                           id="outlined-basic"
                           variant="outlined"
                           label="Enter amount"
                           className="sec-1"
                           size="small"
                           value={info.sup_amt}
-                          onChange={(e) =>
-                            setInfo({ ...info, sup_amt: e.target.value })
-                          }
+                          // onChange={(e) =>
+                          //   setInfo({ ...info, sup_amt: e.target.value.replace(/\D/g, "") })
+                          // }
                           required
                         />
                         <select
+                        disabled
                           className={
                             info.sup_amt_type === "receive"
                               ? "text-green-600 bg-white p-1 border border-slate-400 rounded"
@@ -582,12 +594,21 @@ const EditSup = (props) => {
               </Box>
             </div>
             <div className="add-customer-edit-btn-wrapper bg-white z-50">
-              <button
-                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-                onClick={updateSup}
-              >
-                Update Supplier
-              </button>
+              {submitDisabled ? (
+                <button
+                  disabled={submitDisabled}
+                  className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+                >
+                  Update Supplier
+                </button>
+              ) : (
+                <button
+                  className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+                  onClick={updateSup}
+                >
+                  Update Supplier
+                </button>
+              )}
             </div>
           </form>
         </>

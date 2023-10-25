@@ -8,11 +8,14 @@ const SerRight = (props) => {
   const { serId, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [data, setData] = useState([]);
+
+  const [serUnit , setSerUnit] = useState("")
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/ser/fetchDataid/${serId}`)
       .then((res) => {
         setResult(res.data);
+        setSerUnit(res.data[0].ser_unit)
       });
     axios
       .get(`http://localhost:8000/api/ser/fetchTranid/${serId}`)
@@ -20,7 +23,7 @@ const SerRight = (props) => {
         setData(res.data);
       });
   }, [change, serId]);
-  console.log(data);
+  
   return (
     <div className="serright">
       <div className="service">
@@ -47,7 +50,7 @@ const SerRight = (props) => {
           <div className="grItems">
             <div className="flex flex-col items-center">
               <div className="font-semibold text-lg text-slate-800">
-                {item.ser_sac}
+                {item.ser_sac !== "" ? item.ser_sac : '-'}
               </div>
               <div className="text-xs text-slate-600">SAC Code</div>
             </div>
@@ -55,7 +58,7 @@ const SerRight = (props) => {
           <div className="grItems">
             <div className="flex flex-col items-center">
               <div className="font-semibold text-lg text-slate-800">
-                GST@ {item.ser_gst}%
+                  {item.ser_igst !== null ? "GST@" + item.ser_igst + "%" : '-'}
               </div>
               <div className="text-xs text-slate-600">GST %</div>
             </div>
@@ -68,7 +71,7 @@ const SerRight = (props) => {
       </div>
       <div className="transactions">
         {data.map((item, index) => (
-          <SerTran key={index} data={item} editSale={props.editSale} />
+          <SerTran key={index} data={item} editSale={props.editSale} ser_unit={serUnit} />
         ))}
       </div>
       <div className="btn shadow-lg">

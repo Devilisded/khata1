@@ -9,8 +9,6 @@ import axios from "axios";
 const ExLeft = (props) => {
   const { change, expId } = useContext(UserContext);
   const [result, setResult] = useState([]);
-  //const [result2, setResult2] = useState([]);
-  //const [data, setData] = useState([]);
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/exp/fetchExpensesData")
@@ -18,6 +16,27 @@ const ExLeft = (props) => {
         setResult(response.data);
       });
   }, [change, expId]);
+
+  const [sortOption, setSortOption] = useState("");
+  const [filterByValue, setFilterByValue] = useState("All");
+  //const [filter2, setFilter2] = useState("All");
+  const [searchValue, setSearchValue] = useState("");
+
+  console.log("resulet : ", result);
+  let sortedUsers = [...result];
+
+  if (sortOption === "latestFirst") {
+    sortedUsers.sort((a, b) => b.exp_id - a.exp_id);
+  } else if (sortOption === "oldestFirst") {
+    sortedUsers.sort((a, b) => a.exp_id - b.exp_id);
+  } else if (sortOption === "highestAmount") {
+    sortedUsers.sort((a, b) => b.exp_total - a.exp_total);
+  } else if (sortOption === "lowestAmount") {
+    sortedUsers.sort((a, b) => a.exp_total - b.exp_total);
+  }
+
+  let categories = [...new Set(result.map((item) => item.exp_category))];
+ console.log("categories : ",categories)
   return (
     <div className="exleft">
       <div className="border-b border-slate-300 p-4 font-semibold text-blue-600 text-xl">
@@ -30,6 +49,7 @@ const ExLeft = (props) => {
             type="text"
             className="focus:outline-none p-1 w-56"
             placeholder="Name Or Phone Number"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
         <div className="filter1">
@@ -38,13 +58,17 @@ const ExLeft = (props) => {
               <div className="flex gap-3">Sort By</div>
             </InputLabel>
 
-            <Select label="Sort By" value={""}>
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value="recent">Most Recent</MenuItem>
+            <Select
+              label="Sort By"
+              value={sortOption}
+              onChange={(e) => {
+                setSortOption(e.target.value);
+              }}
+            >
+              <MenuItem value="latestFirst">Latest First</MenuItem>
+              <MenuItem value="oldestFirst">Oldest First</MenuItem>
               <MenuItem value="highestAmount">Highest Amount</MenuItem>
-              <MenuItem value="name">By Name</MenuItem>
+              <MenuItem value="lowestAmount">Lowest Amount</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -56,14 +80,15 @@ const ExLeft = (props) => {
               labelId="demo-select-small-label"
               id="demo-select-small"
               label="Filter By"
-              value={""}
+              value={filterByValue}
+              onChange={(e) => setFilterByValue(e.target.value)}
             >
-              <MenuItem>
-                <em>None</em>
-              </MenuItem>
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="pay">Receive</MenuItem>
-              <MenuItem value="receive">Pay</MenuItem>
+              {categories.map((item) => (
+                <MenuItem value={item} label={item}>
+                  {item}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>
@@ -72,10 +97,26 @@ const ExLeft = (props) => {
         <div className="name">Name</div>
         <div className="amount">Amount</div>
       </div>
+
       <div className="transactions border-b border-slate-300">
-        {result.map((item, index) => (
-          <ExTran key={index} data={item} />
-        ))}
+        {sortedUsers
+
+          .filter((code) => {
+            if (filterByValue !== "All") {
+             
+              return code.exp_category === filterByValue;
+            } else {
+              return code;
+            }
+          })
+          .filter((code) =>
+            code.exp_category
+              .toLowerCase()
+              .startsWith(searchValue.toLowerCase())
+          )
+          .map((filteredItem, index) => (
+            <ExTran key={index} data={filteredItem} />
+          ))}
       </div>
       <div className="expbtn px-6 py-4">
         <button

@@ -54,7 +54,7 @@ const StockOut = (props) => {
         });
         
         setConvertedPrice(
-          parseFloat(response.data[0].purchase_price / response.data[0].conversion)
+          parseFloat(response.data[0].sale_price / response.data[0].conversion)
         );
       });
     axios

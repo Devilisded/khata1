@@ -4,7 +4,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useContext, useState } from "react";
+import { useContext, useState , useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 const CashIn = (props) => {
@@ -23,7 +23,7 @@ const CashIn = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [payMode, setPayMode] = useState("");
+  const [payMode, setPayMode] = useState("cash");
 
   const [values, setValues] = useState({
     cash_receive: "",
@@ -38,7 +38,7 @@ const CashIn = (props) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      values.cash_date = filteredDate;
+      values.cash_date = filteredDate.trim();
       values.cash_mode = payMode;
       formData.append("image", file);
       formData.append("cash_receive", values.cash_receive);
@@ -52,6 +52,16 @@ const CashIn = (props) => {
       console.log(err);
     }
   };
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (values.cash_receive !== "") {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [values.cash_receive]);
+
   return (
     <form className="block overflow-hidden" method="post">
       <h1 className="text_left heading text-green-500 font-semibold text-lg">
@@ -76,7 +86,11 @@ const CashIn = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="cash_receive"
-                onChange={handleChange}
+                //onChange={handleChange}
+                onChange={(e) =>
+                  setValues({ ...values, cash_receive: e.target.value.replace(/\D/g, "") })
+                }
+                value={values.cash_receive}
                 required
               />
             </Box>
@@ -100,13 +114,14 @@ const CashIn = (props) => {
             </Box>
             <Box>
               <div>
-                <label>Payment Mode</label>
+                <label >Payment Mode</label>
               </div>
               <div className="flex gap-2 p-2">
                 <input
                   type="radio"
                   id="cash"
                   name="payment_mode"
+                  checked
                   onChange={(e) => setPayMode("cash")}
                 />
                 <label htmlFor="cash">Cash</label>
@@ -202,12 +217,22 @@ const CashIn = (props) => {
       </div>
 
       <div className="cashout-btn-wrapper">
-        <button
-          className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-          onClick={handleClick}
-        >
-          In
-        </button>
+        \
+        {submitDisabled ? (
+          <button
+            disabled={submitDisabled}
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+          >
+            In
+          </button>
+        ) : (
+          <button
+            className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
+            onClick={handleClick}
+          >
+            In
+          </button>
+        )}
       </div>
     </form>
   );

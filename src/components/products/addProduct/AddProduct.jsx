@@ -117,7 +117,7 @@ const AddProduct = (props) => {
     },
   ];
 
-  //   {
+  
   //     value: "taxExempted",
   //     label1: "Tax Exempted",
   //     label2: "(NO GST)",
@@ -173,64 +173,7 @@ const AddProduct = (props) => {
   //     label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
   //   },
   // ];
-  const hsn = [
-    {
-      hsn_code: "21",
-      product_name:
-        "LITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "5 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "212",
-      product_name:
-        "AITE BITE FOODS PVT LTD Classic ab cd  ef Vegetable Momo's 09 Pcs 9 Each",
-      tax: "6 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "213",
-      product_name:
-        "MITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "7 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "226",
-      product_name:
-        "BITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "8 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "271",
-      product_name:
-        "EITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "9 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "22",
-      product_name:
-        "BITE BITE FOODS PVT LTD Classic ab cd  ef Vegetable Momo's 09 Pcs 9 Each",
-      tax: "10 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "23",
-      product_name:
-        "MITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "11 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-    {
-      hsn_code: "27",
-      product_name:
-        "LITE BITE FOODS PVT LTD Classic Vegetable Momo's 09 Pcs 9 Each",
-      tax: "12 GST %",
-      tax_details: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-    },
-  ];
+ 
   const [isOn, setIsOn] = useState(false);
   const handleOnChange1 = () => {
     setIsOn(!isOn);
@@ -275,10 +218,10 @@ const AddProduct = (props) => {
     customeCess +
     "% CESS )";
 
-  const [igst, setIgst] = useState(null);
-  const [stategst, setStategst] = useState(null);
-  const [cgst, setCgst] = useState(null);
-  const [cess, setCess] = useState(null);
+   const [igst, setIgst] = useState(null);
+  // const [stategst, setStategst] = useState(null);
+  // const [cgst, setCgst] = useState(null);
+  //const [cess, setCess] = useState(null);
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -297,38 +240,38 @@ const AddProduct = (props) => {
   const [fileExists, setFileExists] = useState(false);
 
   const [primaryUnitValue, setPrimaryUnitValue] = useState(null);
-  const [secondaryUnitValue, setSecondaryUnitValue] = useState(null);
+  const [secondaryUnitValue, setSecondaryUnitValue] = useState("");
 
   const [productData, setProductData] = useState({
     product_name: "",
-    primary_unit: null,
+    primary_unit: "",
     secondary_unit: "",
-    sale_price: null,
-    purchase_price: null,
+    sale_price: "",
+    purchase_price: "",
     tax: "",
-    opening_stock: null,
+    opening_stock: "",
     low_stock: 0,
     balance_stock: 0,
     entry_date: "",
-    hsn_code: null,
+    hsn_code: "",
     hsn_desc: "",
-    sgst: null,
-    igst: null,
-    cess: null,
-    conversion: null,
-    cgst: null,
+    sgst: "",
+    igst: "",
+    cess: "",
+    conversion: "",
+    cgst: "",
   });
   const handleChange = (e) => {
     setProductData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   productData.entry_date = filteredDate;
-  productData.sgst = stategst;
-  productData.igst = igst;
-  productData.cgst = cgst;
-  productData.cess = customeCess;
-  productData.hsn_desc = hsnValue1;
-  productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
+  // productData.sgst = stategst;
+  // productData.igst = igst;
+  // productData.cgst = cgst;
+  // productData.cess = customeCess;
+  // productData.hsn_desc = hsnValue1;
+  // productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
   productData.tax = isOn2 ? "yes" : "no";
   const [err, setErr] = useState(null);
 
@@ -358,7 +301,7 @@ const AddProduct = (props) => {
       formData.append("cess", productData.cess);
       formData.append("conversion", productData.conversion);
       formData.append("cgst", productData.cgst);
-
+      console.log("product_data : " , productData)
       await axios.post("http://localhost:8000/api/auth/addProduct", formData);
       console.log("values : ", productData);
       changeChange();
@@ -561,7 +504,11 @@ const AddProduct = (props) => {
                         size="small"
                         name="conversion"
                         required
-                        onChange={handleChange}
+                        //onChange={handleChange}
+                        onChange={(e) =>
+                          setProductData({ ...productData, conversion : e.target.value.replace(/\D/g, "") })
+                        }
+                        value={productData.conversion}
                       />
                     </div>
                   </Box>
@@ -575,7 +522,11 @@ const AddProduct = (props) => {
                     variant="outlined"
                     label="Sale Price"
                     name="sale_price"
-                    onChange={handleChange}
+                    //onChange={handleChange}
+                    onChange={(e) =>
+                      setProductData({ ...productData, sale_price : e.target.value.replace(/\D/g, "") })
+                    }
+                    value={productData.sale_price}
                     className="sec-1 w-full"
                     size="small"
                     required
@@ -589,13 +540,18 @@ const AddProduct = (props) => {
                     size="small"
                     name="purchase_price"
                     required
-                    onChange={handleChange}
+                    //onChange={handleChange}
+                    onChange={(e) =>
+                      setProductData({ ...productData, purchase_price : e.target.value.replace(/\D/g, "") })
+                    }
+                    value={productData.purchase_price}
                   />
                 </Box>
                 <Box className="box-sec margin-top-zero ">
                   <label className="pl-2 ">Tax included</label>
                   <Switch
                     {...label}
+                    
                     color="success"
                     onChange={handleOnChange2}
                   />
@@ -608,7 +564,12 @@ const AddProduct = (props) => {
                     label="Opening stock"
                     className="sec-1 w-full"
                     size="small"
-                    onChange={handleChange}
+                    //onChange={handleChange}
+                    onChange={(e) =>
+                      setProductData({ ...productData, opening_stock : e.target.value.replace(/\D/g, "") })
+                    }
+                    value={productData.opening_stock}
+                    
                     name="opening_stock"
                     required
                   />
@@ -619,7 +580,11 @@ const AddProduct = (props) => {
                     label="Low stock"
                     className="sec-2 w-full"
                     size="small"
-                    onChange={handleChange}
+                    //onChange={handleChange}
+                    onChange={(e) =>
+                      setProductData(e.target.value !== 0 ? { ...productData, low_stock : e.target.value.replace(/\D/g, "") } : {low_stock : 0} )
+                    }
+                    value={productData.low_stock === 0 ? "" : productData.low_stock}
                     name="low_stock"
                   />
                 </Box>
@@ -696,19 +661,15 @@ const AddProduct = (props) => {
                             key={filteredItem.hsn_code}
                             className="flex card-sec"
                             onClick={() => {
-                              // setProductData({
-                              //   ...productData ,
-
-                              //   igst: filteredItem.igst,
-                              //   cgst: filteredItem.cgst,
-                              //   sgst: filteredItem.sgst,
-                              //   hsn_code:  typeof(filteredItem.hsn_code) === "number" ? filteredItem.hsn_code : null,
-                              //   hsn_desc: filteredItem.hsn_desc,
-                              // })
-                              // {console.log(productData)}
-                              setIgst(filteredItem.igst),
-                                setCgst(filteredItem.cgst),
-                                setStategst(filteredItem.sgst),
+                              setProductData({
+                                ...productData ,
+                                igst: filteredItem.igst,
+                                cgst: filteredItem.cgst,
+                                sgst: filteredItem.sgst,
+                                hsn_code:  typeof(filteredItem.hsn_code) === "number" ? filteredItem.hsn_code : null,
+                                hsn_desc: filteredItem.hsn_desc,
+                              })
+                              
                                 setHsnCode(filteredItem.hsn_code),
                                 setHsnValue1(filteredItem.hsn_desc),
                                 setGstValue1(filteredItem.igst),
@@ -782,10 +743,14 @@ const AddProduct = (props) => {
                                           "% IGST )"
                                       );
                                     setIsClicked2(false);
-                                    setIgst(item.label1),
-                                      setCgst(item.label2),
-                                      setStategst(item.label3),
-                                      console.log(gstValue2);
+                                    setIgst(item.label1)
+                                    setProductData({
+                                      ...productData,
+                                      igst: item.label1,
+                                      cgst: item.label2,
+                                      sgst: item.label3,
+                                    });
+                                      
                                   }}
                                 />
                               </div>
@@ -804,7 +769,7 @@ const AddProduct = (props) => {
                         size="small"
                         required
                         onChange={(e) => {
-                          setcustomGst(e.target.value);
+                          setcustomGst(e.target.value.replace(/\D/g, ""));
                         }}
                       />
                       <TextField
@@ -815,8 +780,12 @@ const AddProduct = (props) => {
                         size="small"
                         required
                         onChange={(e) => {
-                          setCustomeCess(e.target.value);
+                          setCustomeCess(e.target.value.replace(/\D/g, ""));
                         }}
+                        // onChange={(e) =>
+                        //   setProductData({ ...productData, low_stock : e.target.value.replace(/\D/g, "") })
+                        // }
+                        // value={productData.low_stock === 0 ? "" : productData.low_stock}
                       />
                     </Box>
                     <Box className="box-sec">
@@ -826,13 +795,20 @@ const AddProduct = (props) => {
                             setGstValue1(customGst),
                             setGstValue2(custom_gst_details);
                           setIsClicked2(false);
-                          setIgst(customGst),
-                            setCgst(customGst / 2),
-                            setStategst(customGst / 2),
-                            setCustomeCess(customeCess);
-                          {
-                            console.log(productData);
-                          }
+                          // setIgst(customGst),
+                          //   setCgst(customGst / 2),
+                          //   setStategst(customGst / 2),
+                          //   setCustomeCess(customeCess);
+                          // {
+                          //   console.log(productData);
+                          // }
+                          setProductData({
+                            ...productData,
+                            igst: customGst,
+                            cgst: customGst / 2,
+                            sgst: customGst / 2,
+                            cess: customeCess,
+                          });
                         }}
                       >
                         Add Custome Gst

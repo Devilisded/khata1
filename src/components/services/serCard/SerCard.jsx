@@ -44,6 +44,7 @@ const SerCard = (props) => {
         </div>
         <div className="w-[70px]">
           <div className="qty text-slate-800 text-lg">{sum}</div>
+          {/* <div className="qty text-slate-800 text-lg">{props.data.ser_sales === null ? 0 : props.data.ser_sales}</div> */}
         </div>
       </div>
     </div>

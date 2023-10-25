@@ -124,7 +124,7 @@ const ProRight = (props) => {
             <div className="grItems">
               <div className="flex flex-col items-center">
                 <div className="font-semibold text-lg text-slate-800">
-                  {item.igst >= 0 && item.igst !== null
+                  {item.igst >= 0 && item.igst !== null && item.igst !== ""
                     ? "GST @ " + item.igst + "%"
                     : "-"}
                 </div>

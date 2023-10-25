@@ -9,15 +9,8 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const SerLeft = (props) => {
   const { change } = useContext(UserContext);
-  const [age, setAge] = useState("");
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-  const [filter, setFilter] = useState("");
-  const handleChange1 = (e) => {
-    setFilter(e.target.value);
-  };
+  const [filterByValue, setFilterByValue] = useState("All");
+  
   const location = useLocation();
 
   const [result, setResult] = useState([]);
@@ -32,6 +25,32 @@ const SerLeft = (props) => {
         setData(response.data);
       });
   }, [change]);
+
+
+  const [filter2, setFilter2] = useState("All");
+  const [searchValue, setSearchValue] = useState("");
+
+  const [sortOption, setSortOption] = useState("");
+  const handleChange1 = (e) => {
+    setSortOption(e.target.value);
+  };
+  console.log("sortOption : ", sortOption)
+  let sortedUsers = [...result];
+  if (sortOption === "recent") {
+    sortedUsers.sort((a, b) => b.ser_id - a.ser_id);
+  } else if (sortOption === "highestAmount") {
+    sortedUsers.sort((a, b) => b.ser_price - a.ser_price);
+  } else if (sortOption === "name") {
+    sortedUsers.sort((a, b) => a.ser_name.localeCompare(b.ser_name));
+  
+  } else if (sortOption === "salesPriceHighToLow") {
+    sortedUsers.sort((a, b) => b.ser_price - a.ser_price );
+  }
+  else if (sortOption === "salesPriceLowToHigh") {
+    sortedUsers.sort((a, b) => a.ser_price  - b.ser_price );
+  }
+
+  console.log("sortedUsers : " , sortedUsers , result)
   return (
     <div className="serleft">
       <div className="heading text-lg font-semibold">
@@ -65,6 +84,7 @@ const SerLeft = (props) => {
             type="text"
             className="focus:outline-none p-1 w-56"
             placeholder="Search By Product Name"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
         <div className="filter1">
@@ -75,16 +95,19 @@ const SerLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={filter}
+              //value={filter}
               label="Sort By"
               onChange={handleChange1}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>Most Recent</MenuItem>
-              <MenuItem value={20}>Highest Amount</MenuItem>
-              <MenuItem value={30}>By Name</MenuItem>
+              <MenuItem value="recent">Most Recent</MenuItem>
+              <MenuItem value="highestAmount">Highest Amount</MenuItem>
+              <MenuItem value="name">By Name</MenuItem>
+              <MenuItem value="salesPriceHighToLow">Sales Price High - Low</MenuItem>
+              <MenuItem value="salesPriceLowToHigh">Sales Price Low - High</MenuItem>
+              
             </Select>
           </FormControl>
         </div>
@@ -94,16 +117,13 @@ const SerLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={age}
+              //value={age}
               label="Filter By"
-              onChange={handleChange}
+              onChange={(e) => setFilterByValue(e.target.value)}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>All</MenuItem>
-              <MenuItem value={20}>Pay</MenuItem>
-              <MenuItem value={30}>Receive</MenuItem>
+              
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="lowSales">Low Sales</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -116,10 +136,29 @@ const SerLeft = (props) => {
         <div className="sprice text-slate-600">Sales Price</div>
         <div className="qty text-slate-600">No. Of Sales</div>
       </div>
-      <div className="cards">
+      {/* <div className="cards">
         {result.map((item, index) => (
           <SerCard key={index} data={item} />
         ))}
+      </div> */}
+      <div className="cards">
+        
+        {sortedUsers
+
+          .filter((code) => {
+            if (filterByValue === "lowSales") {
+              return code.ser_sales === null;
+            } else if (filterByValue === "All") {
+              return true;
+            }
+          })
+          .filter(
+            (code) =>
+              code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          )
+          .map((filteredItem, index) => (
+            <SerCard key={index} data={filteredItem} />
+          ))}
       </div>
     </div>
   );

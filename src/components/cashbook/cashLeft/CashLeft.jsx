@@ -27,6 +27,7 @@ const CashLeft = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
   const [info, setInfo] = useState([]);
+  console.log(filteredDate);
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/cash/fetchDate/${filteredDate}`)
@@ -37,6 +38,7 @@ const CashLeft = (props) => {
       setInfo(res.data);
     });
   }, [change, transactionDate]);
+
   const sum_pay = data.reduce(function (prev, current) {
     return prev + +current.cash_pay;
   }, 0);
@@ -51,6 +53,7 @@ const CashLeft = (props) => {
     return prev + +current.cash_receive;
   }, 0);
   const totalBalance = total_pay - total_receive;
+  console.log(data);
   return (
     <div className="cashleft">
       <div className="text-xl font-semibold p-5 border-b border-gray-300 text-blue-600">
