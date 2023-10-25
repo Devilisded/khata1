@@ -19,7 +19,7 @@ import "./editExpenses.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 import { useSnackbar } from "notistack";
-const EditExpense = (props) => {
+const EditExpenses = (props) => {
   const { change, expId, changeChange } = useContext(UserContext);
   const [expensesListResult, setExpensesListResult] = useState([]);
   const [expensesCategoryResult, setExpensesCategoryResult] = useState([]);
@@ -1184,4 +1184,4 @@ const EditExpense = (props) => {
   );
 };
 
-export default EditExpense;
+export default EditExpenses;
