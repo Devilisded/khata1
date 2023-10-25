@@ -15,11 +15,13 @@ const MainLeft = (props) => {
   const [result, setResult] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios.get(process.env.Backend_Url + "/api/auth/fetch").then((response) => {
-      setResult(response.data);
-    });
     axios
-      .get(process.env.Backend_Url + "/api/auth/fetchAll")
+      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetch")
+      .then((response) => {
+        setResult(response.data);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchAll")
       .then((response) => {
         setTran(response.data);
       });
