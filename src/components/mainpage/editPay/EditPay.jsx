@@ -32,7 +32,7 @@ const EditPay = (props) => {
   const { tranId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
-  const [amtType , setAmtType] = useState("");
+  const [amtType, setAmtType] = useState("");
   const [data, setData] = useState({
     tran_pay: "",
     tran_description: "",
@@ -42,7 +42,7 @@ const EditPay = (props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchTranid/${tranId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTranid/${tranId}`)
       .then((response) => {
         setResult(response.data);
         setData({
@@ -53,15 +53,17 @@ const EditPay = (props) => {
           balance: response.data[0].balance,
         });
       });
-      
+
     axios
-      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/auth/fetchDataUsingId/${userId}`
+      )
       .then((response) => {
         setAmtType(response.data[0].amt_type);
         setResult2(response.data);
       });
     axios
-      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchLastTran/${userId}`)
       .then((response) => {
         setPrevTranPay(response.data[0].tran_pay);
         setPrevBalance(response.data[0].balance);
@@ -103,7 +105,9 @@ const EditPay = (props) => {
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
-      await axios.delete(`http://localhost:8000/api/auth/deleteTran/${tranId}`);
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/auth/deleteTran/${tranId}`
+      );
       changeChange();
       props.snackd();
     } catch (err) {
@@ -118,7 +122,7 @@ const EditPay = (props) => {
         if (data.tran_pay > prevTranPay) {
           data.balance = prevBalance + (data.tran_pay - prevTranPay);
         } else if (data.tran_pay < prevTranPay) {
-          data.balance = prevBalance - (prevTranPay - data.tran_pay) ;
+          data.balance = prevBalance - (prevTranPay - data.tran_pay);
         }
       } else if (amtType === "receive") {
         if (data.tran_pay > prevTranPay) {
@@ -137,7 +141,7 @@ const EditPay = (props) => {
       formData.append("balance", data.balance);
       console.log("formData : ", formData);
       await axios.put(
-        `http://localhost:8000/api/auth/updateTran/${tranId}`,
+        import.meta.env.VITE_BACKEND + `/api/auth/updateTran/${tranId}`,
         formData
       );
       changeChange();
@@ -375,7 +379,10 @@ const EditPay = (props) => {
                           name="tran_pay"
                           value={data.tran_pay}
                           onChange={(e) =>
-                            setData({ ...data, tran_pay: e.target.value.replace(/\D/g, "") })
+                            setData({
+                              ...data,
+                              tran_pay: e.target.value.replace(/\D/g, ""),
+                            })
                           }
                           id="outlined-basic"
                           variant="outlined"
@@ -438,7 +445,6 @@ const EditPay = (props) => {
                             id="file-1"
                             className="hidden sr-only w-full"
                             accept="image/x-png,image/gif,image/jpeg"
-                           
                             onChange={(event) => {
                               setFile(event.target.files[0]);
                               setFileExists(true);

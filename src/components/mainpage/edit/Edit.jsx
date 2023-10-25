@@ -66,7 +66,7 @@ const Edit = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchCust/${userId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchCust/${userId}`)
       .then((response) => {
         setResult(response.data);
         setData({
@@ -91,7 +91,9 @@ const Edit = (props) => {
   }, [change, userId]);
   const deleteCustomer = async () => {
     try {
-      await axios.post(`http://localhost:8000/api/auth/delcust/${userId}`);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + `api/auth/delcust/${userId}`
+      );
       changeChange();
       props.snack();
       changeUser(0);
@@ -99,17 +101,19 @@ const Edit = (props) => {
       console.log(err);
     }
   };
-  data.cust_bflat = data.cust_sflat,
-  data.cust_barea = data.cust_sarea,
-  data.cust_bpin = data.cust_spin,
-  data.cust_bcity = data.cust_scity,
-  data.cust_bstate = data.cust_sstate;
-
+  (data.cust_bflat = data.cust_sflat),
+    (data.cust_barea = data.cust_sarea),
+    (data.cust_bpin = data.cust_spin),
+    (data.cust_bcity = data.cust_scity),
+    (data.cust_bstate = data.cust_sstate);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      axios.put(`http://localhost:8000/api/auth/updatecust/${userId}`, data);
+      axios.put(
+        import.meta.env.VITE_BACKEND + `/api/auth/updatecust/${userId}`,
+        data
+      );
       changeChange();
       props.snacku();
     } catch (err) {
@@ -122,7 +126,7 @@ const Edit = (props) => {
     if (
       data.cust_name !== "" &&
       data.cust_number !== "" &&
-      data.cust_amt !== "" 
+      data.cust_amt !== ""
     ) {
       setSubmitDisabled(false);
     } else {
@@ -343,7 +347,6 @@ const Edit = (props) => {
                     >
                       <div className="box-sec">
                         <TextField
-                          
                           label="Name"
                           id="outlined-basic"
                           variant="outlined"
@@ -359,17 +362,19 @@ const Edit = (props) => {
 
                       <div className="box-sec">
                         <TextField
-                        
                           id="outlined-basic"
                           variant="outlined"
                           label="Phone Number"
                           type="tel"
                           className="w-full"
                           size="small"
-                          inputProps={{ maxLength: 10}}
+                          inputProps={{ maxLength: 10 }}
                           value={data.cust_number}
                           onChange={(e) =>
-                            setData({ ...data, cust_number: e.target.value.replace(/\D/g, "") })
+                            setData({
+                              ...data,
+                              cust_number: e.target.value.replace(/\D/g, ""),
+                            })
                           }
                           required
                         />
@@ -377,7 +382,7 @@ const Edit = (props) => {
 
                       <div className="box-sec ">
                         <TextField
-                        disabled
+                          disabled
                           id="outlined-basic"
                           variant="outlined"
                           label="Enter amount"
@@ -390,7 +395,7 @@ const Edit = (props) => {
                           required
                         />
                         <select
-                        disabled
+                          disabled
                           className={
                             data.amt_type === "receive"
                               ? "text-green-600 bg-white p-1 border border-slate-400 rounded"

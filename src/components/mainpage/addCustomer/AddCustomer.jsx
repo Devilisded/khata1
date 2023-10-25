@@ -23,25 +23,21 @@ const AddCustomer = (props) => {
     cust_bcity: "",
     cust_bstate: "",
   });
-  values.cust_bflat = values.cust_sflat,
-  values.cust_barea = values.cust_sarea,
-  values.cust_bpin = values.cust_spin,
-  values.cust_bcity = values.cust_scity,
-  values.cust_bstate = values.cust_sstate;
+  (values.cust_bflat = values.cust_sflat),
+    (values.cust_barea = values.cust_sarea),
+    (values.cust_bpin = values.cust_spin),
+    (values.cust_bcity = values.cust_scity),
+    (values.cust_bstate = values.cust_sstate);
 
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-
-  
   const [err, setErr] = useState(null);
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      
-      
-      await axios.post("http://localhost:8000/api/auth/send", values);
+      await axios.post(import.meta.env.VITE_BACKEND + "/api/auth/send", values);
       changeChange();
       props.snack();
     } catch (err) {
@@ -73,8 +69,6 @@ const AddCustomer = (props) => {
     }
   }, [values.cust_name, values.cust_number, values.cust_amt, values.amt_type]);
 
-  
-
   return (
     <div>
       <form method="post">
@@ -105,12 +99,14 @@ const AddCustomer = (props) => {
                     variant="outlined"
                     label="Phone Number"
                     name="cust_number"
-          
                     className="w-full"
                     size="small"
-                    inputProps={{ maxLength: 10}}
+                    inputProps={{ maxLength: 10 }}
                     onChange={(e) =>
-                      setValues({ ...values, cust_number : e.target.value.replace(/\D/g, "") })
+                      setValues({
+                        ...values,
+                        cust_number: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={values.cust_number}
                     required
@@ -126,7 +122,10 @@ const AddCustomer = (props) => {
                     className="sec-1"
                     size="small"
                     onChange={(e) =>
-                      setValues({ ...values, cust_amt : e.target.value.replace(/\D/g, "") })
+                      setValues({
+                        ...values,
+                        cust_amt: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={values.cust_amt}
                     required

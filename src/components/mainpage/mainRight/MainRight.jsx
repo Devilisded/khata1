@@ -10,7 +10,7 @@ const MainRight = (props) => {
   const [result, setResult] = useState([]);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchTran/${userId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTran/${userId}`)
       .then((response) => {
         setResult(response.data);
       });

@@ -32,7 +32,7 @@ const EditReceive = (props) => {
   const { tranId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
-  const [amtType , setAmtType] = useState("");
+  const [amtType, setAmtType] = useState("");
   const [data, setData] = useState({
     tran_description: "",
     tran_date: "",
@@ -41,7 +41,7 @@ const EditReceive = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchTranid/${tranId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTranid/${tranId}`)
       .then((response) => {
         setResult(response.data);
         setData({
@@ -54,13 +54,15 @@ const EditReceive = (props) => {
       });
 
     axios
-      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/auth/fetchDataUsingId/${userId}`
+      )
       .then((response) => {
         setAmtType(response.data[0].amt_type);
         setResult2(response.data);
       });
     axios
-      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchLastTran/${userId}`)
       .then((response) => {
         setPrevTranRecieve(response.data[0].tran_receive);
         setPrevBalance(response.data[0].balance);
@@ -70,7 +72,9 @@ const EditReceive = (props) => {
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
-      await axios.delete(`http://localhost:8000/api/auth/deleteTran/${tranId}`);
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/auth/deleteTran/${tranId}`
+      );
       changeChange();
       props.snackd();
     } catch (err) {
@@ -99,23 +103,24 @@ const EditReceive = (props) => {
     setOpen(true);
   };
 
-
   const handleClickSubmit = async (e) => {
     e.preventDefault();
     try {
-     
       if (amtType === "pay") {
         if (data.tran_receive > prevTranRecieve) {
-          data.balance = prevBalance - (parseInt(data.tran_receive) - prevTranRecieve) ;
-          
+          data.balance =
+            prevBalance - (parseInt(data.tran_receive) - prevTranRecieve);
         } else if (data.tran_receive < prevTranRecieve) {
-          data.balance = prevBalance + (prevTranRecieve - parseInt(data.tran_receive)); 
+          data.balance =
+            prevBalance + (prevTranRecieve - parseInt(data.tran_receive));
         }
       } else if (amtType === "receive") {
-        if (data.tran_receive > prevTranRecieve) {          
-          data.balance = prevBalance + (parseInt(data.tran_receive) - prevTranRecieve);
+        if (data.tran_receive > prevTranRecieve) {
+          data.balance =
+            prevBalance + (parseInt(data.tran_receive) - prevTranRecieve);
         } else if (data.tran_receive < prevTranRecieve) {
-          data.balance = prevBalance - (prevTranRecieve - parseInt(data.tran_receive));
+          data.balance =
+            prevBalance - (prevTranRecieve - parseInt(data.tran_receive));
         }
       }
 
@@ -128,7 +133,7 @@ const EditReceive = (props) => {
       formData.append("balance", data.balance);
       console.log("formData : ", formData);
       await axios.put(
-        `http://localhost:8000/api/auth/updateTran/${tranId}`,
+        import.meta.env.VITE_BACKEND + `/api/auth/updateTran/${tranId}`,
         formData
       );
       changeChange();
@@ -138,7 +143,6 @@ const EditReceive = (props) => {
     }
   };
 
-  
   const handleClose = () => {
     setOpen(false);
   };
@@ -372,7 +376,10 @@ const EditReceive = (props) => {
                       <Box className="box-sec">
                         <TextField
                           onChange={(e) =>
-                            setData({ ...data, tran_receive: e.target.value.replace(/\D/g, "") })
+                            setData({
+                              ...data,
+                              tran_receive: e.target.value.replace(/\D/g, ""),
+                            })
                           }
                           value={data.tran_receive}
                           label="Amount"

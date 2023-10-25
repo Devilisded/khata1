@@ -26,17 +26,19 @@ const Receive = (props) => {
 
   const [res, setRes] = useState([]);
   const [bal, setBal] = useState(null);
-  const [amtType , setAmtType] = useState("");
+  const [amtType, setAmtType] = useState("");
   const [custAmt, setCustAmt] = useState(0);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchDataUsingId/${userId}`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/auth/fetchDataUsingId/${userId}`
+      )
       .then((response) => {
         setCustAmt(response.data[0].cust_amt);
         setAmtType(response.data[0].amt_type);
       });
     axios
-      .get(`http://localhost:8000/api/auth/fetchLastTran/${userId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchLastTran/${userId}`)
       .then((response) => {
         setRes(response.data);
         setBal(response.data[0].balance);
@@ -69,7 +71,7 @@ const Receive = (props) => {
           values.balance = bal + parseInt(values.tran_receive);
         }
       }
-      
+
       const formData = new FormData();
       values.tran_date = filteredDate;
       formData.append("image", file);
@@ -78,7 +80,10 @@ const Receive = (props) => {
       formData.append("cnct_id", values.cnct_id);
       formData.append("tran_date", values.tran_date);
       formData.append("balance", values.balance);
-      await axios.post("http://localhost:8000/api/auth/sendTran", formData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/auth/sendTran",
+        formData
+      );
       changeChange();
       props.snack();
     } catch (err) {
