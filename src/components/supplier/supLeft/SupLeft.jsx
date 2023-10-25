@@ -20,12 +20,16 @@ const SupLeft = (props) => {
   const [data, setData] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:8000/api/sup/fetchData").then((response) => {
-      setData(response.data);
-    });
-    axios.get("http://localhost:8000/api/sup/fetchAll").then((response) => {
-      setTran(response.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchData")
+      .then((response) => {
+        setData(response.data);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchAll")
+      .then((response) => {
+        setTran(response.data);
+      });
   }, [change]);
   const sum = data
     .filter((person) => person.sup_amt_type === "pay")

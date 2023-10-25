@@ -39,7 +39,10 @@ const AddSupplier = (props) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/sup/sendData", values);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/sup/sendData",
+        values
+      );
       changeChange();
       props.snack();
     } catch (err) {
@@ -99,9 +102,11 @@ const AddSupplier = (props) => {
                     className="w-full"
                     size="small"
                     name="sup_number"
-                    
                     onChange={(e) =>
-                      setValues({ ...values, sup_number : e.target.value.replace(/\D/g, "") })
+                      setValues({
+                        ...values,
+                        sup_number: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={values.sup_number}
                     inputProps={{ maxLength: 10 }}
@@ -122,7 +127,10 @@ const AddSupplier = (props) => {
                     name="sup_amt"
                     //onChange={handleChange}
                     onChange={(e) =>
-                      setValues({ ...values, sup_amt : e.target.value.replace(/\D/g, "") })
+                      setValues({
+                        ...values,
+                        sup_amt: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={values.sup_amt}
                     required

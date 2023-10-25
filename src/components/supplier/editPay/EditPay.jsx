@@ -57,22 +57,24 @@ const EditPay = (props) => {
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState([]);
   const [subAmtType, setSubAmtType] = useState("");
-  const [prevSubTranPay , setPrevSubTranPay] = useState(0);
-  const [prevSubBalance , setPrevSubBalance] = useState(0);
+  const [prevSubTranPay, setPrevSubTranPay] = useState(0);
+  const [prevSubBalance, setPrevSubBalance] = useState(0);
   const [tran, setTran] = useState([]);
   const [update, setUpdate] = useState({
     sup_tran_pay: "",
     sup_tran_date: "",
     sup_tran_description: "",
-    sup_balance: ""
+    sup_balance: "",
   });
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/sup/fetchSup/${supId}`).then((res) => {
-      setData(res.data);
-      setSubAmtType(res.data[0].sup_amt_type);
-    });
     axios
-      .get(`http://localhost:8000/api/sup/fetchTranid/${tranId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${supId}`)
+      .then((res) => {
+        setData(res.data);
+        setSubAmtType(res.data[0].sup_amt_type);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchTranid/${tranId}`)
       .then((res) => {
         setTran(res.data);
         setUpdate({
@@ -80,11 +82,11 @@ const EditPay = (props) => {
           sup_tran_pay: res.data[0].sup_tran_pay,
           sup_tran_date: res.data[0].sup_tran_date,
           sup_tran_description: res.data[0].sup_tran_description,
-          sup_balance: res.data[0].sup_balance
+          sup_balance: res.data[0].sup_balance,
         });
       });
     axios
-      .get(`http://localhost:8000/api/sup/fetchSupLastTran/${supId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSupLastTran/${supId}`)
       .then((response) => {
         setPrevSubTranPay(response.data[0].sup_tran_pay);
         setPrevSubBalance(response.data[0].sup_balance);
@@ -92,7 +94,9 @@ const EditPay = (props) => {
   }, [tranId]);
   const delTran = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/sup/delTran/${tranId}`);
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/sup/delTran/${tranId}`
+      );
       changeChange();
       props.snackd();
     } catch (err) {
@@ -104,15 +108,19 @@ const EditPay = (props) => {
     try {
       if (subAmtType === "pay") {
         if (update.sup_tran_pay > prevSubTranPay) {
-          update.sup_balance = prevSubBalance + (update.sup_tran_pay - prevSubTranPay);
+          update.sup_balance =
+            prevSubBalance + (update.sup_tran_pay - prevSubTranPay);
         } else if (update.sup_tran_pay < prevSubTranPay) {
-          update.sup_balance = prevSubBalance - (prevSubTranPay - update.sup_tran_pay);
+          update.sup_balance =
+            prevSubBalance - (prevSubTranPay - update.sup_tran_pay);
         }
       } else if (subAmtType === "receive") {
         if (update.sup_tran_pay > prevSubTranPay) {
-          update.sup_balance = prevSubBalance - (update.sup_tran_pay - prevSubTranPay);
+          update.sup_balance =
+            prevSubBalance - (update.sup_tran_pay - prevSubTranPay);
         } else if (update.sup_tran_pay < prevSubTranPay) {
-          update.sup_balance = prevSubTranPay - update.sup_tran_pay + prevSubBalance;
+          update.sup_balance =
+            prevSubTranPay - update.sup_tran_pay + prevSubBalance;
         }
       }
       flag ? (update.sup_tran_date = filteredDate) : "";
@@ -125,7 +133,7 @@ const EditPay = (props) => {
       formData.append("sup_balance", update.sup_balance);
       console.log("filr : ", file, formData);
       await axios.put(
-        `http://localhost:8000/api/sup/updateTran/${tranId}`,
+        import.meta.env.VITE_BACKEND + `/api/sup/updateTran/${tranId}`,
         formData
       );
 
@@ -221,7 +229,9 @@ const EditPay = (props) => {
                         {item.sup_tran_bill ? (
                           <img
                             src={
-                              "http://localhost:8000/sup/" + item.sup_tran_bill
+                              import.meta.env.VITE_BACKEND +
+                              "/sup/" +
+                              item.sup_tran_bill
                             }
                             width={50}
                             height={50}
@@ -243,7 +253,8 @@ const EditPay = (props) => {
                             <img
                               className="image"
                               src={
-                                "http://localhost:8000/sup/" +
+                                import.meta.env.VITE_BACKEND +
+                                "/sup/" +
                                 item.sup_tran_bill
                               }
                               alt="no image"

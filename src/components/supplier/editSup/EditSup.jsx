@@ -69,7 +69,7 @@ const EditSup = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/sup/fetchSup/${supId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${supId}`)
       .then((response) => {
         setData(response.data);
         setInfo({
@@ -93,7 +93,9 @@ const EditSup = (props) => {
       });
   }, [supId, change]);
   const delSup = async () => {
-    await axios.delete(`http://localhost:8000/api/sup/delSup/${supId}`);
+    await axios.delete(
+      import.meta.env.VITE_BACKEND + `/api/sup/delSup/${supId}`
+    );
     changeSup(0);
     changeChange();
     props.snack();
@@ -101,7 +103,10 @@ const EditSup = (props) => {
   const updateSup = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8000/api/sup/updateSup/${supId}`, info);
+      await axios.put(
+        import.meta.env.VITE_BACKEND + `/api/sup/updateSup/${supId}`,
+        info
+      );
       changeChange();
       props.snacku();
     } catch (err) {
@@ -326,7 +331,10 @@ const EditSup = (props) => {
                           size="small"
                           value={info.sup_number}
                           onChange={(e) =>
-                            setInfo({ ...info, sup_number: e.target.value.replace(/\D/g, "") })
+                            setInfo({
+                              ...info,
+                              sup_number: e.target.value.replace(/\D/g, ""),
+                            })
                           }
                           required
                         />
@@ -347,7 +355,7 @@ const EditSup = (props) => {
                           required
                         />
                         <select
-                        disabled
+                          disabled
                           className={
                             info.sup_amt_type === "receive"
                               ? "text-green-600 bg-white p-1 border border-slate-400 rounded"

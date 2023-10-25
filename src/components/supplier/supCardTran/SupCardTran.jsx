@@ -7,9 +7,11 @@ const SupCardTran = (props) => {
   const { supId, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:8000/api/sup/fetchData").then((response) => {
-      setResult(response.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchData")
+      .then((response) => {
+        setResult(response.data);
+      });
   }, [change]);
   return (
     <div>

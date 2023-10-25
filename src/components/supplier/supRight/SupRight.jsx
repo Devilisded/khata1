@@ -16,7 +16,7 @@ const SupRight = (props) => {
   const [result, setResult] = useState([]);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/sup/fetchTran/${supId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchTran/${supId}`)
       .then((response) => {
         setResult(response.data);
       });
