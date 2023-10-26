@@ -92,7 +92,7 @@ const Edit = (props) => {
   const deleteCustomer = async () => {
     try {
       await axios.post(
-        import.meta.env.VITE_BACKEND + `api/auth/delcust/${userId}`
+        import.meta.env.VITE_BACKEND + `/api/auth/delcust/${userId}`
       );
       changeChange();
       props.snack();
