@@ -8,7 +8,10 @@ const SerCard = (props) => {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/ser/fetchTranid/${props.data.ser_id}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/ser/fetchTranid/${props.data.ser_id}`
+      )
       .then((res) => {
         setData(res.data);
       });

@@ -10,22 +10,23 @@ import axios from "axios";
 const SerLeft = (props) => {
   const { change } = useContext(UserContext);
   const [filterByValue, setFilterByValue] = useState("All");
-  
+
   const location = useLocation();
 
   const [result, setResult] = useState([]);
   const [data, setData] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:8000/api/ser/fetchData").then((res) => {
-      setResult(res.data);
-    });
     axios
-      .get("http://localhost:8000/api/auth/fetchProductData")
+      .get(import.meta.env.VITE_BACKEND + "/api/ser/fetchData")
+      .then((res) => {
+        setResult(res.data);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchProductData")
       .then((response) => {
         setData(response.data);
       });
   }, [change]);
-
 
   const [filter2, setFilter2] = useState("All");
   const [searchValue, setSearchValue] = useState("");
@@ -34,7 +35,7 @@ const SerLeft = (props) => {
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
-  console.log("sortOption : ", sortOption)
+  console.log("sortOption : ", sortOption);
   let sortedUsers = [...result];
   if (sortOption === "recent") {
     sortedUsers.sort((a, b) => b.ser_id - a.ser_id);
@@ -42,15 +43,13 @@ const SerLeft = (props) => {
     sortedUsers.sort((a, b) => b.ser_price - a.ser_price);
   } else if (sortOption === "name") {
     sortedUsers.sort((a, b) => a.ser_name.localeCompare(b.ser_name));
-  
   } else if (sortOption === "salesPriceHighToLow") {
-    sortedUsers.sort((a, b) => b.ser_price - a.ser_price );
-  }
-  else if (sortOption === "salesPriceLowToHigh") {
-    sortedUsers.sort((a, b) => a.ser_price  - b.ser_price );
+    sortedUsers.sort((a, b) => b.ser_price - a.ser_price);
+  } else if (sortOption === "salesPriceLowToHigh") {
+    sortedUsers.sort((a, b) => a.ser_price - b.ser_price);
   }
 
-  console.log("sortedUsers : " , sortedUsers , result)
+  console.log("sortedUsers : ", sortedUsers, result);
   return (
     <div className="serleft">
       <div className="heading text-lg font-semibold">
@@ -105,9 +104,12 @@ const SerLeft = (props) => {
               <MenuItem value="recent">Most Recent</MenuItem>
               <MenuItem value="highestAmount">Highest Amount</MenuItem>
               <MenuItem value="name">By Name</MenuItem>
-              <MenuItem value="salesPriceHighToLow">Sales Price High - Low</MenuItem>
-              <MenuItem value="salesPriceLowToHigh">Sales Price Low - High</MenuItem>
-              
+              <MenuItem value="salesPriceHighToLow">
+                Sales Price High - Low
+              </MenuItem>
+              <MenuItem value="salesPriceLowToHigh">
+                Sales Price Low - High
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -121,7 +123,6 @@ const SerLeft = (props) => {
               label="Filter By"
               onChange={(e) => setFilterByValue(e.target.value)}
             >
-              
               <MenuItem value="All">All</MenuItem>
               <MenuItem value="lowSales">Low Sales</MenuItem>
             </Select>
@@ -142,7 +143,6 @@ const SerLeft = (props) => {
         ))}
       </div> */}
       <div className="cards">
-        
         {sortedUsers
 
           .filter((code) => {
@@ -152,9 +152,8 @@ const SerLeft = (props) => {
               return true;
             }
           })
-          .filter(
-            (code) =>
-              code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          .filter((code) =>
+            code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
           )
           .map((filteredItem, index) => (
             <SerCard key={index} data={filteredItem} />

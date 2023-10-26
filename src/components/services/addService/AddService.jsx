@@ -24,70 +24,7 @@ const AddService = (props) => {
     },
   ];
 
-  // const gst = [
-  //   {
-  //     value: "taxExempted",
-  //     label1: "Tax Exempted",
-  //     label2: "(NO GST)",
-  //   },
-  //   {
-  //     value: "gst0",
-  //     label1: "GST@ 0%",
-  //     label2: "(NO GST)",
-  //   },
-  //   {
-  //     value: "gst0_1", // 0_1 => 0.1
-  //     label1: "GST@ 0.1%",
-  //     label2: "(0.05% CSGT + 0.05% SGST/UT GST ; 0.1% IGST )",
-  //   },
-  //   {
-  //     value: "gst0_25", // 0_25 => 0.25
-  //     label1: "GST@ 0.25%",
-  //     label2: "(0.125% CSGT + 0.125% SGST/UT GST ; 0.25% IGST )",
-  //   },
-  //   {
-  //     value: "gst3",
-  //     label1: "GST@ 3%",
-  //     label2: "(1.5% CSGT + 1.5% SGST/UT GST ; 3% IGST )",
-  //   },
-  //   {
-  //     value: "gst5",
-  //     label1: "GST@ 5%",
-  //     label2: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-  //   },
-  //   {
-  //     value: "gst6",
-  //     label1: "GST@ 6%",
-  //     label2: "(3% CSGT + 3% SGST/UT GST ; 6% IGST )",
-  //   },
-  //   {
-  //     value: "gst7_5", // 7_5  =>  7.5
-  //     label1: "GST@ 7.5%",
-  //     label2: "(3.75% CSGT + 3.75% SGST/UT GST ; 7.5% IGST )",
-  //   },
-  //   {
-  //     value: "gst12",
-  //     label1: "GST@ 12%",
-  //     label2: "(6% CSGT + 6% SGST/UT GST ; 12% IGST )",
-  //   },
-  //   {
-  //     value: "gst18",
-  //     label1: "GST@ 18%",
-  //     label2: "(9% CSGT + 9% SGST/UT GST ; 18% IGST )",
-  //   },
-  //   {
-  //     value: "gst28",
-  //     label1: "GST@ 28%",
-  //     label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
-  //   },
-  // ];
-
   const gst = [
-    // {
-    //   value: "taxExempted",
-    //   label1: "Tax Exempted",
-    //   label2: "(NO GST)",
-    // },
     {
       value: "gst0",
       label1: 0,
@@ -157,14 +94,14 @@ const AddService = (props) => {
 
   const [productUnits, setProductUnits] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductUnits`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
     .then((response) => {
       setProductUnits(response.data);
     });
 
   const [productHsnCodes, setProductHsnCodes] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
     .then((response) => {
       setProductHsnCodes(response.data);
     });
@@ -227,7 +164,10 @@ const AddService = (props) => {
     try {
       //data.ser_gst = gstValue1;
       console.log("data : ", data);
-      await axios.post("http://localhost:8000/api/ser/sendData", data);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/ser/sendData",
+        data
+      );
       changeChange();
       props.snack();
     } catch (err) {
@@ -255,7 +195,6 @@ const AddService = (props) => {
       setSubmitDisabled(true);
     }
   }, [data.ser_name, data.ser_unit, data.ser_price]);
-
 
   return (
     <div>
@@ -318,7 +257,10 @@ const AddService = (props) => {
                     //onChange={handleChange}
                     required
                     onChange={(e) =>
-                      setData({ ...data, ser_price : e.target.value.replace(/\D/g, "") })
+                      setData({
+                        ...data,
+                        ser_price: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={data.ser_price}
                   />
