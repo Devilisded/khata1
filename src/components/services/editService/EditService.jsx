@@ -95,18 +95,20 @@ const EditService = (props) => {
   ];
 
   const [productUnits, setProductUnits] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
-    .then((response) => {
-      setProductUnits(response.data);
-    });
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
+      .then((response) => {
+        setProductUnits(response.data);
+      });
 
-  const [productHsnCodes, setProductHsnCodes] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
-    .then((response) => {
-      setProductHsnCodes(response.data);
-    });
+    const [productHsnCodes, setProductHsnCodes] = useState([]);
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .then((response) => {
+        setProductHsnCodes(response.data);
+      });
+  }, []);
 
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
