@@ -9,21 +9,6 @@ import { UserContext } from "../../../context/UserIdContext";
 
 const AddService = (props) => {
   const { changeChange } = useContext(UserContext);
-  const units = [
-    {
-      value: "PCS",
-    },
-    {
-      value: "NOS",
-    },
-    {
-      value: "DAY",
-    },
-    {
-      value: "HRS",
-    },
-  ];
-
   const gst = [
     {
       value: "gst0",
@@ -87,26 +72,21 @@ const AddService = (props) => {
     },
   ];
 
-  const [igst, setIgst] = useState(null);
-  const [stategst, setStategst] = useState(null);
-  const [cgst, setCgst] = useState(null);
-  const [cess, setCess] = useState(null);
-
   const [productUnits, setProductUnits] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
-    .then((response) => {
-      setProductUnits(response.data);
-    });
-
   const [productHsnCodes, setProductHsnCodes] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
-    .then((response) => {
-      setProductHsnCodes(response.data);
-    });
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
+      .then((response) => {
+        setProductUnits(response.data);
+      });
 
-  const [isOn2, setIsOn2] = useState(false);
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .then((response) => {
+        setProductHsnCodes(response.data);
+      });
+  }, []);
 
   const [isClicked, setIsClicked] = useState(false);
   const [isClicked2, setIsClicked2] = useState(false);
@@ -121,7 +101,6 @@ const AddService = (props) => {
     setIsClicked(false);
   };
 
-  const [gstOnItem, setGstOnItem] = useState("");
   const [gstValue1, setGstValue1] = useState("GST %");
   const [gstValue2, setGstValue2] = useState("");
 
@@ -132,23 +111,13 @@ const AddService = (props) => {
 
   const [customGst, setcustomGst] = useState("");
   const [customeCess, setCustomeCess] = useState("");
-  const custom_gst_details =
-    "(" +
-    customGst / 2 +
-    "% CSTS + " +
-    customGst / 2 +
-    "% SGST/UT GST ; " +
-    customGst +
-    "% IGST ; " +
-    customeCess +
-    "% CESS )";
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState({
     ser_name: "",
     ser_unit: "",
     ser_price: "",
-    ser_tax_included: 0,
+    ser_tax_included: "",
     ser_sac: "",
     ser_sac_desc: "",
     ser_sgst: null,
