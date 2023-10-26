@@ -16,7 +16,6 @@ import { useState, useEffect, useContext } from "react";
 import { Menu, MenuItem } from "@mui/material";
 import Fade from "@mui/material/Fade";
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
 import { UserContext } from "../../context/UserIdContext";
 const Navbar = () => {
   const { change } = useContext(UserContext);

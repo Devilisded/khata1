@@ -11,7 +11,7 @@ const ExLeft = (props) => {
   const [result, setResult] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/exp/fetchExpensesData")
+      .get(import.meta.env.VITE_BACKEND + "/api/exp/fetchExpensesData")
       .then((response) => {
         setResult(response.data);
       });
@@ -36,7 +36,7 @@ const ExLeft = (props) => {
   }
 
   let categories = [...new Set(result.map((item) => item.exp_category))];
- console.log("categories : ",categories)
+  console.log("categories : ", categories);
   return (
     <div className="exleft">
       <div className="border-b border-slate-300 p-4 font-semibold text-blue-600 text-xl">
@@ -103,7 +103,6 @@ const ExLeft = (props) => {
 
           .filter((code) => {
             if (filterByValue !== "All") {
-             
               return code.exp_category === filterByValue;
             } else {
               return code;

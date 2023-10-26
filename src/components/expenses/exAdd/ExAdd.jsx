@@ -41,18 +41,18 @@ const AddExpense = (props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/exp/fetchExpenseCategory`)
+      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseCategory`)
       .then((response) => {
         setResult(response.data);
       });
 
     axios
-      .get(`http://localhost:8000/api/exp/fetchExpenseList`)
+      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseList`)
       .then((response) => {
         setResult2(response.data);
       });
     axios
-      .get(`http://localhost:8000/api/exp/fetchExpensesPrefixData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpensesPrefixData`)
       .then((response) => {
         setExpensesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].prefix_no);
@@ -120,7 +120,7 @@ const AddExpense = (props) => {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:8000/api/exp/addExpenseCategory",
+        import.meta.env.VITE_BACKEND + "/api/exp/addExpenseCategory",
         values2
       );
       changeChange();
@@ -142,7 +142,10 @@ const AddExpense = (props) => {
   const handleClick3 = async () => {
     console.log(values3);
     try {
-      await axios.post("http://localhost:8000/api/exp/addExpenselist", values3);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/exp/addExpenselist",
+        values3
+      );
       changeChange();
       handleClickVariant("success", "", "Added Successfully");
     } catch (err) {
@@ -159,7 +162,7 @@ const AddExpense = (props) => {
   const updateExpenseItemData = async (eiid) => {
     try {
       await axios.put(
-        `http://localhost:8000/api/exp/updateExpenseItemData/${eiid}`,
+        import.meta.env.VITE_BACKEND + `/api/exp/updateExpenseItemData/${eiid}`,
         values4
       );
       changeChange();
@@ -177,7 +180,8 @@ const AddExpense = (props) => {
     try {
       console.log(values5);
       await axios.put(
-        `http://localhost:8000/api/exp/updateExpenseCategoryData/${ecid}`,
+        import.meta.env.VITE_BACKEND +
+          `/api/exp/updateExpenseCategoryData/${ecid}`,
         values5
       );
       changeChange();
@@ -191,7 +195,8 @@ const AddExpense = (props) => {
     try {
       console.log("expenseItemId :", expenseItemId);
       await axios.delete(
-        `http://localhost:8000/api/exp/delExpenseItemFromList/${expenseItemId}`
+        import.meta.env.VITE_BACKEND +
+          `/api/exp/delExpenseItemFromList/${expenseItemId}`
       );
       changeChange();
       handleClickVariant("success", "", "Deleted Successfully");
@@ -206,7 +211,8 @@ const AddExpense = (props) => {
     try {
       console.log("expenseCategoryId :", expenseCategoryId);
       await axios.delete(
-        `http://localhost:8000/api/exp/delExpenseCategory/${expenseCategoryId}`
+        import.meta.env.VITE_BACKEND +
+          `/api/exp/delExpenseCategory/${expenseCategoryId}`
       );
       changeChange();
       handleClickVariant("success", "", "Deleted Successfully");
@@ -325,7 +331,7 @@ const AddExpense = (props) => {
       //expenseData.prefix_no = prefixNo;
       console.log("values : ", expenseData, list);
       await axios.post(
-        "http://localhost:8000/api/exp/addExpenses",
+        import.meta.env.VITE_BACKEND + "/api/exp/addExpenses",
         expenseData
       );
       changeChange();
