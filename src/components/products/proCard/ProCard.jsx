@@ -21,7 +21,9 @@ const ProCard = (props) => {
             <img
               src={
                 props.data.product_image
-                  ? "http://localhost:8000/product/" + props.data.product_image
+                  ? import.meta.env.VITE_BACKEND +
+                    "/product/" +
+                    props.data.product_image
                   : Img
               }
               className="w-7 object-cover"

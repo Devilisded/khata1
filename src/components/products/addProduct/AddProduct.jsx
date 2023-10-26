@@ -19,23 +19,18 @@ const AddProduct = (props) => {
 
   const [result, setResult] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductUnits`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
     .then((response) => {
       setResult(response.data);
     });
 
   const [result2, setResult2] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
     .then((response) => {
       setResult2(response.data);
     });
   const gst = [
-    // {
-    //   value: "taxExempted",
-    //   label1: "Tax Exempted",
-    //   label2: "(NO GST)",
-    // },
     {
       value: "gst0",
       label1: 0,
@@ -117,63 +112,6 @@ const AddProduct = (props) => {
     },
   ];
 
-  
-  //     value: "taxExempted",
-  //     label1: "Tax Exempted",
-  //     label2: "(NO GST)",
-  //   },
-  //   {
-  //     value: "gst0",
-  //     label1: "GST@ 0%",
-  //     label2: "(NO GST)",
-  //   },
-  //   {
-  //     value: "gst0_1", // 0_1 => 0.1
-  //     label1: "GST@ 0.1%",
-  //     label2: "(0.05% CSGT + 0.05% SGST/UT GST ; 0.1% IGST )",
-  //   },
-  //   {
-  //     value: "gst0_25", // 0_25 => 0.25
-  //     label1: "GST@ 0.25%",
-  //     label2: "(0.125% CSGT + 0.125% SGST/UT GST ; 0.25% IGST )",
-  //   },
-  //   {
-  //     value: "gst3",
-  //     label1: "GST@ 3%",
-  //     label2: "(1.5% CSGT + 1.5% SGST/UT GST ; 3% IGST )",
-  //   },
-  //   {
-  //     value: "gst5",
-  //     label1: "GST@ 5%",
-  //     label2: "(2.5% CSGT + 2.5% SGST/UT GST ; 5% IGST )",
-  //   },
-  //   {
-  //     value: "gst6",
-  //     label1: "GST@ 6%",
-  //     label2: "(3% CSGT + 3% SGST/UT GST ; 6% IGST )",
-  //   },
-  //   {
-  //     value: "gst7_5", // 7_5  =>  7.5
-  //     label1: "GST@ 7.5%",
-  //     label2: "(3.75% CSGT + 3.75% SGST/UT GST ; 7.5% IGST )",
-  //   },
-  //   {
-  //     value: "gst12",
-  //     label1: "GST@ 12%",
-  //     label2: "(6% CSGT + 6% SGST/UT GST ; 12% IGST )",
-  //   },
-  //   {
-  //     value: "gst18",
-  //     label1: "GST@ 18%",
-  //     label2: "(9% CSGT + 9% SGST/UT GST ; 18% IGST )",
-  //   },
-  //   {
-  //     value: "gst28",
-  //     label1: "GST@ 28%",
-  //     label2: "(14% CSGT + 14% SGST/UT GST ; 28% IGST )",
-  //   },
-  // ];
- 
   const [isOn, setIsOn] = useState(false);
   const handleOnChange1 = () => {
     setIsOn(!isOn);
@@ -218,10 +156,7 @@ const AddProduct = (props) => {
     customeCess +
     "% CESS )";
 
-   const [igst, setIgst] = useState(null);
-  // const [stategst, setStategst] = useState(null);
-  // const [cgst, setCgst] = useState(null);
-  //const [cess, setCess] = useState(null);
+  const [igst, setIgst] = useState(null);
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -266,12 +201,6 @@ const AddProduct = (props) => {
   };
 
   productData.entry_date = filteredDate;
-  // productData.sgst = stategst;
-  // productData.igst = igst;
-  // productData.cgst = cgst;
-  // productData.cess = customeCess;
-  // productData.hsn_desc = hsnValue1;
-  // productData.hsn_code = typeof hsnCode === "number" ? hsnCode : null;
   productData.tax = isOn2 ? "yes" : "no";
   const [err, setErr] = useState(null);
 
@@ -301,8 +230,11 @@ const AddProduct = (props) => {
       formData.append("cess", productData.cess);
       formData.append("conversion", productData.conversion);
       formData.append("cgst", productData.cgst);
-      console.log("product_data : " , productData)
-      await axios.post("http://localhost:8000/api/auth/addProduct", formData);
+      console.log("product_data : ", productData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/auth/addProduct",
+        formData
+      );
       console.log("values : ", productData);
       changeChange();
       props.snack();
@@ -506,7 +438,10 @@ const AddProduct = (props) => {
                         required
                         //onChange={handleChange}
                         onChange={(e) =>
-                          setProductData({ ...productData, conversion : e.target.value.replace(/\D/g, "") })
+                          setProductData({
+                            ...productData,
+                            conversion: e.target.value.replace(/\D/g, ""),
+                          })
                         }
                         value={productData.conversion}
                       />
@@ -524,7 +459,10 @@ const AddProduct = (props) => {
                     name="sale_price"
                     //onChange={handleChange}
                     onChange={(e) =>
-                      setProductData({ ...productData, sale_price : e.target.value.replace(/\D/g, "") })
+                      setProductData({
+                        ...productData,
+                        sale_price: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={productData.sale_price}
                     className="sec-1 w-full"
@@ -542,7 +480,10 @@ const AddProduct = (props) => {
                     required
                     //onChange={handleChange}
                     onChange={(e) =>
-                      setProductData({ ...productData, purchase_price : e.target.value.replace(/\D/g, "") })
+                      setProductData({
+                        ...productData,
+                        purchase_price: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={productData.purchase_price}
                   />
@@ -551,7 +492,6 @@ const AddProduct = (props) => {
                   <label className="pl-2 ">Tax included</label>
                   <Switch
                     {...label}
-                    
                     color="success"
                     onChange={handleOnChange2}
                   />
@@ -566,10 +506,12 @@ const AddProduct = (props) => {
                     size="small"
                     //onChange={handleChange}
                     onChange={(e) =>
-                      setProductData({ ...productData, opening_stock : e.target.value.replace(/\D/g, "") })
+                      setProductData({
+                        ...productData,
+                        opening_stock: e.target.value.replace(/\D/g, ""),
+                      })
                     }
                     value={productData.opening_stock}
-                    
                     name="opening_stock"
                     required
                   />
@@ -582,9 +524,18 @@ const AddProduct = (props) => {
                     size="small"
                     //onChange={handleChange}
                     onChange={(e) =>
-                      setProductData(e.target.value !== 0 ? { ...productData, low_stock : e.target.value.replace(/\D/g, "") } : {low_stock : 0} )
+                      setProductData(
+                        e.target.value !== 0
+                          ? {
+                              ...productData,
+                              low_stock: e.target.value.replace(/\D/g, ""),
+                            }
+                          : { low_stock: 0 }
+                      )
                     }
-                    value={productData.low_stock === 0 ? "" : productData.low_stock}
+                    value={
+                      productData.low_stock === 0 ? "" : productData.low_stock
+                    }
                     name="low_stock"
                   />
                 </Box>
@@ -662,15 +613,18 @@ const AddProduct = (props) => {
                             className="flex card-sec"
                             onClick={() => {
                               setProductData({
-                                ...productData ,
+                                ...productData,
                                 igst: filteredItem.igst,
                                 cgst: filteredItem.cgst,
                                 sgst: filteredItem.sgst,
-                                hsn_code:  typeof(filteredItem.hsn_code) === "number" ? filteredItem.hsn_code : null,
+                                hsn_code:
+                                  typeof filteredItem.hsn_code === "number"
+                                    ? filteredItem.hsn_code
+                                    : null,
                                 hsn_desc: filteredItem.hsn_desc,
-                              })
-                              
-                                setHsnCode(filteredItem.hsn_code),
+                              });
+
+                              setHsnCode(filteredItem.hsn_code),
                                 setHsnValue1(filteredItem.hsn_desc),
                                 setGstValue1(filteredItem.igst),
                                 setGstValue2(
@@ -743,14 +697,13 @@ const AddProduct = (props) => {
                                           "% IGST )"
                                       );
                                     setIsClicked2(false);
-                                    setIgst(item.label1)
+                                    setIgst(item.label1);
                                     setProductData({
                                       ...productData,
                                       igst: item.label1,
                                       cgst: item.label2,
                                       sgst: item.label3,
                                     });
-                                      
                                   }}
                                 />
                               </div>

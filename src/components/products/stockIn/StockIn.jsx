@@ -34,7 +34,7 @@ const StockIn = (props) => {
   const [convertedPrice, setConvertedPrice] = useState(null);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
         setPrimaryUnit(response.data[0].primary_unit);
         setSecondaryUnit(response.data[0].secondary_unit);
@@ -90,9 +90,12 @@ const StockIn = (props) => {
       values.selected_unit = unit ? unit : primaryUnit;
       values.balance_stock = coverted_qty + currentStock;
 
-      await axios.post("http://localhost:8000/api/auth/addStockIn", values);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/auth/addStockIn",
+        values
+      );
       await axios.put(
-        `http://localhost:8000/api/auth/updateStockQty/${pId}`,
+        import.meta.env.VITE_BACKEND + `/api/auth/updateStockQty/${pId}`,
         values2
       );
       changeChange();

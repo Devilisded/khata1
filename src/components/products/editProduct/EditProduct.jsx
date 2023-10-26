@@ -120,14 +120,14 @@ const EditProduct = (props) => {
 
   const [result, setResult] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductUnits`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
     .then((response) => {
       setResult(response.data);
     });
 
   const [result2, setResult2] = useState([]);
   axios
-    .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
     .then((response) => {
       setResult2(response.data);
     });
@@ -155,7 +155,7 @@ const EditProduct = (props) => {
   const [isTaxIncluded, setIsTaxIncluded] = useState("");
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
         setIsTaxIncluded(response.data[0].tax);
         setData({
@@ -192,7 +192,9 @@ const EditProduct = (props) => {
 
   const deleteProduct = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/auth/delproduct/${pId}`);
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/auth/delproduct/${pId}`
+      );
       changeChange();
       props.snackd();
       changeProduct(0);
@@ -257,7 +259,7 @@ const EditProduct = (props) => {
       formData.append("conversion", data.conversion);
       formData.append("cgst", data.cgst);
       axios.put(
-        `http://localhost:8000/api/auth/updateProduct/${pId}`,
+        import.meta.env.VITE_BACKEND + `/api/auth/updateProduct/${pId}`,
         formData
       );
       changeChange();
@@ -268,7 +270,6 @@ const EditProduct = (props) => {
   };
 
   const [searchValue, setSearchValue] = useState("0");
-  //console.log(searchValue);
 
   const [customGst, setcustomGst] = useState("");
   const [customeCess, setCustomeCess] = useState("");

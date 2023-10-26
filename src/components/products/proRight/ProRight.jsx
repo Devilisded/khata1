@@ -12,20 +12,17 @@ const ProRight = (props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
         setResult(response.data);
       });
     axios
-      .get(`http://localhost:8000/api/auth/fetchStockInTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchStockInTran/${pId}`)
       .then((response) => {
         setResult2(response.data);
         //setQtySold(response.data.qty_sold)
       });
   }, [pId, change]);
-
-  console.log(result2);
-
   return (
     <div className="proright">
       {result.map((item, index) => (

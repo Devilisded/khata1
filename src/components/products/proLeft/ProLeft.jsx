@@ -14,19 +14,21 @@ const ProLeft = (props) => {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/auth/fetchProductData")
+      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchProductData")
       .then((response) => {
         setResult(response.data);
       });
 
     axios
-      .get(`http://localhost:8000/api/auth/fetchTotalStockValue`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTotalStockValue`)
       .then((response) => {
         setResult2(response.data);
       });
-    axios.get("http://localhost:8000/api/ser/fetchData").then((res) => {
-      setData(res.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/ser/fetchData")
+      .then((res) => {
+        setData(res.data);
+      });
   }, [change]);
 
   const [sortOption, setSortOption] = useState("");
@@ -44,14 +46,11 @@ const ProLeft = (props) => {
   } else if (sortOption === "name") {
     sortedUsers.sort((a, b) => a.product_name.localeCompare(b.product_name));
   } else if (sortOption === "stockHighToLow") {
-    sortedUsers.sort((a, b) => b.balance_stock  - a.balance_stock );
-  }
-  else if (sortOption === "stockLowToHigh") {
-    sortedUsers.sort((a, b) => a.balance_stock  - b.balance_stock );
+    sortedUsers.sort((a, b) => b.balance_stock - a.balance_stock);
+  } else if (sortOption === "stockLowToHigh") {
+    sortedUsers.sort((a, b) => a.balance_stock - b.balance_stock);
   }
 
-  
-  
   const location = useLocation();
 
   return (
@@ -122,11 +121,8 @@ const ProLeft = (props) => {
               id="demo-select-small"
               //value={filter}
               label="Sort By"
-              
               onChange={handleChange1}
-
             >
-              
               <MenuItem value="recent">Most Recent</MenuItem>
               <MenuItem value="highestAmount">Highest Amount</MenuItem>
               <MenuItem value="name">By Name</MenuItem>
@@ -147,10 +143,9 @@ const ProLeft = (props) => {
                 setFilter2(e.target.value);
               }}
             >
-              
-               <MenuItem value="All">All</MenuItem>
+              <MenuItem value="All">All</MenuItem>
               <MenuItem value="lowStock">Low Stock</MenuItem>
-              </Select>
+            </Select>
           </FormControl>
         </div>
       </div>
@@ -159,9 +154,9 @@ const ProLeft = (props) => {
         <div className="sprice text-slate-600">Sales Price</div>
         <div className="qty text-slate-600">Stock Qty</div>
       </div>
-      
+
       <div className="cards">
-        {console.log("searchValue : ",searchValue)}
+        {console.log("searchValue : ", searchValue)}
         {sortedUsers
 
           .filter((code) => {
@@ -171,9 +166,10 @@ const ProLeft = (props) => {
               return true;
             }
           })
-          .filter(
-            (code) =>
-              code.product_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          .filter((code) =>
+            code.product_name
+              .toLowerCase()
+              .startsWith(searchValue.toLowerCase())
           )
           .map((filteredItem, index) => (
             <ProCard key={index} data={filteredItem} />

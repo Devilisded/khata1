@@ -18,8 +18,8 @@ const StockOut = (props) => {
   const [isActive, setIsActive] = useState(true);
   const [conversion, setConversion] = useState(0);
   const [currentStock, setCurrentStock] = useState(0);
-  const [result , setResult] = useState([])
-  const [result2 , setResult2] = useState([])
+  const [result, setResult] = useState([]);
+  const [result2, setResult2] = useState([]);
   const [values, setValues] = useState({
     product_stock_out: null,
     balance_stock: null,
@@ -29,43 +29,49 @@ const StockOut = (props) => {
     product_desc: "",
     entry_date: "",
     cnct_id: pId,
-    
+
     total_profit: null,
   });
 
-  const [price1 , setPrice1] = useState("hgfh")
+  const [price1, setPrice1] = useState("hgfh");
   const [convertedPrice, setConvertedPrice] = useState(null);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
-        setResult(response.data)
+        setResult(response.data);
         setPrimaryUnit(response.data[0].primary_unit);
         setSecondaryUnit(response.data[0].secondary_unit);
         setUnit(response.data[0].primary_unit);
         setConversion(response.data[0].conversion);
         setCurrentStock(response.data[0].balance_stock);
-        setPrice1(response.data[0].sale_price)
+        setPrice1(response.data[0].sale_price);
         setValues({
           ...values,
           primary_unit: response.data[0].primary_unit,
           secondary_unit: response.data[0].secondary_unit,
           sale_price: response.data[0].sale_price,
         });
-        
+
         setConvertedPrice(
           parseFloat(response.data[0].sale_price / response.data[0].conversion)
         );
       });
     axios
-      .get(`http://localhost:8000/api/auth/fetchStockInTran/${pId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchStockInTran/${pId}`)
       .then((response) => {
         setResult2(response.data);
       });
   }, [pId]);
 
-
-  console.log("values.sale price : ", values.sale_price, price1 , result, values.primary_unit , currentStock );
+  console.log(
+    "values.sale price : ",
+    values.sale_price,
+    price1,
+    result,
+    values.primary_unit,
+    currentStock
+  );
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -107,9 +113,12 @@ const StockOut = (props) => {
         : convertedPrice;
       values.selected_unit = unit ? unit : primaryUnit;
       values.balance_stock = currentStock - coverted_qty;
-      await axios.post("http://localhost:8000/api/auth/addStockIn", values);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/auth/addStockIn",
+        values
+      );
       await axios.put(
-        `http://localhost:8000/api/auth/updateStockQty/${pId}`,
+        import.meta.env.VITE_BACKEND + `/api/auth/updateStockQty/${pId}`,
         values2
       );
       changeChange();
