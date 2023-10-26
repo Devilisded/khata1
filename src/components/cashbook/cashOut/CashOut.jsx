@@ -4,7 +4,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useContext, useState , useEffect} from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const CashOut = (props) => {
@@ -33,7 +33,7 @@ const CashOut = (props) => {
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  
+
   const handleClick = (e) => {
     e.preventDefault();
     try {
@@ -45,7 +45,7 @@ const CashOut = (props) => {
       formData.append("cash_description", values.cash_description);
       formData.append("cash_date", values.cash_date);
       formData.append("cash_mode", values.cash_mode);
-      axios.post("http://localhost:8000/api/cash/sendData", formData);
+      axios.post(import.meta.env.VITE_BACKEND + "/api/cash/sendData", formData);
       changeChange();
       props.snack();
     } catch (err) {
@@ -88,7 +88,10 @@ const CashOut = (props) => {
                 name="cash_pay"
                 //onChange={handleChange}
                 onChange={(e) =>
-                  setValues({ ...values, cash_pay: e.target.value.replace(/\D/g, "") })
+                  setValues({
+                    ...values,
+                    cash_pay: e.target.value.replace(/\D/g, ""),
+                  })
                 }
                 value={values.cash_pay}
                 required

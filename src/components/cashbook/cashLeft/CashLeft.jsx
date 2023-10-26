@@ -30,13 +30,15 @@ const CashLeft = (props) => {
   console.log(filteredDate);
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/cash/fetchDate/${filteredDate}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDate/${filteredDate}`)
       .then((res) => {
         setData(res.data);
       });
-    axios.get("http://localhost:8000/api/cash/fetchData").then((res) => {
-      setInfo(res.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/cash/fetchData")
+      .then((res) => {
+        setInfo(res.data);
+      });
   }, [change, transactionDate]);
 
   const sum_pay = data.reduce(function (prev, current) {
