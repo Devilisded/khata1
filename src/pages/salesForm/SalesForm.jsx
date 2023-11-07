@@ -1289,8 +1289,8 @@ const SalesForm = () => {
       );
       // await axios.put("http://localhost:8000/api/sale/updateStockQty", saleData);
 
-      changeChange();
-      props.snack();
+      // changeChange();
+      // props.snack();
       navigate("/sales");
     } catch (err) {
       console.log(err);
