@@ -75,7 +75,7 @@ const AddExpense = (props) => {
   const [transactionDate, setTransactionDate] = useState(todaysDate);
 
   var date1 = transactionDate.$d;
-  var filteredDate = date1.toString().slice(4, 16);
+  var filteredDate = date1.toString().slice(4, 15);
 
   const [categoryName, setCategoryName] = useState("Choose Category");
   const [addNewCategories, setAddNewCategories] = useState(false);
