@@ -27,11 +27,9 @@ const CashLeft = (props) => {
   var date1 = transactionDate.$d;
 
   var filteredDate = date1.toString().slice(4, 15);
-  const fDate = filteredDate + " "
+  const fDate = filteredDate + " ";
   const [info, setInfo] = useState([]);
-  
-  
- 
+
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/cash/fetchDate/${filteredDate}`)
@@ -42,8 +40,6 @@ const CashLeft = (props) => {
       setInfo(res.data);
     });
   }, [change, transactionDate]);
-
-  
 
   const sum_pay = data.reduce(function (prev, current) {
     return prev + +current.cash_pay;
@@ -59,7 +55,7 @@ const CashLeft = (props) => {
     return prev + +current.cash_receive;
   }, 0);
   const totalBalance = total_pay - total_receive;
-  console.log(data)
+  console.log(data);
   return (
     <div className="cashleft">
       <div className="text-xl font-semibold p-5 border-b border-gray-300 text-blue-600">
@@ -153,18 +149,18 @@ const CashLeft = (props) => {
           </div>
         </div>
       </div>
-      {/* <div className="transactions">
+      <div className="transactions">
         {age === ""
-          ? data.map((item, index) =>( <CashTran key={index} data={item} />))
+          ? data.map((item, index) => <CashTran key={index} data={item} />)
           : data
               .filter((persons) => persons.cash_mode === age)
-              .map((item, index) => (<CashTran key={index} data={item} />)  )}
-      </div> */}
-      <div className="transactions">
+              .map((item, index) => <CashTran key={index} data={item} />)}
+      </div>
+      {/* <div className="transactions">
         {
           info.map((item, index) =>( <CashTran key={index} data={item} />)) }
           
-      </div>
+      </div> */}
       <div className="outin flex p-3 gap-4">
         <button
           className="w-full p-2 rounded-xl bg-red-100 text-red-600 hover:text-white hover:bg-red-600"
