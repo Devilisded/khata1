@@ -4,7 +4,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useContext, useState , useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 const CashIn = (props) => {
@@ -45,7 +45,7 @@ const CashIn = (props) => {
       formData.append("cash_description", values.cash_description);
       formData.append("cash_date", values.cash_date);
       formData.append("cash_mode", values.cash_mode);
-      axios.post("http://localhost:8000/api/cash/sendData", formData);
+      axios.post(import.meta.env.VITE_BACKEND + "/api/cash/sendData", formData);
       changeChange();
       props.snack();
     } catch (err) {
@@ -88,7 +88,10 @@ const CashIn = (props) => {
                 name="cash_receive"
                 //onChange={handleChange}
                 onChange={(e) =>
-                  setValues({ ...values, cash_receive: e.target.value.replace(/\D/g, "") })
+                  setValues({
+                    ...values,
+                    cash_receive: e.target.value.replace(/\D/g, ""),
+                  })
                 }
                 value={values.cash_receive}
                 required
@@ -114,7 +117,7 @@ const CashIn = (props) => {
             </Box>
             <Box>
               <div>
-                <label >Payment Mode</label>
+                <label>Payment Mode</label>
               </div>
               <div className="flex gap-2 p-2">
                 <input

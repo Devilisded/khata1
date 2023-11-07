@@ -41,7 +41,7 @@ const CashRight = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/cash/fetchDataid/${cashId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDataid/${cashId}`)
       .then((res) => {
         setData({
           ...data,
@@ -63,7 +63,9 @@ const CashRight = (props) => {
   const AMPM = hours > 12 ? "PM" : "AM";
   const deleteData = () => {
     try {
-      axios.delete(`http://localhost:8000/api/cash/deleteData/${cashId}`);
+      axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/cash/deleteData/${cashId}`
+      );
       changeCashId(0);
       changeChange();
       props.snack();
@@ -171,7 +173,9 @@ const CashRight = (props) => {
           <div className="text-xl text-slate-800">
             {data.cash_bill ? (
               <img
-                src={"http://localhost:8000/cashbook/" + data.cash_bill}
+                src={
+                  import.meta.env.VITE_BACKEND + "/cashbook/" + data.cash_bill
+                }
                 width={50}
                 height={50}
                 onClick={handleImgOpen}
@@ -191,7 +195,9 @@ const CashRight = (props) => {
               <DialogContent>
                 <img
                   className="image"
-                  src={"http://localhost:8000/cashbook/" + data.cash_bill}
+                  src={
+                    import.meta.env.VITE_BACKEND + "/cashbook/" + data.cash_bill
+                  }
                   alt="no image"
                 />
               </DialogContent>

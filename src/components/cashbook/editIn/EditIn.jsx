@@ -34,7 +34,7 @@ const EditIn = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/cash/fetchDataid/${cashId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDataid/${cashId}`)
       .then((res) => {
         setData({
           ...data,
@@ -57,7 +57,7 @@ const EditIn = (props) => {
       flag ? (data.cash_date = filteredDate) : "";
       console.log(data);
       await axios.put(
-        `http://localhost:8000/api/cash/updateData/${cashId}`,
+        import.meta.env.VITE_BACKEND + `/api/cash/updateData/${cashId}`,
         data
       );
       changeChange();
