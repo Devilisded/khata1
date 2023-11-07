@@ -56,24 +56,29 @@ export default function Account() {
       formData.append("business_gst", data.business_gst);
       formData.append("business_type", data.business_type);
       formData.append("business_nature", data.business_nature);
-      await axios.post("http://localhost:8000/api/act/sendData", formData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/act/sendData",
+        formData
+      );
       changeChange();
     } catch (err) {
       console.log(err);
     }
   };
   const [info, setInfo] = useState([]);
-  console.log("data : ", data)
+  console.log("data : ", data);
   useEffect(() => {
-    console.log("data : ", data)
-    axios.get("http://localhost:8000/api/act/fetchData").then((res) => {
-      setInfo(res.data);
-      console.log("info : ", info)
-    });
+    console.log("data : ", data);
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .then((res) => {
+        setInfo(res.data);
+        console.log("info : ", info);
+      });
   }, [change]);
   const deleteAc = async () => {
     try {
-      await axios.delete("http://localhost:8000/api/act/delData");
+      await axios.delete(import.meta.env.VITE_BACKEND + "/api/act/delData");
       changeChange();
     } catch (err) {
       console.log(err);
@@ -100,7 +105,11 @@ export default function Account() {
               >
                 <img
                   className="w-32 h-32 rounded-full mx-auto object-contain shadow-md shadow-slate-600 p-2"
-                  src={"http://localhost:8000/account/" + item.business_logo}
+                  src={
+                    import.meta.env.VITE_BACKEND +
+                    "/account/" +
+                    item.business_logo
+                  }
                   alt="Profile picture"
                 />
 

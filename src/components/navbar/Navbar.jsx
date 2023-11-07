@@ -8,6 +8,7 @@ import {
   IconLogout,
   IconServer,
   IconSettings,
+  IconShoppingCart,
   IconTruckLoading,
   IconUser,
 } from "@tabler/icons-react";
@@ -46,6 +47,12 @@ const Navbar = () => {
       name: "Expenses",
       icon: <IconCreditCard />,
       linkto: "/expenses",
+    },
+    {
+      name: "Sales",
+      icon: <IconShoppingCart />,
+      linkto: "/sales",
+      link2: "/salesForm",
     },
     {
       name: "Account",

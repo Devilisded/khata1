@@ -11,7 +11,8 @@ import Services from "./pages/services/Services";
 import Products from "./pages/products/Products";
 import Cashbook from "./pages/cashbook/Cashbook";
 import Expenses from "./pages/expenses/Expenses";
-
+import Sales from "./pages/sales/sales";
+import SalesForm from "./pages/salesForm/SalesForm";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -61,6 +62,14 @@ const App = () => {
     {
       path: "/expenses",
       element: <Expenses />,
+    },
+    {
+      path: "/sales",
+      element: <Sales />,
+    },
+    {
+      path: "/salesform",
+      element: <SalesForm />,
     },
   ]);
   return (

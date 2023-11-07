@@ -1,13 +1,20 @@
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import "./proleft.scss";
 import { useLocation, Link } from "react-router-dom";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
+} from "@mui/material";
 import ProCard from "../proCard/ProCard";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 
 const ProLeft = (props) => {
+  const [skeleton, setSkeleton] = useState(true);
   const { change, pId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
@@ -17,6 +24,7 @@ const ProLeft = (props) => {
       .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchProductData")
       .then((response) => {
         setResult(response.data);
+        setSkeleton(false);
       });
 
     axios
@@ -52,7 +60,6 @@ const ProLeft = (props) => {
   }
 
   const location = useLocation();
-
   return (
     <div className="proleft">
       <div className="heading text-lg font-semibold">
@@ -80,26 +87,45 @@ const ProLeft = (props) => {
         </Link>
       </div>
 
-      {result2.map((item, index) => (
-        <div className="info flex justify-between items-center" key={index}>
-          <div className="total text-slate-400 text-lg font-semibold">
-            Total Stock Value :
-            <span className="text-black font-semibold">
-              {item.stockValue ? item.stockValue.toFixed(2) : "0"}
-            </span>
+      <div className="info flex justify-between items-center">
+        {skeleton ? (
+          <div className="flex gap-20">
+            <div className="total text-slate-400 text-lg font-semibold flex items-center gap-2">
+              Total Stock Value :
+              <Skeleton variant="rectangular" width={50} height={20} />
+            </div>
+            <div className="low text-slate-400 text-lg font-semibold flex items-center gap-2">
+              Low Stock Products :
+              <Skeleton variant="rectangular" width={50} height={20} />
+            </div>
+            <button className="flex gap-1" onClick={props.add}>
+              <IconPlus className="w-5" />
+              Add Product
+            </button>
           </div>
-          <div className="low text-slate-400 text-lg font-semibold">
-            Low Stock Products :{" "}
-            <span className="text-red-600 font-semibold">
-              {item.lowStockProducts}
-            </span>
-          </div>
-          <button className="flex gap-1" onClick={props.add}>
-            <IconPlus className="w-5" />
-            Add Product
-          </button>
-        </div>
-      ))}
+        ) : (
+          result2.map((item, index) => (
+            <div className="flex gap-20">
+              <div className="total text-slate-400 text-lg font-semibold">
+                Total Stock Value :
+                <span className="text-black font-semibold">
+                  {item.stockValue ? item.stockValue.toFixed(2) : "0"}
+                </span>
+              </div>
+              <div className="low text-slate-400 text-lg font-semibold">
+                Low Stock Products :{" "}
+                <span className="text-red-600 font-semibold">
+                  {item.lowStockProducts ? item.lowStockProducts : "0"}
+                </span>
+              </div>
+              <button className="flex gap-1" onClick={props.add}>
+                <IconPlus className="w-5" />
+                Add Product
+              </button>
+            </div>
+          ))
+        )}
+      </div>
 
       <div className="filters flex items-center justify-between">
         <div className="searchbar1 flex h-10 rounded p-1 w-72 items-center gap-2 border border-slate-400 hover:border-black">
@@ -156,24 +182,53 @@ const ProLeft = (props) => {
       </div>
 
       <div className="cards">
-        {console.log("searchValue : ", searchValue)}
-        {sortedUsers
+        {skeleton ? (
+          <div className={"cardItem cursor-pointer"}>
+            <div
+              className="flex justify-between  items-center p-3 "
+              style={{ borderBottom: "1px solid rgb(245 245 245" }}
+            >
+              <div className="flex items-center gap-4 w-[200px]">
+                <Skeleton variant="circular" width={50} height={50} />
+                <div className="flex flex-col gap-1">
+                  <span className="text-lg text-slate-700">
+                    <Skeleton variant="rectangular" width={60} height={20} />
+                  </span>
+                </div>
+              </div>
+              <div className="w-[95px]">
+                <div className="text-slate-800 text-lg">
+                  {" "}
+                  <Skeleton variant="rectangular" width={100} height={20} />
+                </div>
+              </div>
+              <div className="w-[70px]">
+                <div className="qty text-slate-800 text-lg">
+                  {" "}
+                  <Skeleton variant="rectangular" width={60} height={20} />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          sortedUsers
 
-          .filter((code) => {
-            if (filter2 === "lowStock") {
-              return code.balance_stock <= code.low_stock;
-            } else if (filter2 === "All") {
-              return true;
-            }
-          })
-          .filter((code) =>
-            code.product_name
-              .toLowerCase()
-              .startsWith(searchValue.toLowerCase())
-          )
-          .map((filteredItem, index) => (
-            <ProCard key={index} data={filteredItem} />
-          ))}
+            .filter((code) => {
+              if (filter2 === "lowStock") {
+                return code.balance_stock <= code.low_stock;
+              } else if (filter2 === "All") {
+                return true;
+              }
+            })
+            .filter((code) =>
+              code.product_name
+                .toLowerCase()
+                .startsWith(searchValue.toLowerCase())
+            )
+            .map((filteredItem, index) => (
+              <ProCard key={index} data={filteredItem} />
+            ))
+        )}
       </div>
     </div>
   );

@@ -25,21 +25,25 @@ const CashLeft = (props) => {
   };
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
-  var filteredDate = date1.toString().slice(4, 16);
+
+  var filteredDate = date1.toString().slice(4, 15);
+  const fDate = filteredDate + " "
   const [info, setInfo] = useState([]);
-  console.log(filteredDate);
+  
+  
+ 
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDate/${filteredDate}`)
+      .get(`http://localhost:8000/api/cash/fetchDate/${filteredDate}`)
       .then((res) => {
         setData(res.data);
       });
-    axios
-      .get(import.meta.env.VITE_BACKEND + "/api/cash/fetchData")
-      .then((res) => {
-        setInfo(res.data);
-      });
+    axios.get("http://localhost:8000/api/cash/fetchData").then((res) => {
+      setInfo(res.data);
+    });
   }, [change, transactionDate]);
+
+  
 
   const sum_pay = data.reduce(function (prev, current) {
     return prev + +current.cash_pay;
@@ -55,7 +59,7 @@ const CashLeft = (props) => {
     return prev + +current.cash_receive;
   }, 0);
   const totalBalance = total_pay - total_receive;
-  console.log(data);
+  console.log(data)
   return (
     <div className="cashleft">
       <div className="text-xl font-semibold p-5 border-b border-gray-300 text-blue-600">
@@ -149,12 +153,17 @@ const CashLeft = (props) => {
           </div>
         </div>
       </div>
-      <div className="transactions">
+      {/* <div className="transactions">
         {age === ""
-          ? data.map((item, index) => <CashTran key={index} data={item} />)
+          ? data.map((item, index) =>( <CashTran key={index} data={item} />))
           : data
               .filter((persons) => persons.cash_mode === age)
-              .map((item, index) => <CashTran key={index} data={item} />)}
+              .map((item, index) => (<CashTran key={index} data={item} />)  )}
+      </div> */}
+      <div className="transactions">
+        {
+          info.map((item, index) =>( <CashTran key={index} data={item} />)) }
+          
       </div>
       <div className="outin flex p-3 gap-4">
         <button

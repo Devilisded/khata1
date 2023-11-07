@@ -23,7 +23,10 @@ import { useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
+import { Skeleton } from "@mui/material";
 const EditSup = (props) => {
+  const [skeleton, setSkeleton] = useState(true);
+
   const { supId, change, changeChange, changeSup } = useContext(UserContext);
   const [isChecked, setIsChecked] = useState(false);
   const handleOnChange = () => {
@@ -90,6 +93,7 @@ const EditSup = (props) => {
           sup_bcity: response.data[0].sup_bcity,
           sup_bstate: response.data[0].sup_bstate,
         });
+        setSkeleton(false);
       });
   }, [supId, change]);
   const delSup = async () => {
@@ -126,159 +130,276 @@ const EditSup = (props) => {
   return (
     <div>
       {openEntryDetails ? (
-        data.map((item, index) => (
-          <div key={index}>
-            <div>
-              <Box sx={{ width: 400 }} className="w-full">
-                <h1 className="text_left heading">Edit Supplier</h1>
-                <div className="customer-profile flex items-start px-4 py-6 gap-4">
-                  <div className="icon2 p-3 rounded-full">
-                    <IconUser className="text-blue-500" />
-                  </div>
-                  <div className="">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-normal text-gray-700 -mt-1">
-                        {item.sup_name}
-                      </h2>
-                    </div>
-                    <p className="text-gray-500  bg-slate-200 rounded text-center">
-                      Supplier
-                    </p>
-                  </div>
-                </div>
-                <div className="supplier-edit-btn-wrapper flex justify-center">
-                  <button
-                    className="supplier-edit-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
-                    type="submit"
-                    onClick={handleClick}
-                  >
-                    <IconEdit />
-                    Edit Entry
-                  </button>
-                </div>
-                <div className="supplier-edit-section-wrapper">
-                  <div className="edit-section">
-                    <div className="flex card-sec">
-                      <div className="customer-info-icon-wrapper ">
-                        <IconCash />
-                      </div>
-                      <div className="customer-info-text">
-                        <h2>Opening Balance</h2>
-                        <p className=" font-medium flex gap-2">
-                          ₹ {item.sup_amt}
-                          <span className=" capitalize">
-                            {item.sup_amt_type}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex card-sec">
-                      <div className="customer-info-icon-wrapper ">
-                        <IconPhoneCall />
-                      </div>
-                      <div className="customer-info-text">
-                        <h2>Phone Number</h2>
-                        <p className=" font-medium">{item.sup_number}</p>
-                      </div>
-                    </div>
+        skeleton ? (
+          <div>
+            <Box sx={{ width: 400 }} className="w-full">
+              <h1 className="text_left heading">Pay Entry Details</h1>
+              <div className="customer-profile flex items-start px-4 py-6 gap-4">
+                <Skeleton variant="circular" width={45} height={45} />
 
-                    <div className="flex card-sec">
-                      <div className="customer-info-icon-wrapper ">
-                        <IconReceipt />
-                      </div>
-                      <div className="customer-info-text">
-                        <h2>GST Number</h2>
-                        <p className=" font-medium">
-                          {item.sup_gstin ? item.sup_gstin : "-"}
-                        </p>
-                      </div>
-                    </div>
+                <div className="flex flex-col gap-1 mt-2">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-normal text-gray-700 -mt-1">
+                      <Skeleton variant="rectangular" width={60} height={15} />
+                    </h2>
+                  </div>
+                  <p className="text-gray-500  bg-slate-200 rounded text-center">
+                    <Skeleton variant="rectangular" width={60} height={15} />
+                  </p>
+                </div>
+              </div>
 
-                    <div className="flex card-sec">
-                      <div className="customer-info-icon-wrapper ">
-                        <IconMapPin />
-                      </div>
-                      <div className="customer-info-text">
-                        <h2>Shipping Address</h2>
-                        <p className=" font-medium">
-                          {item.sup_sflat ? item.sup_sflat + "," : ""}
-                          {item.sup_sarea ? " " + item.sup_sarea + "," : ""}
-                          {item.sup_scity ? " " + item.sup_scity + "," : ""}
-                          {item.sup_sstate ? " " + item.sup_sstate + "," : ""}
-                          {item.sup_spin ? " " + item.sup_spin : ""}
-                        </p>
-                      </div>
-                    </div>
+              <div className="pay-edit-entry-btn-wrapper flex justify-center">
+                <Skeleton variant="rounded" width={370} height={45} />
+              </div>
 
-                    <div className="flex card-sec">
-                      <div className="customer-info-icon-wrapper ">
-                        <IconMapPin />
-                      </div>
-                      <div className="customer-info-text">
-                        <h2>Billing Address</h2>
-                        <p className=" font-medium">
-                          {item.sup_bflat ? item.sup_bflat + "," : ""}
-                          {item.sup_barea ? " " + item.sup_barea + "," : ""}
-                          {item.sup_bcity ? " " + item.sup_bcity + "," : ""}
-                          {item.sup_bstate ? " " + item.sup_bstate + "," : ""}
-                          {item.sup_bpin ? " " + item.sup_bpin : ""}
-                        </p>
-                      </div>
+              <div className="customer-edit-section-wrapper">
+                <div className="edit-section">
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconCash />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Opening Balance</h2>
+                      <p className=" font-medium flex gap-2 mt-2">
+                        <Skeleton
+                          variant="rectangular"
+                          width={80}
+                          height={18}
+                        />
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconPhoneCall />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Phone Number</h2>
+                      <p className=" font-medium">
+                        {" "}
+                        <Skeleton
+                          variant="rectangular"
+                          width={80}
+                          height={18}
+                        />
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconReceipt />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>GST Number</h2>
+                      <p className=" font-medium">
+                        {" "}
+                        <Skeleton
+                          variant="rectangular"
+                          width={80}
+                          height={18}
+                        />
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconMapPin />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Shipping Address</h2>
+                      <p className=" font-medium">
+                        {" "}
+                        <Skeleton
+                          variant="rectangular"
+                          width={80}
+                          height={18}
+                        />
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex card-sec">
+                    <div className="customer-info-icon-wrapper ">
+                      <IconMapPin />
+                    </div>
+                    <div className="customer-info-text">
+                      <h2>Billing Address</h2>
+                      <p className=" font-medium">
+                        {" "}
+                        <Skeleton
+                          variant="rectangular"
+                          width={80}
+                          height={18}
+                        />
+                      </p>
                     </div>
                   </div>
                 </div>
-              </Box>
-            </div>
-            <div className="add-customer-btn-wrapper flex justify-center">
-              <button
-                className="delete-btn text-red-600 flex gap-1 justify-center"
-                type="submit"
-                onClick={handleClickOpen}
-              >
-                <IconTrash />
-                Delete Customer
-              </button>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <div className="flex">
-                  <div className="pt-5 pl-3">
-                    <IconAlertOctagonFilled
-                      size={60}
-                      className="text-red-600"
-                    />
-                  </div>
-                  <div>
-                    <DialogTitle id="alert-dialog-title">
-                      Are You Sure ?
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        You are about to delete this supplier This action cannot
-                        be undone.
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions className="flex gap-4">
-                      <button className="pb-3" onClick={handleClose}>
-                        Cancel
-                      </button>
-                      <button
-                        className="delete-btn text-red-600 pb-3 pr-3"
-                        onClick={delSup}
-                        autoFocus
-                      >
-                        Delete Customer
-                      </button>
-                    </DialogActions>
-                  </div>
-                </div>
-              </Dialog>
+              </div>
+            </Box>
+
+            <div className="delete-customer-btn-wrapper flex justify-center">
+              <Skeleton variant="rounded" width={370} height={45} />
             </div>
           </div>
-        ))
+        ) : (
+          data.map((item, index) => (
+            <div key={index}>
+              <div>
+                <Box sx={{ width: 400 }} className="w-full">
+                  <h1 className="text_left heading">Edit Supplier</h1>
+                  <div className="customer-profile flex items-start px-4 py-6 gap-4">
+                    <div className="icon2 p-3 rounded-full">
+                      <IconUser className="text-blue-500" />
+                    </div>
+                    <div className="">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-normal text-gray-700 -mt-1">
+                          {item.sup_name}
+                        </h2>
+                      </div>
+                      <p className="text-gray-500  bg-slate-200 rounded text-center">
+                        Supplier
+                      </p>
+                    </div>
+                  </div>
+                  <div className="supplier-edit-btn-wrapper flex justify-center">
+                    <button
+                      className="supplier-edit-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
+                      type="submit"
+                      onClick={handleClick}
+                    >
+                      <IconEdit />
+                      Edit Entry
+                    </button>
+                  </div>
+                  <div className="supplier-edit-section-wrapper">
+                    <div className="edit-section">
+                      <div className="flex card-sec">
+                        <div className="customer-info-icon-wrapper ">
+                          <IconCash />
+                        </div>
+                        <div className="customer-info-text">
+                          <h2>Opening Balance</h2>
+                          <p className=" font-medium flex gap-2">
+                            ₹ {item.sup_amt}
+                            <span className=" capitalize">
+                              {item.sup_amt_type}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex card-sec">
+                        <div className="customer-info-icon-wrapper ">
+                          <IconPhoneCall />
+                        </div>
+                        <div className="customer-info-text">
+                          <h2>Phone Number</h2>
+                          <p className=" font-medium">{item.sup_number}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex card-sec">
+                        <div className="customer-info-icon-wrapper ">
+                          <IconReceipt />
+                        </div>
+                        <div className="customer-info-text">
+                          <h2>GST Number</h2>
+                          <p className=" font-medium">
+                            {item.sup_gstin ? item.sup_gstin : "-"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex card-sec">
+                        <div className="customer-info-icon-wrapper ">
+                          <IconMapPin />
+                        </div>
+                        <div className="customer-info-text">
+                          <h2>Shipping Address</h2>
+                          <p className=" font-medium">
+                            {item.sup_sflat ? item.sup_sflat + "," : ""}
+                            {item.sup_sarea ? " " + item.sup_sarea + "," : ""}
+                            {item.sup_scity ? " " + item.sup_scity + "," : ""}
+                            {item.sup_sstate ? " " + item.sup_sstate + "," : ""}
+                            {item.sup_spin ? " " + item.sup_spin : ""}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex card-sec">
+                        <div className="customer-info-icon-wrapper ">
+                          <IconMapPin />
+                        </div>
+                        <div className="customer-info-text">
+                          <h2>Billing Address</h2>
+                          <p className=" font-medium">
+                            {item.sup_bflat ? item.sup_bflat + "," : ""}
+                            {item.sup_barea ? " " + item.sup_barea + "," : ""}
+                            {item.sup_bcity ? " " + item.sup_bcity + "," : ""}
+                            {item.sup_bstate ? " " + item.sup_bstate + "," : ""}
+                            {item.sup_bpin ? " " + item.sup_bpin : ""}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Box>
+              </div>
+              <div className="add-customer-btn-wrapper flex justify-center">
+                <button
+                  className="delete-btn text-red-600 flex gap-1 justify-center"
+                  type="submit"
+                  onClick={handleClickOpen}
+                >
+                  <IconTrash />
+                  Delete Customer
+                </button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <div className="flex">
+                    <div className="pt-5 pl-3">
+                      <IconAlertOctagonFilled
+                        size={60}
+                        className="text-red-600"
+                      />
+                    </div>
+                    <div>
+                      <DialogTitle id="alert-dialog-title">
+                        Are You Sure ?
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          You are about to delete this supplier This action
+                          cannot be undone.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions className="flex gap-4">
+                        <button className="pb-3" onClick={handleClose}>
+                          Cancel
+                        </button>
+                        <button
+                          className="delete-btn text-red-600 pb-3 pr-3"
+                          onClick={delSup}
+                          autoFocus
+                        >
+                          Delete Customer
+                        </button>
+                      </DialogActions>
+                    </div>
+                  </div>
+                </Dialog>
+              </div>
+            </div>
+          ))
+        )
       ) : (
         <div></div>
       )}

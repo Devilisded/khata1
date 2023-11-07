@@ -4,7 +4,8 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import { useNavigate } from "react-router-dom";
 const CashTran = (props) => {
-  const { changeCashId, cashId, changeExpId, expId } = useContext(UserContext);
+  const { changeCashId, cashId, changeExpId, expId, changeSaleId } =
+    useContext(UserContext);
   const navigate = useNavigate();
   const time1 = new Date(props.data.cash_time);
   const hours = time1.getHours();
@@ -16,7 +17,14 @@ const CashTran = (props) => {
     changeExpId(parseInt(props.data.cash_mode));
     navigate("/expenses");
   };
+  const changeS = () => {
+    changeSaleId(props.data.cash_sale_cnct_id);
+    navigate("/Sales");
+  };
   const checkNavigate = () => {
+    if (props.data.cash_mode === "cash" || props.data.cash_mode === "online" && props.data.cash_description === "PAYMENT IN") {
+      changeS();
+    }
     if (props.data.cash_mode === "cash" || props.data.cash_mode === "online") {
       changeCashId(props.data.cash_id);
     } else {
@@ -41,10 +49,7 @@ const CashTran = (props) => {
           <div className="date font-semibold flex items-center gap-2 text-slate-600">
             {fhours + ":" + fminutes + " " + AMPM}
             <div className="cashonline p-[2px] text-[10px] text-blue-600 bg-blue-100 rounded font-semibold uppercase">
-              {props.data.cash_mode === "cash" ||
-              props.data.cash_mode === "online"
-                ? props.data.cash_mode
-                : "Expenses"}
+              {props.data.cash_mode}
             </div>
           </div>
           <div className="text-sm text-slate-500 font-semibold">

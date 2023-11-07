@@ -5,7 +5,13 @@ import {
   IconPlus,
   IconSearch,
 } from "@tabler/icons-react";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
+} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import SupCard from "../supCard/SupCard";
 import axios from "axios";
@@ -19,6 +25,7 @@ const SupLeft = (props) => {
   };
   const [data, setData] = useState([]);
   const [tran, setTran] = useState([]);
+  const [skeleton, setSkeleton] = useState(true);
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchData")
@@ -29,6 +36,7 @@ const SupLeft = (props) => {
       .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchAll")
       .then((response) => {
         setTran(response.data);
+        setSkeleton(false);
       });
   }, [change]);
   const sum = data
@@ -146,25 +154,63 @@ const SupLeft = (props) => {
         <div className="amount">Amount</div>
       </div>
       <div className="cards">
-        {sortedUsers
+        {skeleton ? (
+          <div className={"cardItem cursor-pointer"}>
+            <div
+              className="flex justify-between  items-center p-3"
+              style={{ borderBottom: "1px solid rgb(245 245 245" }}
+            >
+              <div className="flex items-center gap-2">
+                <Skeleton
+                  variant="circular"
+                  width={50}
+                  height={50}
+                  animation={"wave"}
+                />
+                <div className="flex flex-col gap-2">
+                  <span className="text-lg text-slate-700">
+                    <Skeleton variant="rectangular" width={80} height={15} />
+                  </span>
+                  <span className="text-slate-500 text-sm">
+                    <Skeleton variant="rectangular" width={80} height={15} />
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div className="flex flex-col items-end gap-1">
+                  <div className={"font-semibold text-lg"}>
+                    <Skeleton variant="rectangular" width={50} height={20} />
+                  </div>
+                  <div className="text-slate-700 text-xs">
+                    <Skeleton variant="rectangular" width={30} height={10} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          sortedUsers
 
-          .filter((code) => {
-            if (filter2 === "pay") {
-              return code.sup_amt_type === "receive";
-            } else if (filter2 === "receive") {
-              return code.sup_amt_type === "pay";
-            } else if (filter2 === "All") {
-              return true;
-            }
-          })
-          .filter(
-            (code) =>
-              code.sup_number.startsWith(searchValue) ||
-              code.sup_name.toLowerCase().startsWith(searchValue.toLowerCase())
-          )
-          .map((filteredItem, index) => (
-            <SupCard key={index} tran={tran} data={filteredItem} />
-          ))}
+            .filter((code) => {
+              if (filter2 === "pay") {
+                return code.sup_amt_type === "receive";
+              } else if (filter2 === "receive") {
+                return code.sup_amt_type === "pay";
+              } else if (filter2 === "All") {
+                return true;
+              }
+            })
+            .filter(
+              (code) =>
+                code.sup_number.startsWith(searchValue) ||
+                code.sup_name
+                  .toLowerCase()
+                  .startsWith(searchValue.toLowerCase())
+            )
+            .map((filteredItem, index) => (
+              <SupCard key={index} tran={tran} data={filteredItem} />
+            ))
+        )}
       </div>
     </div>
   );

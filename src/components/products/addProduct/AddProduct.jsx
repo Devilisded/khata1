@@ -18,18 +18,20 @@ const AddProduct = (props) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   const [result, setResult] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
-    .then((response) => {
-      setResult(response.data);
-    });
-
   const [result2, setResult2] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
-    .then((response) => {
-      setResult2(response.data);
-    });
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
+      .then((response) => {
+        setResult(response.data);
+      });
+
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .then((response) => {
+        setResult2(response.data);
+      });
+  }, []);
   const gst = [
     {
       value: "gst0",
@@ -202,7 +204,6 @@ const AddProduct = (props) => {
 
   productData.entry_date = filteredDate;
   productData.tax = isOn2 ? "yes" : "no";
-  const [err, setErr] = useState(null);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -230,7 +231,6 @@ const AddProduct = (props) => {
       formData.append("cess", productData.cess);
       formData.append("conversion", productData.conversion);
       formData.append("cgst", productData.cgst);
-      console.log("product_data : ", productData);
       await axios.post(
         import.meta.env.VITE_BACKEND + "/api/auth/addProduct",
         formData

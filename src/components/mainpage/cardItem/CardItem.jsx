@@ -20,6 +20,9 @@ const CardItem = (props) => {
     props.users.amt_type === "receive"
       ? props.users.cust_amt + total
       : -props.users.cust_amt + total;
+  props.skeleton
+    ? console.log("Skeletion is true")
+    : console.log("skeleton is false");
   return (
     <div
       className={
