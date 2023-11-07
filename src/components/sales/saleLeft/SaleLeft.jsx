@@ -11,9 +11,11 @@ const SaleLeft = (props) => {
   const [result, setResult] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:8000/api/sale/fetchData").then((response) => {
-      setResult(response.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/sale/fetchData")
+      .then((response) => {
+        setResult(response.data);
+      });
   }, [change]);
 
   const total_amt = result.reduce((acc, current) => {
@@ -44,7 +46,10 @@ const SaleLeft = (props) => {
       </div>
       <div className="flex justify-between p-5 border-b border-slate-300">
         <div className="give text-gray-500 flex gap-1 items-center">
-          Sales :<span className="text-gray-700 font-bold">₹ {total_amt.toFixed(2)}</span>
+          Sales :
+          <span className="text-gray-700 font-bold">
+            ₹ {total_amt.toFixed(2)}
+          </span>
           <IconArrowUpRight className="text-red-600" />
         </div>
         <Link to="/salesForm">
@@ -130,7 +135,9 @@ const SaleLeft = (props) => {
             if (filter2 === "unpaid") {
               return code.sale_amt_due === code.sale_amt;
             } else if (filter2 === "partial") {
-              return code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt;
+              return (
+                code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt
+              );
             } else if (filter2 === "full") {
               return code.sale_amt_due === "0";
             } else if (filter2 === "All") {

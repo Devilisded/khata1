@@ -11,7 +11,8 @@ const Transaction = (props) => {
   const fminutes = minutes < 10 ? "0" + minutes : minutes;
   const fhours = hours > 12 ? hours - 12 : hours;
   const AMPM = hours > 12 ? "PM" : "AM";
-  const { changeTranId, tranId, change , changeSaleId } = useContext(UserContext);
+  const { changeTranId, tranId, change, changeSaleId } =
+    useContext(UserContext);
   const tid = (e) => {
     changeTranId(props.transactions.tran_id),
       props.transactions.tran_pay
@@ -21,18 +22,16 @@ const Transaction = (props) => {
         : alert("No Transactions");
   };
   const changeS = () => {
-    console.log(props.transactions.tran_sale_cnct_id)
+    console.log(props.transactions.tran_sale_cnct_id);
     changeSaleId(props.transactions.tran_sale_cnct_id);
-    navigate("/Sales");
+    navigate("/sales");
   };
   const checkNavigate = () => {
-    if (
-      props.transactions.tran_sale_cnct_id !== null) {
+    if (props.transactions.tran_sale_cnct_id !== null) {
       changeS();
     } else {
-      tid(props.transactions.tran_id)
+      tid(props.transactions.tran_id);
     }
-    
   };
 
   return (

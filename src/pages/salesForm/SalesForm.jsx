@@ -145,25 +145,31 @@ const SalesForm = () => {
   const [businessGst, setBusinessGst] = useState("");
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/auth/fetch`).then((response) => {
-      setCustomerData(response.data);
-    });
-    axios.get("http://localhost:8000/api/act/fetchData").then((response) => {
-      setBusinessdata(response.data);
-      setBusinessGst(response.data[0].business_gst);
-    });
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch`)
+      .then((response) => {
+        setCustomerData(response.data);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .then((response) => {
+        setBusinessdata(response.data);
+        setBusinessGst(response.data[0].business_gst);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
       .then((response) => {
         setProductList(response.data);
       });
 
-    axios.get(`http://localhost:8000/api/ser/fetchData`).then((response) => {
-      setServicesList(response.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData`)
+      .then((response) => {
+        setServicesList(response.data);
+      });
 
     axios
-      .get(`http://localhost:8000/api/sale/fetchSalesPrefixData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSalesPrefixData`)
       .then((response) => {
         setSalesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].sale_prefix_no);
@@ -175,7 +181,7 @@ const SalesForm = () => {
       });
 
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
       .then((response) => {
         setHsnCodes(response.data);
       });
@@ -1274,7 +1280,6 @@ const SalesForm = () => {
 
   amountPaid === "0" ? (saleData.sale_amt_type = "unpaid") : "";
 
-
   const handleClick = async (e) => {
     e.preventDefault();
     try {
@@ -1304,7 +1309,7 @@ const SalesForm = () => {
           <div className="w-full bg-white rounded-lg border border-slate-300 p-2 flex items-center justify-between">
             <div className="flex gap-5">
               <Link
-                to="/Sales"
+                to="/sales"
                 className="rounded-full p-1 hover:bg-slate-200"
                 style={{ transition: "all 400ms ease-in-out" }}
               >
@@ -1647,7 +1652,6 @@ const SalesForm = () => {
                 {/* <div>Amount Paid (₹) :</div> */}
                 <div>
                   <input
-                 
                     type="text"
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Amount Paid (₹)"

@@ -46,34 +46,39 @@ const SalesInvoice = () => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/sale/fetchDataById/${saleId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${saleId}`)
       .then((response) => {
         setData({
           ...data,
           salesId: response.data[0].sale_id,
           cust_cnct_id: response.data[0].cust_cnct_id,
-          amtPaid : response.data[0].sale_amt_paid,
-          amtDue : response.data[0].sale_amt_due,
+          amtPaid: response.data[0].sale_amt_paid,
+          amtDue: response.data[0].sale_amt_due,
         });
       });
     axios
-      .get(`http://localhost:8000/api/sale/fetchSaleTran/${saleId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSaleTran/${saleId}`)
       .then((response) => {
         setSaleRightTranData(response.data);
       });
-    axios.get("http://localhost:8000/api/act/fetchData").then((res) => {
-      setAcct(res.data);
-      setImg({
-        ...img,
-        imgLink: res.data[0].business_logo,
-        act_name: res.data[0].business_name,
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .then((res) => {
+        setAcct(res.data);
+        setImg({
+          ...img,
+          imgLink: res.data[0].business_logo,
+          act_name: res.data[0].business_name,
+        });
       });
-    });
   }, [change, saleId]);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchCust/${data.cust_cnct_id}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/auth/fetchCust/${data.cust_cnct_id}`
+      )
       .then((response) => {
         setCustData(response.data);
       });
@@ -109,7 +114,11 @@ const SalesInvoice = () => {
             <div className="invoice-head">
               <div className="invoice-head-top">
                 <div className="invoice-head-top-left text-start">
-                  <img src={"http://localhost:8000/account/" + img.imgLink} />
+                  <img
+                    src={
+                      import.meta.env.VITE_BACKEND + "/account/" + img.imgLink
+                    }
+                  />
                 </div>
                 <div className="invoice-head-top-right text-end">
                   <h3>{img.act_name}</h3>
@@ -196,15 +205,26 @@ const SalesInvoice = () => {
                         </td>
                         <td>{item.sale_item_qty}</td>
                         <td>
-                          ₹{(item.sale_item_disc_price * item.sale_item_qty).toFixed(2)}
+                          ₹
+                          {(
+                            item.sale_item_disc_price * item.sale_item_qty
+                          ).toFixed(2)}
                         </td>
-                        <td>{(item.sale_item_gst_amt * item.sale_item_qty).toFixed(2)}</td>
+                        <td>
+                          {(
+                            item.sale_item_gst_amt * item.sale_item_qty
+                          ).toFixed(2)}
+                        </td>
                         <td>
                           ₹
                           {item.sale_item_qty *
                             (
                               parseFloat(item.sale_item_disc_price) +
-                              parseFloat(item.sale_item_gst_amt ? item.sale_item_gst_amt : 0 )
+                              parseFloat(
+                                item.sale_item_gst_amt
+                                  ? item.sale_item_gst_amt
+                                  : 0
+                              )
                             ).toFixed(2)}
                         </td>
                       </tr>
@@ -216,39 +236,48 @@ const SalesInvoice = () => {
                     <div className="info-item-td text-end text-bold">
                       Sub Total:
                     </div>
-                    <div className="info-item-td text-end">₹ {totalRate.toFixed(2)}</div>
+                    <div className="info-item-td text-end">
+                      ₹ {totalRate.toFixed(2)}
+                    </div>
                   </div>
                   <div className="invoice-body-info-item border-bottom">
                     <div className="info-item-td text-end text-bold">Tax:</div>
-                    <div className="info-item-td text-end">₹ {totalTax.toFixed(2)}</div>
+                    <div className="info-item-td text-end">
+                      ₹ {totalTax.toFixed(2)}
+                    </div>
                   </div>
                   <div className="invoice-body-info-item border-bottom">
-                    <div className="info-item-td text-end text-bold">Total Amount:</div>
-                    <div className="info-item-td text-end">₹ {(totalRate + totalTax).toFixed(2)}</div>
-                  </div>
-
-                  {data.amtPaid ? 
-                  <>
-                  <div className="invoice-body-info-item border-bottom">
                     <div className="info-item-td text-end text-bold">
-                    Amount Paid: 
+                      Total Amount:
                     </div>
                     <div className="info-item-td text-end">
-                      ₹ {data.amtPaid}
+                      ₹ {(totalRate + totalTax).toFixed(2)}
                     </div>
                   </div>
 
-                  <div className="invoice-body-info-item">
-                    <div className="info-item-td text-end text-bold">
-                    Balance Due:
-                    </div>
-                    <div className="info-item-td text-end">
-                      ₹ {parseFloat(data.amtDue).toFixed(2)}
-                    </div>
-                  </div>
-                  </> :
-                  "" }
+                  {data.amtPaid ? (
+                    <>
+                      <div className="invoice-body-info-item border-bottom">
+                        <div className="info-item-td text-end text-bold">
+                          Amount Paid:
+                        </div>
+                        <div className="info-item-td text-end">
+                          ₹ {data.amtPaid}
+                        </div>
+                      </div>
 
+                      <div className="invoice-body-info-item">
+                        <div className="info-item-td text-end text-bold">
+                          Balance Due:
+                        </div>
+                        <div className="info-item-td text-end">
+                          ₹ {parseFloat(data.amtDue).toFixed(2)}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>

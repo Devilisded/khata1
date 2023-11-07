@@ -39,7 +39,7 @@ const SaleRight = (props) => {
   });
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/sale/fetchDataById/${saleId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${saleId}`)
       .then((response) => {
         setData({
           ...data,
@@ -54,7 +54,7 @@ const SaleRight = (props) => {
         });
       });
     axios
-      .get(`http://localhost:8000/api/sale/fetchSaleTran/${saleId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSaleTran/${saleId}`)
       .then((response) => {
         setSaleRightTranData(response.data);
       });
@@ -62,7 +62,10 @@ const SaleRight = (props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/auth/fetchCust/${data.cust_cnct_id}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/auth/fetchCust/${data.cust_cnct_id}`
+      )
       .then((response) => {
         setCustData(response.data);
       });
@@ -70,7 +73,9 @@ const SaleRight = (props) => {
 
   const deleteSales = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/sale/delSales/${saleId}`);
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/sale/delSales/${saleId}`
+      );
       changeChange();
       changeSaleId(0);
       props.snack();
@@ -201,12 +206,11 @@ const SaleRight = (props) => {
                   </div>
                 ) : (
                   <div className="flex items-center  flex-col">
-                    <div className="text-slate-700">₹ {parseFloat(data.sale_amt).toFixed(2)}</div>
+                    <div className="text-slate-700">
+                      ₹ {parseFloat(data.sale_amt).toFixed(2)}
+                    </div>
                     <div>
-                      {data.sale_amt_due > 0 
-                      
-                        ? "Partially Paid"
-                        : "Fully Paid"}
+                      {data.sale_amt_due > 0 ? "Partially Paid" : "Fully Paid"}
                     </div>
                   </div>
                 )}
