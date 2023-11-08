@@ -25,11 +25,9 @@ const CashLeft = (props) => {
   };
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
-
-  var filteredDate = date1.toString().slice(4, 15);
-  const fDate = filteredDate + " ";
+  var filteredDate = date1.toString().slice(4, 16);
   const [info, setInfo] = useState([]);
-
+  console.log(filteredDate);
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDate/${filteredDate}`)
@@ -158,11 +156,6 @@ const CashLeft = (props) => {
               .filter((persons) => persons.cash_mode === age)
               .map((item, index) => <CashTran key={index} data={item} />)}
       </div>
-      {/* <div className="transactions">
-        {
-          info.map((item, index) =>( <CashTran key={index} data={item} />)) }
-          
-      </div> */}
       <div className="outin flex p-3 gap-4">
         <button
           className="w-full p-2 rounded-xl bg-red-100 text-red-600 hover:text-white hover:bg-red-600"

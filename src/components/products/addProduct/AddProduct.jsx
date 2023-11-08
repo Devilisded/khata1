@@ -406,9 +406,10 @@ const AddProduct = (props) => {
                 {isOn ? (
                   <Box className="box-sec margin-top-zero">
                     <Autocomplete
-                      options={result
-                        .filter((code) => code.unit_code !== primaryUnitValue)
-                        .map((item) => item.unit_code)}
+                      // options={result.map(
+                      //   (item) => item.unit_name + "- " + item.unit_code
+                      // )}
+                      options={result.map((item) => item.unit_code)}
                       onChange={(event, newValue) => {
                         setSecondaryUnitValue(newValue);
                       }}

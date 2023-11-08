@@ -17,7 +17,6 @@ const MainRight = (props) => {
       });
   }, [change, userId]);
 
-
   return (
     <div className="right bg-white shadow-xl w-full">
       <div className="customer">
@@ -32,24 +31,14 @@ const MainRight = (props) => {
       </div>
       <div className="transactions">
         {result.length > 0 ? (
-          result.map((item, index) => {
-            const sum = result
-            .filter((filteredItem) => filteredItem.tran_id >= item.tran_id )
-            .reduce(function (prev , current) {
-              if (current.tran_pay) {
-              return prev+ +current.tran_pay;
-            } else {
-              return prev- +current.tran_receive;
-            }
-          } , 0); return (
+          result.map((item, index) => (
             <Transaction
               key={index}
               transactions={item}
               editPay={props.editPay}
               editReceive={props.editReceive}
-              totalBalance = {sum}
             />
-          )})
+          ))
         ) : (
           <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">
             <div>
