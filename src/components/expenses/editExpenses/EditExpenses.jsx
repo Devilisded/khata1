@@ -374,7 +374,7 @@ const EditExpenses = (props) => {
         <>
           <div>
             <Box>
-              <h1 className="text_left heading">Create an Expense</h1>
+              <h1 className="text_left heading">Edit Expense</h1>
 
               <div className="add-expense-section-wrapper">
                 <div className="section-2">
@@ -661,6 +661,7 @@ const EditExpenses = (props) => {
                                               filteredItem.id
                                             );
                                         }}
+                                        
                                         className="text-red-600 py-2 px-5 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
                                         style={{ border: "1px solid #dc2626" }}
                                       >
@@ -966,7 +967,7 @@ const EditExpenses = (props) => {
                                     +
                                   </button>
                                 </span>
-                                <div className="flex gap-3">
+                                {/* <div className="flex gap-3">
                                   {filteredItem.exp_item_qty > 0 ? (
                                     <>
                                       <button
@@ -1070,7 +1071,7 @@ const EditExpenses = (props) => {
                                       }}
                                     />
                                   </button>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                             {editExpenseItems ? (

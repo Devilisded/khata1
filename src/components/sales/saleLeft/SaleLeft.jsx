@@ -46,10 +46,7 @@ const SaleLeft = (props) => {
       </div>
       <div className="flex justify-between p-5 border-b border-slate-300">
         <div className="give text-gray-500 flex gap-1 items-center">
-          Sales :
-          <span className="text-gray-700 font-bold">
-            ₹ {total_amt.toFixed(2)}
-          </span>
+          Sales :<span className="text-gray-700 font-bold">₹ {total_amt.toFixed(2)}</span>
           <IconArrowUpRight className="text-red-600" />
         </div>
         <Link to="/salesForm">
@@ -112,11 +109,10 @@ const SaleLeft = (props) => {
                 setFilter2(e.target.value);
               }}
             >
-              <MenuItem value={filter2}></MenuItem>
+              <MenuItem value={filter2}>{/* <em>None</em>  */}</MenuItem>
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="unpaid">Unpaid</MenuItem>
-              <MenuItem value="partial">Partially Paid</MenuItem>
-              <MenuItem value="full">Fully Paid</MenuItem>
+              <MenuItem value="pay">Receive</MenuItem>
+              <MenuItem value="receive">Pay</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -127,23 +123,9 @@ const SaleLeft = (props) => {
       </div>
       <div className="cards2">
         {sortedUsers
-
           .filter((code) =>
             code.sale_name.toLowerCase().startsWith(searchValue.toLowerCase())
           )
-          .filter((code) => {
-            if (filter2 === "unpaid") {
-              return code.sale_amt_due === code.sale_amt;
-            } else if (filter2 === "partial") {
-              return (
-                code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt
-              );
-            } else if (filter2 === "full") {
-              return code.sale_amt_due === "0";
-            } else if (filter2 === "All") {
-              return true;
-            }
-          })
           .map((filteredItem, index) => (
             <SaleTran
               key={index}

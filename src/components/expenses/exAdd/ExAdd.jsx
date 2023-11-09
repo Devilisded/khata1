@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
@@ -41,22 +42,23 @@ const AddExpense = (props) => {
 
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseCategory`)
+      .get(`http://localhost:8000/api/exp/fetchExpenseCategory`)
       .then((response) => {
         setResult(response.data);
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseList`)
+      .get(`http://localhost:8000/api/exp/fetchExpenseList`)
       .then((response) => {
         setResult2(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpensesPrefixData`)
+      .get(`http://localhost:8000/api/exp/fetchExpensesPrefixData`)
       .then((response) => {
         setExpensesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].prefix_no);
       });
+    
   }, [change]);
 
   const [isClicked, setIsClicked] = useState(false);
@@ -75,7 +77,7 @@ const AddExpense = (props) => {
   const [transactionDate, setTransactionDate] = useState(todaysDate);
 
   var date1 = transactionDate.$d;
-  var filteredDate = date1.toString().slice(4, 15);
+  var filteredDate = date1.toString().slice(4, 16);
 
   const [categoryName, setCategoryName] = useState("Choose Category");
   const [addNewCategories, setAddNewCategories] = useState(false);
@@ -103,10 +105,10 @@ const AddExpense = (props) => {
     setprefixSelected(!prefixSelected);
   };
 
-  const [addNewCategoryError, setAddNewCategoryError] = useState(false);
-  const [editCategoryError, setEditCategoryError] = useState(false);
-  const [addNewExpensesItemError, setAddNewExpensesItemError] = useState(false);
-  const [editExpensesItemError, setEditExpensesItemError] = useState(false);
+  const [addNewCategoryError , setAddNewCategoryError] = useState(false)
+  const [editCategoryError , setEditCategoryError] = useState(false)
+  const [addNewExpensesItemError , setAddNewExpensesItemError] = useState(false)
+  const [editExpensesItemError , setEditExpensesItemError] = useState(false)
 
   const [values2, setValues2] = useState({
     category_name: null,
@@ -120,7 +122,7 @@ const AddExpense = (props) => {
     e.preventDefault();
     try {
       await axios.post(
-        import.meta.env.VITE_BACKEND + "/api/exp/addExpenseCategory",
+        "http://localhost:8000/api/exp/addExpenseCategory",
         values2
       );
       changeChange();
@@ -142,10 +144,7 @@ const AddExpense = (props) => {
   const handleClick3 = async () => {
     console.log(values3);
     try {
-      await axios.post(
-        import.meta.env.VITE_BACKEND + "/api/exp/addExpenselist",
-        values3
-      );
+      await axios.post("http://localhost:8000/api/exp/addExpenselist", values3);
       changeChange();
       handleClickVariant("success", "", "Added Successfully");
     } catch (err) {
@@ -162,7 +161,7 @@ const AddExpense = (props) => {
   const updateExpenseItemData = async (eiid) => {
     try {
       await axios.put(
-        import.meta.env.VITE_BACKEND + `/api/exp/updateExpenseItemData/${eiid}`,
+        `http://localhost:8000/api/exp/updateExpenseItemData/${eiid}`,
         values4
       );
       changeChange();
@@ -180,8 +179,7 @@ const AddExpense = (props) => {
     try {
       console.log(values5);
       await axios.put(
-        import.meta.env.VITE_BACKEND +
-          `/api/exp/updateExpenseCategoryData/${ecid}`,
+        `http://localhost:8000/api/exp/updateExpenseCategoryData/${ecid}`,
         values5
       );
       changeChange();
@@ -195,8 +193,7 @@ const AddExpense = (props) => {
     try {
       console.log("expenseItemId :", expenseItemId);
       await axios.delete(
-        import.meta.env.VITE_BACKEND +
-          `/api/exp/delExpenseItemFromList/${expenseItemId}`
+        `http://localhost:8000/api/exp/delExpenseItemFromList/${expenseItemId}`
       );
       changeChange();
       handleClickVariant("success", "", "Deleted Successfully");
@@ -211,8 +208,7 @@ const AddExpense = (props) => {
     try {
       console.log("expenseCategoryId :", expenseCategoryId);
       await axios.delete(
-        import.meta.env.VITE_BACKEND +
-          `/api/exp/delExpenseCategory/${expenseCategoryId}`
+        `http://localhost:8000/api/exp/delExpenseCategory/${expenseCategoryId}`
       );
       changeChange();
       handleClickVariant("success", "", "Deleted Successfully");
@@ -291,16 +287,17 @@ const AddExpense = (props) => {
   for (var i = 0; i < list.length; i++) {
     sum = parseInt(list[i].total_price) + parseInt(sum);
   }
-  console.log("sum : ", sum, list);
+
 
   const [expenseData, setExpenseData] = useState({
-    exp_prefix: "",
-    exp_prefix_no: "",
+    prefix_name: "",
     expense_date: "",
     category_name: "",
     amount_paid: sum,
     list: result3,
   });
+
+  console.log("list : " , list , typeof(list))
 
   const handleChange = (e) => {
     setExpenseData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -322,16 +319,16 @@ const AddExpense = (props) => {
       (expenseData.list = result3), (expenseData.amount_paid = sum);
       expenseData.expense_date = filteredDate;
       prefixValue === ""
-        ? ((expenseData.exp_prefix = "Expenses"),
-          (expenseData.exp_prefix_no = defaultPrefixNo + 1))
-        : ((expenseData.exp_prefix = temp),
-          (expenseData.exp_prefix_no = prefixNo));
+        ? ((expenseData.prefix_name = "Expenses"),
+          (expenseData.prefix_no = defaultPrefixNo + 1 ))
+        : ((expenseData.prefix_name = temp),
+          (expenseData.prefix_no = prefixNo));
       //expenseData.prefix_name = temp;
       expenseData.category_name = categoryName;
       //expenseData.prefix_no = prefixNo;
       console.log("values : ", expenseData, list);
       await axios.post(
-        import.meta.env.VITE_BACKEND + "/api/exp/addExpenses",
+        "http://localhost:8000/api/exp/addExpenses",
         expenseData
       );
       changeChange();
@@ -341,6 +338,7 @@ const AddExpense = (props) => {
     }
   };
 
+  
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
     if (sum !== "" && sum !== 0 && categoryName !== "Choose Category") {
@@ -350,7 +348,6 @@ const AddExpense = (props) => {
     }
   }, [sum, categoryName]);
 
-  console.log("prefixNo : ", expenseData.prefix_no, prefixNo, prefixValue);
 
   return (
     <div>
@@ -385,9 +382,7 @@ const AddExpense = (props) => {
                           id="outlined-basic"
                           variant="outlined"
                           value={
-                            prefixValue === "" || prefixValue === undefined
-                              ? defaultPrefixNo + 1
-                              : prefixNo
+                            prefixValue === "" || prefixValue === undefined ? defaultPrefixNo + 1 : prefixNo
                           }
                           name="prefix_number"
                           onChange={handleChange}
@@ -560,40 +555,25 @@ const AddExpense = (props) => {
                                 value={newCategoryValue}
                                 size="small"
                                 onChange={(e) =>
-                                  setNewCategoryValue(
-                                    result.find(
-                                      (category) =>
-                                        category.category_name.toLowerCase() ===
-                                        e.target.value.toLowerCase()
-                                    )
-                                      ? setAddNewCategoryError(true)
-                                      : (setAddNewCategoryError(false),
-                                        e.target.value)
-                                  )
+                                  setNewCategoryValue(result.find((category) => category.category_name.toLowerCase() === e.target.value.toLowerCase()) ? setAddNewCategoryError(true) : (setAddNewCategoryError(false) , e.target.value))
                                 }
-                                helperText={
-                                  addNewCategoryError
-                                    ? "Category Already Exists"
-                                    : ""
-                                }
+                                helperText={addNewCategoryError ? "Category Already Exists" : ""}
                               />
 
                               <button
                                 className="pl-3 icon_check"
-                                onClick={handleClick2}
+                                onClick={ handleClick2}
                                 disabled={addNewCategoryError ? true : false}
                               >
                                 <IconCheck
+                                  
                                   size={60}
                                   className=" text-green-600 fill-inherit cursor-pointer"
                                 />
                               </button>
                               <div
                                 className="pl-3 icon_check"
-                                onClick={() => {
-                                  setAddNewCategories(false),
-                                    setAddNewCategoryError(false);
-                                }}
+                                onClick={() => {setAddNewCategories(false) , setAddNewCategoryError(false)}}
                               >
                                 <IconX
                                   size={60}
@@ -616,35 +596,17 @@ const AddExpense = (props) => {
                                 size="small"
                                 value={updatedExpenseCategoryName}
                                 onChange={(e) =>
-                                  setUpdatedExpenseCategoryName(
-                                    result.find(
-                                      (category) =>
-                                        category.category_name ===
-                                        e.target.value
-                                    )
-                                      ? setEditCategoryError(true)
-                                      : (setEditCategoryError(false),
-                                        e.target.value)
-                                  )
+                                  setUpdatedExpenseCategoryName(result.find((category) => category.category_name === e.target.value) ? setEditCategoryError(true) : (setEditCategoryError(false) , e.target.value))
                                 }
-                                helperText={
-                                  editCategoryError
-                                    ? "Category Already Exists"
-                                    : ""
-                                }
+                                helperText={editCategoryError ? "Category Already Exists" : ""}
+                                
                               />
 
-                              <button
-                                className="pl-3 icon_check"
-                                disabled={editCategoryError ? true : false}
-                              >
+                              <button className="pl-3 icon_check" disabled={editCategoryError ? true : false}>
                                 <IconCheck
                                   size={60}
                                   className="text-green-600 fill-inherit cursor-pointer"
-                                  onClick={(e) => {
-                                    e.preventDefault(),
-                                      updateExpenseCategoryData();
-                                  }}
+                                  onClick={(e) => {e.preventDefault(), updateExpenseCategoryData() }}
                                 />
                               </button>
                               <div
@@ -901,22 +863,9 @@ const AddExpense = (props) => {
                               className="w-full "
                               size="small"
                               //onChange={(e) => setExpenseList(e.target.value)}
-                              onChange={(e) =>
-                                setExpenseList(
-                                  result2.find(
-                                    (item) =>
-                                      item.expense_name === e.target.value
-                                  )
-                                    ? setAddNewExpensesItemError(true)
-                                    : (setAddNewExpensesItemError(false),
-                                      e.target.value)
-                                )
-                              }
-                              helperText={
-                                addNewExpensesItemError
-                                  ? "Expenses Item Already Exists"
-                                  : ""
-                              }
+                              onChange={(e) => setExpenseList(result2.find((item) => item.expense_name === e.target.value) ? setAddNewExpensesItemError(true) : (setAddNewExpensesItemError(false) , e.target.value))}
+                              helperText={addNewExpensesItemError ? "Expenses Item Already Exists" : ""}
+                                
                             />
                           </Box>
                           <Box className="box-sec ">
@@ -940,12 +889,9 @@ const AddExpense = (props) => {
                               <button
                                 onClick={(e) => {
                                   e.preventDefault(),
-                                    handleClick3(),
-                                    setNewAddExpenseItems(false);
+                                  handleClick3(), setNewAddExpenseItems(false);
                                 }}
-                                disabled={
-                                  addNewExpensesItemError ? true : false
-                                }
+                                disabled={addNewExpensesItemError ? true : false}
                                 className="text-green-600  w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
                                 style={{ border: "1px solid #16a34a" }}
                               >
@@ -954,10 +900,7 @@ const AddExpense = (props) => {
                             </div>
                             <div
                               className=""
-                              onClick={() => {
-                                setNewAddExpenseItems(false),
-                                  setAddNewExpensesItemError(false);
-                              }}
+                              onClick={() => {setNewAddExpenseItems(false) , setAddNewExpensesItemError(false)} } 
                             >
                               <button
                                 className="text-red-600 w-full py-2 px-3 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
@@ -972,13 +915,12 @@ const AddExpense = (props) => {
                         ""
                       )}
                     </Box>
-                    {console.log("seacrch value : ", searchValue)}
+                     
                     <Box>
                       {result2
                         .filter(
-                          (code) =>
-                            code.expense_name.startsWith(searchValue) ||
-                            code.id === searchValue
+                          (code) =>  code.expense_name.startsWith(searchValue)
+                         || code.id === searchValue 
                         )
                         .map((filteredItem) => (
                           <div key={filteredItem.id} className="category">
@@ -1075,21 +1017,10 @@ const AddExpense = (props) => {
                                     className="w-full "
                                     size="small"
                                     onChange={(e) =>
-                                      setupdatedExpenseItemName(
-                                        result2.find(
-                                          (item) =>
-                                            item.expense_name === e.target.value
-                                        )
-                                          ? setEditExpensesItemError(true)
-                                          : (setEditExpensesItemError(false),
-                                            e.target.value)
-                                      )
+                                      setupdatedExpenseItemName(result2.find((item) => item.expense_name === e.target.value) ? setEditExpensesItemError(true) : (setEditExpensesItemError(false) , e.target.value))
                                     }
-                                    helperText={
-                                      editExpensesItemError
-                                        ? "Expenses Item Already Exists"
-                                        : ""
-                                    }
+                                    helperText={editExpensesItemError ? "Expenses Item Already Exists" : ""}
+                                    
                                   />
                                 </Box>
                                 <Box className="box-sec ">
@@ -1121,9 +1052,7 @@ const AddExpense = (props) => {
                                         updateExpenseItemData(filteredItem.id);
                                         setSearchValue("");
                                       }}
-                                      disabled={
-                                        editExpensesItemError ? true : false
-                                      }
+                                      disabled={editExpensesItemError ? true : false}
                                       className="text-green-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
                                       style={{ border: "1px solid #47bc72" }}
                                     >
@@ -1143,7 +1072,7 @@ const AddExpense = (props) => {
                                         e.preventDefault(),
                                           setSearchValue(""),
                                           setEditExpenseItems(false);
-                                        setEditExpensesItemError(false);
+                                          setEditExpensesItemError(false)
                                       }}
                                       className="text-red-600  w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
                                       style={{ border: "1px solid #dc2626" }}

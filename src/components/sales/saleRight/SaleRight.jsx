@@ -34,8 +34,6 @@ const SaleRight = (props) => {
     sale_date: "",
     sale_time: "",
     cust_cnct_id: 0,
-    sale_amt: "",
-    sale_amt_due: "",
   });
   useEffect(() => {
     axios
@@ -206,11 +204,12 @@ const SaleRight = (props) => {
                   </div>
                 ) : (
                   <div className="flex items-center  flex-col">
-                    <div className="text-slate-700">
-                      ₹ {parseFloat(data.sale_amt).toFixed(2)}
-                    </div>
+                    <div className="text-slate-700">₹ {parseFloat(data.sale_amt).toFixed(2)}</div>
                     <div>
-                      {data.sale_amt_due > 0 ? "Partially Paid" : "Fully Paid"}
+                      {data.sale_amt_due > 0 
+                      
+                        ? "Partially Paid"
+                        : "Fully Paid"}
                     </div>
                   </div>
                 )}

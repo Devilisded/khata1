@@ -4,7 +4,8 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import { useNavigate } from "react-router-dom";
 const CashTran = (props) => {
-  const { changeCashId, cashId, changeExpId, expId } = useContext(UserContext);
+  const { changeCashId, cashId, changeExpId, changeSaleId } =
+    useContext(UserContext);
   const navigate = useNavigate();
   const time1 = new Date(props.data.cash_time);
   const hours = time1.getHours();
@@ -16,7 +17,15 @@ const CashTran = (props) => {
     changeExpId(parseInt(props.data.cash_mode));
     navigate("/expenses");
   };
+  const changeS = () => {
+    changeSaleId(props.data.cash_sale_cnct_id);
+    navigate("/sales");
+  };
   const checkNavigate = () => {
+    if ((props.data.cash_mode === "cash" || props.data.cash_mode === "online" ) && props.data.cash_description === "PAYMENT IN") {
+      console.log( props.data.cash_description)
+      changeS();
+    }
     if (props.data.cash_mode === "cash" || props.data.cash_mode === "online") {
       changeCashId(props.data.cash_id);
     } else {
@@ -48,7 +57,7 @@ const CashTran = (props) => {
             </div>
           </div>
           <div className="text-sm text-slate-500 font-semibold">
-            Description : {props.data.cash_description}
+             {props.data.cash_description ? "Description : " + props.data.cash_description : ""}
           </div>
         </div>
       </div>

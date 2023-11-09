@@ -26,7 +26,7 @@ const SalesProducts = (props) => {
           )}
           
           <div className="border-r border-slate-300 p-4">
-            {item.in_gst_prectentage !== null && item.in_gst_prectentage !== undefined
+            {item.in_gst_prectentage !== null && item.in_gst_prectentage !== "-"
               ? item.in_gst_prectentage + "% |" + item.in_gst_amt.toFixed(2)
               : "-"}
           </div>
