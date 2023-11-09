@@ -145,25 +145,31 @@ const SalesForm = () => {
   const [businessGst, setBusinessGst] = useState("");
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/auth/fetch`).then((response) => {
-      setCustomerData(response.data);
-    });
-    axios.get("http://localhost:8000/api/act/fetchData").then((response) => {
-      setBusinessdata(response.data);
-      setBusinessGst(response.data[0].business_gst);
-    });
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch`)
+      .then((response) => {
+        setCustomerData(response.data);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .then((response) => {
+        setBusinessdata(response.data);
+        setBusinessGst(response.data[0].business_gst);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
       .then((response) => {
         setProductList(response.data);
       });
 
-    axios.get(`http://localhost:8000/api/ser/fetchData`).then((response) => {
-      setServicesList(response.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData`)
+      .then((response) => {
+        setServicesList(response.data);
+      });
 
     axios
-      .get(`http://localhost:8000/api/sale/fetchSalesPrefixData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSalesPrefixData`)
       .then((response) => {
         setSalesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].sale_prefix_no);
@@ -175,7 +181,7 @@ const SalesForm = () => {
       });
 
     axios
-      .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
       .then((response) => {
         setHsnCodes(response.data);
       });
@@ -407,7 +413,6 @@ const SalesForm = () => {
           )
         )
       : setServicesList((servicesList) =>
-      
           servicesList.map((item) =>
             productId === item.ser_id
               ? {
@@ -415,11 +420,10 @@ const SalesForm = () => {
                   ser_qty: item.ser_qty + 1,
                 }
               : item
-           )
+          )
         );
   };
 
-  
   const handleIncrease2 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
@@ -641,7 +645,6 @@ const SalesForm = () => {
     }
   }
 
-
   const totalGrossValue = filteredInvoiceItems
     .map(
       (item) =>
@@ -764,13 +767,14 @@ const SalesForm = () => {
 
                   <Box>
                     {(addProducts ? productList : servicesList)
-                      .filter(
-                        (code) => 
-                        addProducts ? 
-                          code.product_name.toLowerCase().startsWith(searchValue.toLowerCase())
-                          
-                          : code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
-                          
+                      .filter((code) =>
+                        addProducts
+                          ? code.product_name
+                              .toLowerCase()
+                              .startsWith(searchValue.toLowerCase())
+                          : code.ser_name
+                              .toLowerCase()
+                              .startsWith(searchValue.toLowerCase())
                       )
                       .map((filteredItem) => (
                         <div
@@ -865,7 +869,7 @@ const SalesForm = () => {
                               </button>
                             )}
                           </div>
-                          
+
                           {(addProducts
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== null &&
@@ -875,11 +879,12 @@ const SalesForm = () => {
                             <div>
                               {nerArr
                                 .filter(
-                                  (code) => 
+                                  (code) =>
                                     code.item_id ===
-                                    (addProducts
-                                      ? filteredItem.product_id
-                                      : filteredItem.ser_id) && code.item_qty !== 0 
+                                      (addProducts
+                                        ? filteredItem.product_id
+                                        : filteredItem.ser_id) &&
+                                    code.item_qty !== 0
                                 )
                                 .map((item) => (
                                   <div>
@@ -1264,7 +1269,7 @@ const SalesForm = () => {
   saleData.sale_amt_paid = amountPaid;
   saleData.sale_amt_due = totalGrossValue - parseInt(amountPaid);
   saleData.sale_amt_type = amtPayMethod;
-  
+
   saleData.sale_amt = total_amt;
   saleData.sale_name = custData.cust_name;
   saleData.cust_cnct_id = custData.cust_id;
@@ -1282,11 +1287,13 @@ const SalesForm = () => {
 
   amountPaid === "0" ? (saleData.sale_amt_type = "unpaid") : "";
 
-
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/sale/addSales", saleData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/sale/addSales",
+        saleData
+      );
       //await axios.put("http://localhost:8000/api/sale/updateStockQty", saleData);
 
       // changeChange();
@@ -1655,7 +1662,6 @@ const SalesForm = () => {
                 {/* <div>Amount Paid (₹) :</div> */}
                 <div>
                   <input
-                 
                     type="text"
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Amount Paid (₹)"
