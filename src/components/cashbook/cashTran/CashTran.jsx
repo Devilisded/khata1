@@ -1,4 +1,4 @@
-import { IconNotes } from "@tabler/icons-react";
+import { IconCoins, IconNotes } from "@tabler/icons-react";
 import "./cashtran.scss";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
@@ -22,8 +22,11 @@ const CashTran = (props) => {
     navigate("/sales");
   };
   const checkNavigate = () => {
-    if ((props.data.cash_mode === "cash" || props.data.cash_mode === "online" ) && props.data.cash_description === "PAYMENT IN") {
-      console.log( props.data.cash_description)
+    if (
+      (props.data.cash_mode === "cash" || props.data.cash_mode === "online") &&
+      props.data.cash_description === "PAYMENT IN"
+    ) {
+      console.log(props.data.cash_description);
       changeS();
     }
     if (props.data.cash_mode === "cash" || props.data.cash_mode === "online") {
@@ -37,14 +40,14 @@ const CashTran = (props) => {
     <div
       className={
         props.data.cash_id === cashId
-          ? "grid grid-cols-4 cursor-pointer p-4 border-b border-slate-100 cashtran bg-[#fff9e1]"
+          ? "grid grid-cols-4 cursor-pointer p-4 border-b border-slate-100 cashtran bg-lime-200/25"
           : "grid grid-cols-4 cursor-pointer p-4 border-b border-slate-100 cashtran"
       }
       onClick={checkNavigate}
     >
       <div className="flex col-span-2 gap-3">
-        <div className="notes rounded-full bg-yellow-200 p-3">
-          <IconNotes className="text-yellow-600" />
+        <div className="notes rounded-full bg-lime-200 p-3">
+          <IconCoins className="text-lime-600" />
         </div>
         <div className="details flex flex-col gap-1 ">
           <div className="date font-semibold flex items-center gap-2 text-slate-600">
@@ -57,7 +60,9 @@ const CashTran = (props) => {
             </div>
           </div>
           <div className="text-sm text-slate-500 font-semibold">
-             {props.data.cash_description ? "Description : " + props.data.cash_description : ""}
+            {props.data.cash_description
+              ? "Description : " + props.data.cash_description
+              : ""}
           </div>
         </div>
       </div>
