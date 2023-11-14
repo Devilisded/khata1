@@ -145,31 +145,25 @@ const SalesForm = () => {
   const [businessGst, setBusinessGst] = useState("");
 
   useEffect(() => {
+    axios.get(`http://localhost:8000/api/auth/fetch`).then((response) => {
+      setCustomerData(response.data);
+    });
+    axios.get("http://localhost:8000/api/act/fetchData").then((response) => {
+      setBusinessdata(response.data);
+      setBusinessGst(response.data[0].business_gst);
+    });
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch`)
-      .then((response) => {
-        setCustomerData(response.data);
-      });
-    axios
-      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
-      .then((response) => {
-        setBusinessdata(response.data);
-        setBusinessGst(response.data[0].business_gst);
-      });
-    axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
+      .get(`http://localhost:8000/api/auth/fetchProductData`)
       .then((response) => {
         setProductList(response.data);
       });
 
-    axios
-      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData`)
-      .then((response) => {
-        setServicesList(response.data);
-      });
+    axios.get(`http://localhost:8000/api/ser/fetchData`).then((response) => {
+      setServicesList(response.data);
+    });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSalesPrefixData`)
+      .get(`http://localhost:8000/api/sale/fetchSalesPrefixData`)
       .then((response) => {
         setSalesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].sale_prefix_no);
@@ -181,7 +175,7 @@ const SalesForm = () => {
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .get(`http://localhost:8000/api/auth/fetchProductHsnCodes`)
       .then((response) => {
         setHsnCodes(response.data);
       });
@@ -226,11 +220,13 @@ const SalesForm = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  var i = 0;
   const [nerArr, setNerArr] = useState([]);
   const handleChange2 = (item) => {
     addProducts
       ? setNerArr([
           {
+            item_t_id: 1,
             item_id: item.product_id,
             item_name: item.product_name,
             item_unit: item.primary_unit,
@@ -247,13 +243,14 @@ const SalesForm = () => {
             item_discount_unit: item.discount_unit,
             add_hsn: false,
             add_gst: false,
-            item_cat: 1,
+            item_cat: 1,  // products
           },
           ...nerArr,
         ])
       : setNerArr([
           {
-            item_id: item.ser_id,
+            item_t_id: 1,
+            item_id: item.ser_id ,
             item_name: item.ser_name,
             item_unit: item.ser_unit,
             item_price: item.ser_price,
@@ -268,7 +265,8 @@ const SalesForm = () => {
             item_discount_unit: item.discount_unit,
             add_hsn: false,
             add_gst: false,
-            item_cat: 0,
+            item_cat: 0, // Services
+            item_sales: item.ser_sales,
           },
           ...nerArr,
         ]);
@@ -308,7 +306,7 @@ const SalesForm = () => {
         productId === item.item_id
           ? {
               ...item,
-              item_tax: item.item_tax === "yes" ? "no" : "yes",
+              item_tax: item.item_tax === "1" ? "0" : "1",
             }
           : item
       )
@@ -413,6 +411,7 @@ const SalesForm = () => {
           )
         )
       : setServicesList((servicesList) =>
+      
           servicesList.map((item) =>
             productId === item.ser_id
               ? {
@@ -420,14 +419,30 @@ const SalesForm = () => {
                   ser_qty: item.ser_qty + 1,
                 }
               : item
-          )
+           )
         );
   };
 
+  
   const handleIncrease2 = (productId) => {
+    console.log("product")
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-        productId === item.item_id
+        productId === item.item_id && item.item_cat === 1
+          ? {
+              ...item,
+              item_qty: item.item_qty + 1,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleIncrease3 = (productId) => {
+    console.log("services")
+    setNerArr((nerArr) =>
+      nerArr.map((item) =>
+        productId === item.item_id && item.item_cat === 0
           ? {
               ...item,
               item_qty: item.item_qty + 1,
@@ -462,10 +477,17 @@ const SalesForm = () => {
         );
   };
 
+  
+for (let i = 0; i < nerArr.length; i++) {
+    if (nerArr[i].item_qty === 0) {
+      nerArr.pop(nerArr[i]);
+    }
+  }
+
   const handleDecrease2 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-        productId === item.item_id && item.item_qty >= 1
+        productId === item.item_id && item.item_qty >= 1 && item.item_cat === 1
           ? {
               ...item,
               item_qty: item.item_qty - 1,
@@ -474,6 +496,21 @@ const SalesForm = () => {
       )
     );
   };
+
+  const handleDecrease3 = (productId) => {
+    setNerArr((nerArr) =>
+      nerArr.map((item) =>
+        productId === item.item_id && item.item_qty >= 1 && item.item_cat === 0
+          ? {
+              ...item,
+              item_qty: item.item_qty - 1,
+            }
+          : item
+      )
+    );
+  };
+
+  console.log("nerArr : " , nerArr)
 
   const [isGstBusiness, setIsGstBusiness] = useState(true);
   const handleBusinessGst = () => {
@@ -517,16 +554,18 @@ const SalesForm = () => {
       in_discount_value: 0,
       in_discount_price: "",
       in_discount_unit: "",
-      in_gst_prectentage: "",
-      in_gst_amt: "",
+      in_gst_prectentage: null,
+      in_gst_amt: null,
       in_total_amt: "",
       in_cat: "",
       in_b_stock: "",
+      in_sales_no: ""
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
         item.item_qty > 0
           ? {
+              in_id: item.item_id,
               in_items: item.item_name,
               in_hsn_sac: item.item_code,
               in_qty: item.item_qty,
@@ -550,6 +589,7 @@ const SalesForm = () => {
                 : "amount",
               in_total_amt: "",
               in_cat: item.item_cat,
+              in_sales_no: item.item_sales + item.item_qty
             }
           : invoiceItems
       )
@@ -558,7 +598,7 @@ const SalesForm = () => {
   };
 
   const handleContinue3 = () => {
-    console.log("nerlist : ", nerArr);
+    
     setInvoiceItems({
       in_items: "",
       in_hsn_sac: "",
@@ -573,6 +613,7 @@ const SalesForm = () => {
       in_total_amt: "",
       in_cat: "",
       in_b_stock: "",
+      in_sales_no: ""
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
@@ -589,7 +630,7 @@ const SalesForm = () => {
               in_discount_value: item.item_discount_value,
 
               in_discount_price:
-                item.item_tax === "no"
+                item.item_tax === "0"
                   ? item.item_discount_unit === "percentage"
                     ? parseFloat(item.item_price) -
                       (item.item_price *
@@ -615,7 +656,7 @@ const SalesForm = () => {
 
               in_gst_prectentage: item.item_igst ? item.item_igst : "-",
               in_gst_amt:
-                item.item_tax === "no"
+                item.item_tax === "0"
                   ? (item.item_igst *
                       (item.item_discount_unit === "percentage"
                         ? item.item_price -
@@ -631,12 +672,15 @@ const SalesForm = () => {
                     item.item_price / (item.item_igst / 100 + 1),
               in_total_amt: "",
               in_cat: item.item_cat,
+              in_sales_no: item.item_sales + item.item_qty
             }
           : invoiceItems
       )
     );
     setSelectedItems(true);
+    
   };
+
 
   const filteredInvoiceItems = [];
   for (let i = 0; i < invoiceItems.length; i++) {
@@ -644,6 +688,7 @@ const SalesForm = () => {
       filteredInvoiceItems.push(invoiceItems[i]);
     }
   }
+
 
   const totalGrossValue = filteredInvoiceItems
     .map(
@@ -767,14 +812,13 @@ const SalesForm = () => {
 
                   <Box>
                     {(addProducts ? productList : servicesList)
-                      .filter((code) =>
-                        addProducts
-                          ? code.product_name
-                              .toLowerCase()
-                              .startsWith(searchValue.toLowerCase())
-                          : code.ser_name
-                              .toLowerCase()
-                              .startsWith(searchValue.toLowerCase())
+                      .filter(
+                        (code) => 
+                        addProducts ? 
+                          code.product_name.toLowerCase().startsWith(searchValue.toLowerCase())
+                          
+                          : code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
+                          
                       )
                       .map((filteredItem) => (
                         <div
@@ -816,11 +860,12 @@ const SalesForm = () => {
                                               ? filteredItem.product_id
                                               : filteredItem.ser_id
                                           ),
-                                          handleDecrease2(
-                                            addProducts
-                                              ? filteredItem.product_id
-                                              : filteredItem.ser_id
-                                          );
+                                          // handleDecrease2(
+                                          //   addProducts
+                                          //     ? filteredItem.product_id
+                                          //     : filteredItem.ser_id
+                                          // );
+                                          addProducts ? handleDecrease2(filteredItem.product_id) : handleDecrease3(filteredItem.ser_id)
                                       }}
                                       className="px-3 text-blue-600  hover:bg-blue-200 transition-all ease-in"
                                     >
@@ -839,11 +884,12 @@ const SalesForm = () => {
                                             ? filteredItem.product_id
                                             : filteredItem.ser_id
                                         ),
-                                          handleIncrease2(
-                                            addProducts
-                                              ? filteredItem.product_id
-                                              : filteredItem.ser_id
-                                          );
+                                          // handleIncrease2(
+                                          //   addProducts
+                                          //     ? filteredItem.product_id
+                                          //     : filteredItem.ser_id
+                                          // );
+                                          addProducts ? handleIncrease2(filteredItem.product_id) : handleIncrease3(filteredItem.ser_id)
                                       }}
                                       className="px-3 text-blue-600 hover:bg-blue-200 transition-all ease-in"
                                     >
@@ -855,11 +901,12 @@ const SalesForm = () => {
                             ) : (
                               <button
                                 onClick={(e) => {
-                                  e.preventDefault(),
-                                    handleChange2(filteredItem);
+                                  e.preventDefault();
+                                  
+                                  handleChange2(filteredItem);
                                   handleIncrease(
                                     addProducts
-                                      ? filteredItem.product_id
+                                      ? filteredItem.product_id 
                                       : filteredItem.ser_id
                                   );
                                 }}
@@ -869,7 +916,7 @@ const SalesForm = () => {
                               </button>
                             )}
                           </div>
-
+                          
                           {(addProducts
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== null &&
@@ -877,19 +924,28 @@ const SalesForm = () => {
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== 0 ? (
                             <div>
-                              {nerArr
+                              {/* {nerArr
                                 .filter(
-                                  (code) =>
+                                  (code) => 
                                     code.item_id ===
-                                      (addProducts
-                                        ? filteredItem.product_id
-                                        : filteredItem.ser_id) &&
-                                    code.item_qty !== 0
-                                )
+                                    (addProducts
+                                      ? filteredItem.product_id
+                                      : filteredItem.ser_id ) && code.item_qty !== 0 
+                                ) */}
+
+                                {(addProducts ? nerArr
+                                .filter(
+                                  (code) => 
+                                    code.item_id === filteredItem.product_id && code.item_qty !== 0 && code.item_cat === 1
+                                ) : nerArr
+                                .filter(
+                                  (code) => 
+                                    code.item_id === filteredItem.ser_id && code.item_qty !== 0 && code.item_cat === 0
+                                ))
                                 .map((item) => (
                                   <div>
                                     <div>
-                                      {item.item_tax === "yes" ? (
+                                      {item.item_tax === "1" ? (
                                         <Box className="box-sec margin-top-zero ">
                                           <label className="pl-2 ">
                                             Tax Included?
@@ -1269,7 +1325,7 @@ const SalesForm = () => {
   saleData.sale_amt_paid = amountPaid;
   saleData.sale_amt_due = totalGrossValue - parseInt(amountPaid);
   saleData.sale_amt_type = amtPayMethod;
-
+  
   saleData.sale_amt = total_amt;
   saleData.sale_name = custData.cust_name;
   saleData.cust_cnct_id = custData.cust_id;
@@ -1287,14 +1343,18 @@ const SalesForm = () => {
 
   amountPaid === "0" ? (saleData.sale_amt_type = "unpaid") : "";
 
+
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        import.meta.env.VITE_BACKEND + "/api/sale/addSales",
-        saleData
-      );
-      //await axios.put("http://localhost:8000/api/sale/updateStockQty", saleData);
+      await axios.post("http://localhost:8000/api/sale/addSales", saleData);
+      if (filteredInvoiceItems.includes(filteredInvoiceItems.in_cat === 1)) {
+        await axios.put("http://localhost:8000/api/sale/updateProductStockQty", saleData);
+      }
+      
+      if (filteredInvoiceItems.includes(filteredInvoiceItems.in_cat === 0)) {
+        await axios.put("http://localhost:8000/api/sale/updateServicesSalesQty", saleData);
+      }
 
       // changeChange();
       // props.snack();
@@ -1319,7 +1379,7 @@ const SalesForm = () => {
           <div className="w-full bg-white rounded-lg border border-slate-300 p-2 flex items-center justify-between">
             <div className="flex gap-5">
               <Link
-                to="/Sales"
+                to="/sales"
                 className="rounded-full p-1 hover:bg-slate-200"
                 style={{ transition: "all 400ms ease-in-out" }}
               >
@@ -1612,7 +1672,7 @@ const SalesForm = () => {
                 <div>Action</div>
               </div>
               <div className="h-[37vh] overflow-y-scroll">
-                {console.log("filteredInvoiceItems : ", filteredInvoiceItems)}
+
                 <SalesProducts filteredInvoiceItems={filteredInvoiceItems} />
               </div>
             </div>
@@ -1662,6 +1722,7 @@ const SalesForm = () => {
                 {/* <div>Amount Paid (₹) :</div> */}
                 <div>
                   <input
+                 
                     type="text"
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Amount Paid (₹)"
@@ -1681,12 +1742,12 @@ const SalesForm = () => {
             <div className="flex gap-2 text-lg font-semibold text-slate-600">
               <div>Balance Due :</div>
               <div>
-                ₹ {totalGrossValue - parseInt(amountPaid ? amountPaid : 0)}
+                ₹ {totalGrossValue.toFixed(2) - parseInt(amountPaid ? amountPaid : 0)}
               </div>
             </div>
             <div className="flex gap-2 text-lg">
               <div className="font-semibold">Total Amount :</div>
-              <div>{totalGrossValue > 0 ? totalGrossValue : "0"}</div>
+              <div>{totalGrossValue > 0 ? totalGrossValue.toFixed(2) : "0"}</div>
             </div>
           </div>
         </div>

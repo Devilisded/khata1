@@ -152,7 +152,7 @@ const EditProduct = (props) => {
     conversion: null,
     cgst: null,
   });
-  const [isTaxIncluded, setIsTaxIncluded] = useState("");
+  const [isTaxIncluded, setIsTaxIncluded] = useState("0");
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
@@ -182,7 +182,7 @@ const EditProduct = (props) => {
           cgst: response.data[0].cgst,
         });
         setIsOn(response.data[0].secondary_unit !== "" ? true : false);
-        setIsOn2(response.data[0].tax === "yes" ? true : false);
+        setIsOn2(response.data[0].tax === "1" ? true : false);
       });
   }, [change, pId]);
 
@@ -238,7 +238,7 @@ const EditProduct = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      data.tax = isOn2 ? "yes" : "no";
+      data.tax = isOn2 ? 1 : 0;
       console.log("data.tax : ", data.tax);
       const formData = new FormData();
       formData.append("image", file);
@@ -504,7 +504,7 @@ const EditProduct = (props) => {
                   />
                 </Box>
 
-                {isTaxIncluded === "yes" ? (
+                {isTaxIncluded === "1" ? (
                   <Box className="box-sec margin-top-zero ">
                     {""}
                     <label className="pl-2">Tax included</label>

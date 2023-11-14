@@ -185,7 +185,7 @@ const AddProduct = (props) => {
     secondary_unit: "",
     sale_price: "",
     purchase_price: "",
-    tax: "",
+    tax: 0,
     opening_stock: "",
     low_stock: 0,
     balance_stock: 0,
@@ -203,7 +203,7 @@ const AddProduct = (props) => {
   };
 
   productData.entry_date = filteredDate;
-  productData.tax = isOn2 ? "yes" : "no";
+  productData.tax = isOn2 ? 1 : 0;
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -409,7 +409,13 @@ const AddProduct = (props) => {
                       // options={result.map(
                       //   (item) => item.unit_name + "- " + item.unit_code
                       // )}
-                      options={result.map((item) => item.unit_code)}
+                      // options={result.map((item) => item.unit_code)}
+                      // onChange={(event, newValue) => {
+                      //   setSecondaryUnitValue(newValue);
+                      // }}
+                      options={result.filter((code)=>
+                        code.unit_code !== primaryUnitValue
+                        ).map((item) => item.unit_code)}
                       onChange={(event, newValue) => {
                         setSecondaryUnitValue(newValue);
                       }}

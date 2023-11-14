@@ -28,7 +28,7 @@ const SupTransaction = (props) => {
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
         <div className="text-sm text-slate-600">
-          Balance : {props.data.sup_balance}
+          Balance : {props.totalBalance}
         </div>
       </div>
       <div className="flex gap-56 mr-36">
@@ -46,3 +46,6 @@ const SupTransaction = (props) => {
 };
 
 export default SupTransaction;
+
+// "2023-11-13T08:04:05.000Z"
+// "2023-11-13T08:04:24.000Z"

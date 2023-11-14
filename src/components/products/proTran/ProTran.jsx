@@ -12,7 +12,7 @@ const ProTran = (props) => {
           10:40 AM
         </div>
         <div className="text-sm text-slate-600">
-          Balance : {props.data.balance_stock}
+          Balance : {props.balanceStock}
         </div>
       </div>
       <div className="flex gap-56 mr-24">

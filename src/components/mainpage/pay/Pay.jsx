@@ -124,12 +124,15 @@ const Pay = (props) => {
                 name="tran_pay"
                 //onChange={handleChange}
                 value={values.tran_pay}
+                
                 onChange={(e) =>
                   setValues({
                     ...values,
                     tran_pay: e.target.value.replace(/\D/g, ""),
+                    //tran_pay: e.target.value,
                   })
                 }
+                
                 required
               />
             </Box>

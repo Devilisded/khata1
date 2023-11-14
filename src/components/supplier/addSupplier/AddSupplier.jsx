@@ -32,7 +32,11 @@ const AddSupplier = (props) => {
     sup_bpin: "",
     sup_bcity: "",
     sup_bstate: "",
+    sup_date: "",
   });
+  const today = new Date();
+  var filteredDate = today.toString().slice(4, 16);
+  values.sup_date = filteredDate;
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };

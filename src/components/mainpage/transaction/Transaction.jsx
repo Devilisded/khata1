@@ -31,8 +31,7 @@ const Transaction = (props) => {
       changeS();
     } else {
       tid(props.transactions.tran_id)
-    }
-    
+    }  
   };
 
   return (
@@ -43,7 +42,7 @@ const Transaction = (props) => {
           <IconPointFilled className="w-3 h-3" />
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
-        <div className="text-sm text-slate-600">Balance : {props.transactions.balance}</div>
+        <div className="text-sm text-slate-600">Balance : {props.totalBalance}</div>
       </div>
       <div className="flex gap-56 mr-36">
         <div className="text-red-600">

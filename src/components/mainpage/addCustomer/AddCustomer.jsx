@@ -3,6 +3,7 @@ import "./addcustomer.scss";
 import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
+import dayjs from "dayjs";
 
 const AddCustomer = (props) => {
   const { changeChange } = useContext(UserContext);
@@ -22,17 +23,25 @@ const AddCustomer = (props) => {
     cust_bpin: "",
     cust_bcity: "",
     cust_bstate: "",
+    cust_date: "",
   });
+
+  const today = new Date();
+  var filteredDate = today.toString().slice(4, 16);
+
+
   (values.cust_bflat = values.cust_sflat),
     (values.cust_barea = values.cust_sarea),
     (values.cust_bpin = values.cust_spin),
     (values.cust_bcity = values.cust_scity),
     (values.cust_bstate = values.cust_sstate);
-
+    values.cust_date = filteredDate;
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+
+ 
   const [err, setErr] = useState(null);
   const handleClick = async (e) => {
     e.preventDefault();
@@ -69,6 +78,9 @@ const AddCustomer = (props) => {
     }
   }, [values.cust_name, values.cust_number, values.cust_amt, values.amt_type]);
 
+  
+  
+
   return (
     <div>
       <form method="post">
@@ -90,6 +102,7 @@ const AddCustomer = (props) => {
                     type="text"
                     onChange={handleChange}
                     required
+                    inputProps={{ maxLength: 20 }}
                   />
                 </div>
 

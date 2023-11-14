@@ -11,11 +11,9 @@ const SaleLeft = (props) => {
   const [result, setResult] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios
-      .get(import.meta.env.VITE_BACKEND + "/api/sale/fetchData")
-      .then((response) => {
-        setResult(response.data);
-      });
+    axios.get(import.meta.env.VITE_BACKEND + "/api/sale/fetchData").then((response) => {
+      setResult(response.data);
+    });
   }, [change]);
 
   const total_amt = result.reduce((acc, current) => {
@@ -109,10 +107,11 @@ const SaleLeft = (props) => {
                 setFilter2(e.target.value);
               }}
             >
-              <MenuItem value={filter2}>{/* <em>None</em>  */}</MenuItem>
+              <MenuItem value={filter2}></MenuItem>
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="pay">Receive</MenuItem>
-              <MenuItem value="receive">Pay</MenuItem>
+              <MenuItem value="unpaid">Unpaid</MenuItem>
+              <MenuItem value="partial">Partially Paid</MenuItem>
+              <MenuItem value="full">Fully Paid</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -123,9 +122,20 @@ const SaleLeft = (props) => {
       </div>
       <div className="cards2">
         {sortedUsers
-          .filter((code) =>
-            code.sale_name.toLowerCase().startsWith(searchValue.toLowerCase())
-          )
+          // .filter((code) =>
+          //   code.sale_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          // )
+          .filter((code) => {
+            if (filter2 === "unpaid") {
+              return code.sale_amt_due === code.sale_amt;
+            } else if (filter2 === "partial") {
+              return code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt;
+            } else if (filter2 === "full") {
+              return code.sale_amt_due === "0";
+            } else if (filter2 === "All") {
+              return true;
+            }
+          })
           .map((filteredItem, index) => (
             <SaleTran
               key={index}

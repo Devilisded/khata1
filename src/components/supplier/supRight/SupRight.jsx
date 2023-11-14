@@ -14,13 +14,23 @@ import axios from "axios";
 const SupRight = (props) => {
   const { supId, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
+  const [supAmt, setSupAmt] = useState([]);
+  const [supAmtType, setSupAmtType] = useState([]);
+
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchTran/${supId}`)
       .then((response) => {
         setResult(response.data);
       });
+      axios
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${supId}`)
+      .then((response) => {
+        setSupAmt(response.data[0].sup_amt);
+        setSupAmtType(response.data[0].sup_amt_type);
+      });
   }, [supId, change]);
+  console.log("result : " , result);
   return (
     <div className="supright">
       <div className="customer">
@@ -54,16 +64,50 @@ const SupRight = (props) => {
           <div className="get">You'll Receive</div>
         </div>
       </div>
+      
       <div className="transactions">
         {result.length > 0 ? (
-          result.map((item, index) => (
+          result.map((item, index) => {
+            if (supAmtType === "receive") {
+              const sum = result
+                .filter((filteredItem) => filteredItem.tran_id <= item.tran_id)
+                .reduce(function (prev, current) {
+                  if (current.sup_tran_pay) {
+                    return prev + +current.sup_tran_pay;
+                  } else {
+                    return prev - +current.sup_tran_receive;
+                  }
+                }, 0);
+              return (
+                <SupTransaction
+                  key={index}
+                  transactions={item}
+                  editPay={props.editPay}
+                  editReceive={props.editReceive}
+                  totalBalance={sum}
+                />
+              );
+            } else {
+            const sum = result
+            .filter((filteredItem) => filteredItem.sup_tran_id <= item.sup_tran_id )
+            .reduce(function (prev , current) {
+              if (current.sup_tran_pay) {
+              return prev+ +current.sup_tran_pay;
+            } else {
+              return prev- +current.sup_tran_receive;
+            }
+          } , 0); return (
+            
             <SupTransaction
-              data={item}
-              key={index}
-              editPay={props.editPay}
-              editReceive={props.editReceive}
+            data={item}
+            key={index}
+            editPay={props.editPay}
+            editReceive={props.editReceive}
+            totalBalance = {sum}
             />
-          ))
+          )
+            }
+        })
         ) : (
           <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">
             <div>

@@ -9,6 +9,7 @@ import { Skeleton } from "@mui/material";
 const ProRight = (props) => {
   const { pId, change } = useContext(UserContext);
   const [result, setResult] = useState([]);
+  const [openingStock, setOpeningStock] = useState([]);
   const [result2, setResult2] = useState([]);
   const [skeleton, setSkeleton] = useState(true);
 
@@ -17,6 +18,7 @@ const ProRight = (props) => {
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductTran/${pId}`)
       .then((response) => {
         setResult(response.data[0]);
+        setOpeningStock(response.data[0].opening_stock);
         setSkeleton(false);
       });
     axios
@@ -224,10 +226,24 @@ const ProRight = (props) => {
           <div className="get">Stock In</div>
         </div>
       </div>
-      <div className="transactions">
+      {/* <div className="transactions">
         {result2.map((item, index) => (
           <ProTran key={index} data={item} />
         ))}
+      </div> */}
+      <div className="transactions">
+        {result2.map((item, index) => {
+          const sum = result2
+            .filter((filteredItem) => filteredItem.tran_id <= item.tran_id)
+            .reduce(function (prev, current) {
+              if (current.product_stock_in) {
+                return prev + +current.product_stock_in;
+              } else {
+                return prev - +current.product_stock_out;
+              }
+            }, openingStock);
+          return <ProTran key={index} data={item}  balanceStock={sum} />;
+        })}
       </div>
       <div className="btn shadow-lg">
         <button className="pay text-red-600" onClick={props.out}>
