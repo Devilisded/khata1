@@ -13,6 +13,10 @@ import Cashbook from "./pages/cashbook/Cashbook";
 import Expenses from "./pages/expenses/Expenses";
 import Sales from "./pages/sales/sales";
 import SalesForm from "./pages/salesForm/SalesForm";
+import CustomerReport from "./pages/customerReport/CustomerReport";
+import SupplierReport from "./pages/supplierReport/SupplierReport";
+import CashReport from "./pages/cashReport/CashReport";
+import SalesReport from "./pages/salesReport/SalesReport";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -70,6 +74,22 @@ const App = () => {
     {
       path: "/salesform",
       element: <SalesForm />,
+    },
+    {
+      path: "/custReport",
+      element: <CustomerReport />,
+    },
+    {
+      path: "/supReport",
+      element: <SupplierReport />,
+    },
+    {
+      path: "/cashReport",
+      element: <CashReport />,
+    },
+    {
+      path: "/salesReport",
+      element: <SalesReport />,
     },
   ]);
   return (
