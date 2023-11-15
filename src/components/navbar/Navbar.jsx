@@ -6,6 +6,7 @@ import {
   IconHelpCircle,
   IconHome2,
   IconLogout,
+  IconReportAnalytics,
   IconServer,
   IconSettings,
   IconShoppingCart,
@@ -53,6 +54,11 @@ const Navbar = () => {
       icon: <IconShoppingCart />,
       linkto: "/sales",
       link2: "/salesForm",
+    },
+    {
+      name: "Reports",
+      icon: <IconReportAnalytics />,
+      linkto: "/custReport",
     },
     {
       name: "Account",
