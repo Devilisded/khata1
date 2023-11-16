@@ -238,7 +238,7 @@ const CustomerReport = () => {
                   <div>Customer Name</div>
                   <div>Details</div>
                   <div>You Gave</div>
-                  <div>You Give</div>
+                  <div>You Got</div>
                 </div>
                 <div className="h-[40vh] overflow-y-scroll">
                   {data
