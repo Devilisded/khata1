@@ -139,14 +139,14 @@ const SupplierReport = () => {
             </div>
             <div className="content mx-4 rounded-2xl bg-slate-100 h-[81vh] p-4 flex flex-col gap-4">
               <div className="card bg-white p-4 rounded-lg flex gap-6">
-                <div className="search">
+                {/* <div className="search">
                   <div>Supplier Name</div>
                   <input
                     type="text"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-pri block w-full p-2"
                     placeholder="Search...."
                   />
-                </div>
+                </div> */}
                 <div className="period">
                   <div>Period</div>
                   <select
