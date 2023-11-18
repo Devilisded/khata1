@@ -17,6 +17,7 @@ import CustomerReport from "./pages/customerReport/CustomerReport";
 import SupplierReport from "./pages/supplierReport/SupplierReport";
 import CashReport from "./pages/cashReport/CashReport";
 import SalesReport from "./pages/salesReport/SalesReport";
+import Purchase from "./pages/purchase/Purchase";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -90,6 +91,10 @@ const App = () => {
     {
       path: "/salesReport",
       element: <SalesReport />,
+    },
+    {
+      path: "/purchase",
+      element: <Purchase />,
     },
   ]);
   return (

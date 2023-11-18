@@ -10,6 +10,7 @@ import SaleLeft from "../../components/sales/saleLeft/SaleLeft";
 import SaleRight from "../../components/sales/saleRight/SaleRight";
 import SalesInvoice from "../../components/sales/salesInvoice/SalesInvoice";
 import PaymentIn from "../../components/sales/salesPaymentIn/SalesPaymenIn";
+import { IconBox, IconUsers } from "@tabler/icons-react";
 const MyApp = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState({
@@ -88,7 +89,12 @@ const MyApp = () => {
               addPayment={toggleDrawer("addPayment", true)}
             />
           ) : (
-            <SelectCustomer />
+            <div className="selectCustomer h-[100vh - 87px] flex flex-col justify-center items-center w-full bg-slate-100">
+              <div>
+                <IconBox className=" w-36 h-36 text-slate-400" />
+                <p>No Transaction Selected</p>
+              </div>
+            </div>
           )}
         </div>
       </div>

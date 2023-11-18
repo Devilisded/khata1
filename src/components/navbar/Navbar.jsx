@@ -10,6 +10,7 @@ import {
   IconServer,
   IconSettings,
   IconShoppingCart,
+  IconTruckDelivery,
   IconTruckLoading,
   IconUser,
 } from "@tabler/icons-react";
@@ -54,6 +55,11 @@ const Navbar = () => {
       icon: <IconShoppingCart />,
       linkto: "/sales",
       link2: "/salesForm",
+    },
+    {
+      name: "Purchase",
+      icon: <IconTruckDelivery />,
+      linkto: "/purchase",
     },
     {
       name: "Reports",

@@ -60,7 +60,15 @@ const CustomerPDF = (props) => {
           </div>
           <div className="netbalance flex flex-col gap-5">
             <div className="font-semibold">Net Balance</div>
-            <div className="text-green-600">₹ {props.receive - props.pay}</div>
+            <div
+              className={
+                props.receive - props.pay > 0
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              ₹ {props.receive - props.pay}
+            </div>
           </div>
         </div>
         <div className="my-2 font-semibold text-lg text-slate-700">
