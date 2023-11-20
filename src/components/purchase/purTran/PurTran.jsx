@@ -1,4 +1,4 @@
-import { IconReportMoney } from "@tabler/icons-react";
+import { IconReportMoney, IconShoppingCartDown } from "@tabler/icons-react";
 import React from "react";
 
 const PurTran = () => {
@@ -10,8 +10,8 @@ const PurTran = () => {
         }
       >
         <div className="flex col-span-2 gap-3">
-          <div className="notes rounded-full bg-cyan-100 w-12 h-12 flex items-center justify-center">
-            <IconReportMoney className="text-cyan-600" />
+          <div className="notes rounded-full bg-sky-100 w-12 h-12 flex items-center justify-center">
+            <IconShoppingCartDown className="text-sky-600" />
           </div>
           <div className="details flex flex-col gap-1 ">
             <div className="category font-semibold text-slate-700">

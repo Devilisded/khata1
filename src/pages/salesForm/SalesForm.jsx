@@ -2,7 +2,7 @@ import React from "react";
 import { IconArrowLeft, IconPlus } from "@tabler/icons-react";
 import Navbar from "../../components/navbar/Navbar";
 import SalesProducts from "../../components/salesForm/salesProducts/SalesProducts";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import {
   Box,
@@ -1384,7 +1384,7 @@ const SalesForm = () => {
         <Navbar />
         <div className="p-4 bg-slate-100 h-[90vh]">
           <div className="w-full bg-white rounded-lg border border-slate-300 p-2 flex items-center justify-between">
-            <div className="flex gap-5">
+            <div className="flex gap-5 items-center">
               <Link
                 to="/sales"
                 className="rounded-full p-1 hover:bg-slate-200"
@@ -1411,24 +1411,6 @@ const SalesForm = () => {
                 Create Sale
               </button>
             </div>
-            {/* <div className="text-md font-semibold">
-            {submitDisabled ? (
-              <button
-                disabled={submitDisabled}
-                className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
-              >
-                Create Sale
-              </button>
-            ) : (
-              <button
-                onClick={handleClick}
-                disabled={submitDisabled}
-                className="text-green-600 bg-green-200 w-full p-3 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-              >
-                Create Sale
-              </button>
-            )}
-          </div> */}
           </div>
           <div className="flex gap-4 mt-4">
             <div className="w-full bg-white rounded-xl border border-slate-300 p-5">

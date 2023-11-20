@@ -60,6 +60,7 @@ const Navbar = () => {
       name: "Purchase",
       icon: <IconTruckDelivery />,
       linkto: "/purchase",
+      link2: "/purchaseForm",
     },
     {
       name: "Reports",
