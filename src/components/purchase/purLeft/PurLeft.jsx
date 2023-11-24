@@ -3,8 +3,42 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import PurTran from "../purTran/PurTran";
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { UserContext } from "../../../context/UserIdContext";
+
 
 const PurLeft = () => {
+
+  const { change } = useContext(UserContext);
+  const [result, setResult] = useState([]);
+  const [tran, setTran] = useState([]);
+  useEffect(() => {
+    axios.get(import.meta.env.VITE_BACKEND + "/api/purchase/fetchData").then((response) => {
+      setResult(response.data);
+    });
+  }, [change]);
+
+  const total_amt = result.reduce((acc, current) => {
+    return acc + +current.purchase_amt;
+  }, 0);
+
+  const [sortOption, setSortOption] = useState("");
+  const handleChange1 = (e) => {
+    setSortOption(e.target.value);
+  };
+  const [filter2, setFilter2] = useState("All");
+  const [searchValue, setSearchValue] = useState("");
+  let sortedUsers = [...result];
+
+  if (sortOption === "recent") {
+    sortedUsers.sort((a, b) => b.purchase_id - a.purchase_id);
+  } else if (sortOption === "highestAmount") {
+    sortedUsers.sort((a, b) => b.purchase_amt - a.purchase_amt);
+  } else if (sortOption === "name") {
+    sortedUsers.sort((a, b) => a.purchase_name.localeCompare(b.purchase_name));
+  }
+
   return (
     <div className="left bg-white shadow-lg w-full flex flex-col h-full">
       <div className="heading text-xl font-semibold">
@@ -51,6 +85,7 @@ const PurLeft = () => {
               labelId="demo-select-small-label"
               id="demo-select-small"
               label="Sort By"
+              onChange={handleChange1}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -84,13 +119,29 @@ const PurLeft = () => {
         <div className="amount">Amount</div>
       </div>
       <div className="cards2">
-        <PurTran />
-        <PurTran />
-        <PurTran />
-        <PurTran />
-        <PurTran />
-        <PurTran />
-        <PurTran />
+        {sortedUsers
+          .filter((code) =>
+            code.purchase_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          )
+          .filter((code) => {
+            if (filter2 === "unpaid") {
+              return code.purchase_amt_due === code.purchase_amt;
+            } else if (filter2 === "partial") {
+              return code.purchase_amt_due > "0" && code.purchase_amt_due < code.purchase_amt;
+            } else if (filter2 === "full") {
+              return code.purchase_amt_due === "0";
+            } else if (filter2 === "All") {
+              return true;
+            }
+          })
+          .map((filteredItem, index) => (
+            <PurTran
+              key={index}
+              result={tran}
+              //click={props.click}
+              data={filteredItem}
+            />
+          ))}
       </div>
     </div>
   );

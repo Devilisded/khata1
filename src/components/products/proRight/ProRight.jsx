@@ -226,11 +226,7 @@ const ProRight = (props) => {
           <div className="get">Stock In</div>
         </div>
       </div>
-      {/* <div className="transactions">
-        {result2.map((item, index) => (
-          <ProTran key={index} data={item} />
-        ))}
-      </div> */}
+
       <div className="transactions">
         {result2.map((item, index) => {
           const sum = result2

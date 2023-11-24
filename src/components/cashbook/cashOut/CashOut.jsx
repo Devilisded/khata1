@@ -126,7 +126,7 @@ const CashOut = (props) => {
                   name="cash_mode"
                   className="cursor-pointer"
                   checked
-                  onChange={(e) => setPayMode("cash")}
+                  onChange={() => setPayMode("cash")}
                 />
                 <label htmlFor="cash">Cash</label>
                 <input
@@ -134,7 +134,7 @@ const CashOut = (props) => {
                   id="online"
                   name="cash_mode"
                   className="cursor-pointer"
-                  onClick={(e) => setPayMode("online")}
+                  onClick={() => setPayMode("online")}
                 />
                 <label htmlFor="online">Online</label>
               </div>

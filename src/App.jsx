@@ -19,6 +19,8 @@ import CashReport from "./pages/cashReport/CashReport";
 import SalesReport from "./pages/salesReport/SalesReport";
 import Purchase from "./pages/purchase/Purchase";
 import PurchaseForm from "./pages/purchaseForm/PurchaseForm";
+import PurchaseEdit from "./pages/purchaseEdit/PurchaseEdit";
+import PurchaseReport from "./pages/purchaseReport/PurchaseReport";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -100,6 +102,14 @@ const App = () => {
     {
       path: "/purchaseForm",
       element: <PurchaseForm />,
+    },
+    {
+      path: "/purchaseEdit",
+      element: <PurchaseEdit />,
+    },
+    {
+      path: "/purchaseReport",
+      element: <PurchaseReport />,
     },
   ]);
   return (

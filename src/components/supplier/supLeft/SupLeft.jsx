@@ -59,6 +59,7 @@ const SupLeft = (props) => {
   const total_receive = sum1 + receive;
 
   const [sortOption, setSortOption] = useState("");
+  
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };

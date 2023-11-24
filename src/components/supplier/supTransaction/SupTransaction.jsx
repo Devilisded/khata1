@@ -2,8 +2,12 @@ import { useContext } from "react";
 import "./suptransaction.scss";
 import { IconPointFilled } from "@tabler/icons-react";
 import { UserContext } from "../../../context/UserIdContext";
+import { useNavigate } from "react-router-dom";
+
+  
 const SupTransaction = (props) => {
-  const { changeTranId, tranId } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { changeTranId, tranId, changePurchaseId } = useContext(UserContext);
   const time1 = new Date(props.data.sup_tran_time);
   const hours = time1.getHours();
   const minutes = time1.getMinutes();
@@ -19,8 +23,21 @@ const SupTransaction = (props) => {
       : alert("No Transactions");
   };
 
+  const changeP = () => {
+    changePurchaseId(props.data.sup_tran_pur_cnct_id);
+    navigate("/purchase");
+  };
+  const checkNavigate = () => {
+    if (
+      props.data.sup_tran_pur_cnct_id !== null) {
+      changeP();
+    } else {
+      tid(props.data.sup_tran_id)
+    }  
+  };
+
   return (
-    <div className="transaction cursor-pointer" onClick={(e) => tid(e)}>
+    <div className="transaction cursor-pointer" onClick={checkNavigate}>
       <div className="details flex flex-col gap-1 ">
         <div className="date font-semibold flex items-center gap-1 text-slate-800">
           {props.data.sup_tran_date}
@@ -47,5 +64,3 @@ const SupTransaction = (props) => {
 
 export default SupTransaction;
 
-// "2023-11-13T08:04:05.000Z"
-// "2023-11-13T08:04:24.000Z"

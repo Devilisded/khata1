@@ -39,6 +39,11 @@ export const UserContextProvider = ({ children }) => {
   const changeSaleId = (saleid) => {
     setSaleId(saleid);
   };
+  
+  const [purchaseId, setPurchaseId] = useState(0);
+  const changePurchaseId = (purchaseid) => {
+    setPurchaseId(purchaseid);
+  };
   return (
     <UserContext.Provider
       value={{
@@ -60,6 +65,8 @@ export const UserContextProvider = ({ children }) => {
         changeExpId,
         saleId,
         changeSaleId,
+        purchaseId,
+        changePurchaseId,
       }}
     >
       {children}

@@ -1,4 +1,5 @@
 import {
+  Icon3dCubeSphere,
   IconBuildingBank,
   IconShoppingCart,
   IconTruckLoading,
@@ -29,6 +30,11 @@ const SideBar = () => {
       linkto: "/salesReport",
       name: "Sales",
       icon: <IconShoppingCart />,
+    },
+    {
+      linkto: "/purchaseReport",
+      name: "Purchase",
+      icon: <Icon3dCubeSphere />,
     },
   ];
   return (

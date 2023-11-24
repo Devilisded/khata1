@@ -25,8 +25,8 @@ import TextField from "@mui/material/TextField";
 //import "./salesform.scss";
 import { useNavigate } from "react-router-dom";
 
-const PurchaseForm = () => {
-  const { change, changeChange } = useContext(UserContext);
+const PurchaseEdit = () => {
+  const { change, changeChange, purchaseId } = useContext(UserContext);
   const states = [
     {
       state_name: "Haryana",
@@ -109,8 +109,6 @@ const PurchaseForm = () => {
 
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
-  const [select, setSelect] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
   const [isClicked2, setIsClicked2] = useState(false);
   const [gstValue1, setGstValue1] = useState("GST %");
   const [gstValue2, setGstValue2] = useState("");
@@ -130,24 +128,43 @@ const PurchaseForm = () => {
     customeCess +
     "% CESS )";
 
-  const [supplierList, setSupplierList] = useState(false);
-  const [supplierData, setSupplierData] = useState([]);
+  const [supplierData, setSupplierData] = useState({});
   const [productList, setProductList] = useState([]);
+  const [productListInItems, setProductListInItems] = useState([]);
   const [businessdata, setBusinessdata] = useState([]);
+  const [purchaseDataById, setPurchaseDataById] = useState([]);
 
   const [hsnCodes, setHsnCodes] = useState([]);
-  const [purchasePrefixData, setPurchasePrefixData] = useState([]);
-  const [defaultPrefixNo, setDefaultPrefixNo] = useState(0);
-  const [defaultPrefixValue, setDefaultPrefixValue] = useState("");
 
   const [businessGst, setBusinessGst] = useState("");
-  const [paymentOutPrefixNo , setPaymentOutPrefixNo] = useState("");
+  const [paymentOutPrefixNo, setPaymentOutPrefixNo] = useState("");
+  const [invoiceItemList, setInvoiceItemList] = useState([]);
+
+  const [addQty, setAddQty] = useState(false);
+
+  const [amtPayMethod, setAmtPayMethod] = useState("");
+  const handlePayStatus = (event) => {
+    setAmtPayMethod(event.target.value);
+  };
+
+  const [amountPaid, setAmountPaid] = useState(0);
 
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup`)
       .then((response) => {
-        setSupplierData(response.data);
+        //setSupplierData(response.data);
+        setSupplierData({
+          ...supplierData,
+          sup_name: response.data[0].sup_name,
+          sup_number: response.data[0].sup_number,
+          sup_gstin: response.data[0].sup_gstin,
+          sup_sflat: response.data[0].sup_sflat,
+          sup_sarea: response.data[0].sup_sarea,
+          sup_spin: response.data[0].sup_spin,
+          sup_scity: response.data[0].sup_scity,
+          sup_sstate: response.data[0].sup_sstate,
+        });
       });
     axios
       .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
@@ -156,30 +173,72 @@ const PurchaseForm = () => {
         setBusinessGst(response.data[0].business_gst);
       });
     axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchDataById/${purchaseId}`
+      )
+      .then((response) => {
+        //setPurchaseDataById(response.data);
+        setPurchaseDataById({
+          ...purchaseDataById,
+          purchase_date: response.data[0].purchase_date,
+          purchase_name: response.data[0].purchase_name,
+          purchase_prefix: response.data[0].purchase_prefix,
+          purchase_prefix_no: response.data[0].purchase_prefix_no,
+          purchase_amt: response.data[0].purchase_amt,
+          sup_cnct_id: response.data[0].sup_cnct_id,
+          purchase_amt_paid: response.data[0].purchase_amt_paid,
+          purchase_amt_due: response.data[0].purchase_amt_due,
+          purchase_amt_type: response.data[0].purchase_amt_type,
+          purchase_pay_out_id: response.data[0].purchase_pay_out_id,
+        });
+        setAmtPayMethod(response.data[0].purchase_amt_type);
+        setAmountPaid(response.data[0].purchase_amt_paid);
+      });
+
+    axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
       .then((response) => {
         setProductList(response.data);
       });
 
-    axios
-      .get(
-        import.meta.env.VITE_BACKEND + `/api/purchase/fetchPurchasePrefixData`
-      )
-      .then((response) => {
-        setPurchasePrefixData(response.data);
-        setDefaultPrefixNo(response.data[0].purchase_prefix_no);
-        setDefaultPrefixValue(
-          response.data[0].purchase_prefix == "Invoice"
-            ? response.data[0].purchase_prefix
-            : ("Invoice", setDefaultPrefixNo(0))
-        );
-      });
+    // axios
+    //   .get(
+    //     import.meta.env.VITE_BACKEND + `/api/purchase/fetchPurchasePrefixData`
+    //   )
+    //   .then((response) => {
+    //     //setPurchasePrefixData(response.data);
+    //     setDefaultPrefixNo(response.data[0].purchase_prefix_no);
+    //     setDefaultPrefixValue(
+    //       response.data[0].purchase_prefix == "Invoice"
+    //         ? response.data[0].purchase_prefix
+    //         : ("Invoice", setDefaultPrefixNo(0))
+    //     );
+    //   });
 
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
       .then((response) => {
         setHsnCodes(response.data);
       });
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/invoiceItemList/${purchaseId}`
+      )
+      .then((response) => {
+        setProductListInItems(response.data);
+      });
+
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchPurchaseTran/${purchaseId}`
+      )
+      .then((response) => {
+        setInvoiceItemList(response.data);
+      });
+
     axios
       .get(
         import.meta.env.VITE_BACKEND +
@@ -190,8 +249,29 @@ const PurchaseForm = () => {
       });
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/sup/fetchSup/${purchaseDataById.sup_cnct_id}`
+      )
+      .then((response) => {
+        //setSupplierData(response.data);
+        setSupplierData({
+          ...supplierData,
+          sup_name: response.data[0].sup_name,
+          sup_number: response.data[0].sup_number,
+          sup_gstin: response.data[0].sup_gstin,
+          sup_sflat: response.data[0].sup_sflat,
+          sup_sarea: response.data[0].sup_sarea,
+          sup_spin: response.data[0].sup_spin,
+          sup_scity: response.data[0].sup_scity,
+          sup_sstate: response.data[0].sup_sstate,
+        });
+      });
+  }, [purchaseDataById]);
 
-  
+  console.log("setAmountPaid : " , amountPaid)
   const [supData, setSupData] = useState({
     sup_id: "",
     sup_name: "",
@@ -213,25 +293,67 @@ const PurchaseForm = () => {
   const current_date = `${month}/${date}/${year}`;
   const todaysDate = dayjs(current_date);
   const [transactionDate, setTransactionDate] = useState(todaysDate);
+  
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [addPrefix, setAddPrefix] = useState(false);
-  const [prefixValue, setPrefixValue] = useState("");
-  const [temp, setTemp] = useState("");
-
-  const [addInvoiceItems, setAddInvoiceItems] = useState(false);
+  const [editInvoiceItems, setEditInvoiceItems] = useState(false);
   const [selectedItems, setSelectedItems] = useState(false);
-
-  const [prefixSelected, setprefixSelected] = useState(true);
-  const prefixSelectorHandler = () => {
-    setprefixSelected(!prefixSelected);
-  };
 
   const { enqueueSnackbar } = useSnackbar();
 
   var i = 0;
-  const [nerArr, setNerArr] = useState([]);
+  //const [nerArr, setNerArr] = useState([]);
+
+  const [nerArr, setNerArr] = useState({
+    product_id: "",
+    product_name: "",
+    primary_unit: "",
+    purchase_price: "",
+    tax: "",
+    balance_stock: "",
+    hsn_code: "",
+    hsn_desc: "",
+    item_qty: "",
+    igst: "",
+    cgst: "",
+    cess: "",
+    item_discount_value: "",
+    item_discount_unit: "",
+    add_hsn: false,
+    add_gst: false,
+    item_cat: 1,
+  });
+
+  useEffect(() => {
+    setNerArr((nerArr) =>
+      invoiceItemList.map((item) => 
+        item.purchase_item_qty > 0
+          ? {
+              product_id: item.purchase_item_cnct_id,
+              product_name: item.purchase_item_name,
+              primary_unit: item.purchase_item_unit,
+              purchase_price: item.purchase_item_price,
+              tax: "",
+              balance_stock: "",
+              hsn_code: item.purchase_item_code,
+              hsn_desc: "",
+              item_qty: item.purchase_item_qty,
+              igst: item.purchase_item_gst,
+              cgst: item.purchase_item_gst / 2,
+              cess: item.purchase_item_gst / 2,
+              item_discount_value: item.purchase_item_disc_val,
+              item_discount_unit: item.purchase_item_disc_unit,
+              add_hsn: false,
+              add_gst: false,
+              item_cat: 1,
+            }
+          : item
+      )
+    );
+  }, [invoiceItemList]);
+
+  
   const handleChange2 = (item) => {
     setNerArr([
       {
@@ -257,6 +379,7 @@ const PurchaseForm = () => {
     ]);
   };
 
+  console.log("nerarr : " , nerArr , productListInItems);
   const handleAddHsnCode = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
@@ -299,6 +422,7 @@ const PurchaseForm = () => {
   };
 
   const handlePriceChange = (productId, e) => {
+    console.log(productId , e.target.value)
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.product_id
@@ -384,27 +508,27 @@ const PurchaseForm = () => {
   };
 
   const handleIncrease = (productId) => {
-    setProductList((productList) =>
-      productList.map((item) =>
-        productId === item.product_id
+    setProductListInItems((productListInItems) =>
+      productListInItems.map((item) =>
+      parseInt(productId) === parseInt(item.purchase_item_cnct_id)
           ? {
               ...item,
-              qty: item.qty + 1,
+              purchase_item_qty: item.purchase_item_qty
+                ? parseInt(item.purchase_item_qty) + 1
+                : 1,
             }
           : item
       )
     );
-    console.log("product list : ", productList, nerArr);
   };
 
   const handleIncrease2 = (productId) => {
-    console.log("product");
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-        productId === item.product_id && item.item_cat === 1
+      parseInt(productId) === parseInt(item.product_id) && item.item_cat === 1
           ? {
               ...item,
-              item_qty: item.item_qty + 1,
+              item_qty: parseInt(item.item_qty) + 1,
             }
           : item
       )
@@ -412,12 +536,13 @@ const PurchaseForm = () => {
   };
 
   const handleDecrease = (productId) => {
-    setProductList((productList) =>
-      productList.map((item) =>
-        productId === item.product_id
+   
+    setProductListInItems((productListInItems) =>
+      productListInItems.map((item) =>
+      parseInt(productId) === parseInt(item.purchase_item_cnct_id)
           ? {
               ...item,
-              qty: item.qty - 1,
+              purchase_item_qty: parseInt(item.purchase_item_qty) - 1,
             }
           : item
       )
@@ -427,12 +552,12 @@ const PurchaseForm = () => {
   const handleDecrease2 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-        productId === item.product_id &&
+      parseInt(productId) === parseInt(item.product_id) &&
         item.item_qty >= 1 &&
         item.item_cat === 1
           ? {
               ...item,
-              item_qty: item.item_qty - 1,
+              item_qty: parseInt(item.item_qty) - 1,
             }
           : item
       )
@@ -440,7 +565,8 @@ const PurchaseForm = () => {
   };
 
   for (let i = 0; i < nerArr.length; i++) {
-    if (nerArr[i].item_qty === 0) {
+    
+    if (parseInt(nerArr[i].item_qty) === 0) {
       nerArr.pop(nerArr[i]);
     }
   }
@@ -449,13 +575,6 @@ const PurchaseForm = () => {
   const handleBusinessGst = () => {
     setIsGstBusiness(isGstBusiness ? false : true);
   };
-
-  const [prefixNo, setPrefixNo] = useState(0);
-  useEffect(() => {
-    purchasePrefixData
-      .filter((code) => code.purchase_prefix === prefixValue)
-      .map((item) => setPrefixNo(parseInt(item.purchase_prefix_no) + 1));
-  }, [addPrefix]);
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const [invoiceItems, setInvoiceItems] = useState({
@@ -545,7 +664,7 @@ const PurchaseForm = () => {
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
-        item.item_qty > 0
+        parseInt(item.item_qty) > 0
           ? {
               in_id: item.product_id,
               in_items: item.product_name,
@@ -615,7 +734,11 @@ const PurchaseForm = () => {
     }
   }
 
-  const totalGrossValue = filteredInvoiceItems
+  
+    const totalGrossValue = 
+
+    filteredInvoiceItems.length != 0 ?
+    filteredInvoiceItems
     .map(
       (item) =>
         parseFloat(item.in_qty) *
@@ -624,16 +747,12 @@ const PurchaseForm = () => {
     )
     .reduce((acc, current) => {
       return acc + current;
-    }, 0);
-
-  const [amtPayMethod, setAmtPayMethod] = useState("unpaid");
-  const handlePayStatus = (event) => {
-    setAmtPayMethod(event.target.value);
-  };
-
-  const [amountPaid, setAmountPaid] = useState(0);
+    }, 0) : purchaseDataById.purchase_amt;
+  
+  
 
   
+
   const [purchaseData, setPurchaseData] = useState({
     sup_cnct_id: "",
     purchase_prefix: "",
@@ -650,7 +769,6 @@ const PurchaseForm = () => {
     payment_out_prefix_no: "",
   });
 
-  
   const total_amt = filteredInvoiceItems
     .map(
       (item) =>
@@ -663,7 +781,7 @@ const PurchaseForm = () => {
     }, 0);
 
   const [state, setState] = useState({
-    add: false,
+    edit: false,
   });
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -676,14 +794,14 @@ const PurchaseForm = () => {
   };
   const list = (anchor) => (
     <Box sx={{ width: 450 }} role="presentation">
-      {anchor === "add" ? (
+      {anchor === "edit" ? (
         <>
           <div>
             <div className="flex justify-between p-3 text-center items-center ">
               <div className="flex justify-between flex-row category  ">
                 <button
                   className="back-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-2 pl-0 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
-                  onClick={() => setAddInvoiceItems(false)}
+                  onClick={() => setEditInvoiceItems(false)}
                 >
                   Back
                 </button>
@@ -723,83 +841,74 @@ const PurchaseForm = () => {
                   </Box>
 
                   <Box>
-                    {productList
-                      .filter((code) =>
-                        code.product_name
-                          .toLowerCase()
-                          .startsWith(searchValue.toLowerCase())
-                      )
+                    {productListInItems
+                      //   .filter((code) =>
+                      //     code.purchase_item_name
+                      //       .toLowerCase()
+                      //       .startsWith(searchValue.toLowerCase())
+                      //   )
                       .map((filteredItem) => (
                         <div
-                          key={filteredItem.id}
+                          key={filteredItem.purchase_item_cnct_id}
                           className="category border-b-2"
                         >
+                          {filteredItem.deleted === 1
+                            ? () => setAddQty(true)
+                            : () => setAddQty(false)}
                           <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded  flex flex-row justify-between">
                             <div>
                               <h2 className="pr-4 py-1">
-                                {filteredItem.product_name}
+                                {filteredItem.purchase_item_name}
                               </h2>
                               <div className="flex gap-[10px] place-items-center">
                                 <p className="text-slate-500 text-sm">PRICE</p>
                                 <p className="text-slate-800 font-semibold text-lg">
-                                  ₹ {filteredItem.purchase_price}
+                                  ₹ {filteredItem.purchase_item_price}
                                 </p>
                               </div>
                             </div>
 
-                            {filteredItem.qty !== null &&
-                            filteredItem.qty !== 0 ? (
+                            {filteredItem.purchase_item_qty !== null &&
+                            filteredItem.purchase_item_qty !== 0 ? (
                               <div>
                                 <div>
                                   <span className="border border-blue-600 py-1 px-2 rounded">
                                     <button
+                                      disabled={
+                                        parseInt(filteredItem.deleted) === 1
+                                          ? true
+                                          : false
+                                      }
                                       onClick={(e) => {
                                         e.preventDefault(),
                                           handleDecrease(
-                                            filteredItem.product_id
+                                            filteredItem.purchase_item_cnct_id
                                           ),
                                           handleDecrease2(
-                                            filteredItem.product_id
+                                            filteredItem.purchase_item_cnct_id
                                           );
-                                        // handleDecrease2(
-                                        //   addProducts
-                                        //     ? filteredItem.product_id
-                                        //     : filteredItem.ser_id
-                                        // );
-                                        addProducts
-                                          ? handleDecrease2(
-                                              filteredItem.product_id
-                                            )
-                                          : handleDecrease3(
-                                              filteredItem.ser_id
-                                            );
                                       }}
                                       className="px-3 text-blue-600  hover:bg-blue-200 transition-all ease-in"
                                     >
                                       -
                                     </button>
                                     <span className="px-2">
-                                      {filteredItem.qty}
+                                      {filteredItem.purchase_item_qty}
                                     </span>
                                     <button
+                                      disabled={
+                                        parseInt(filteredItem.deleted) === 1
+                                          ? true
+                                          : false
+                                      }
                                       onClick={(e) => {
                                         e.preventDefault();
-                                        handleIncrease(filteredItem.product_id);
-                                        handleIncrease2(
-                                          filteredItem.product_id
+                                        handleIncrease(
+                                          filteredItem.purchase_item_cnct_id
                                         );
-                                        // handleIncrease2(
-                                        //   addProducts
-                                        //     ? filteredItem.product_id
-                                        //     : filteredItem.ser_id
-                                        // );
-                                        //   addProducts
-                                        //     ? handleIncrease2(
-                                        //         filteredItem.product_id
-                                        //       )
-                                        //     : handleIncrease3(
-                                        //         filteredItem.ser_id
-                                        //       );
+                                        handleIncrease2(
+                                          filteredItem.purchase_item_cnct_id
+                                        );
                                       }}
                                       className="px-3 text-blue-600 hover:bg-blue-200 transition-all ease-in"
                                     >
@@ -809,42 +918,49 @@ const PurchaseForm = () => {
                                 </div>
                               </div>
                             ) : (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-
-                                  handleChange2(filteredItem);
-                                  handleIncrease(filteredItem.product_id);
-                                }}
-                                className="px-3 text-blue-600  hover:bg-blue-200 transition-all ease-in"
-                              >
-                                Add
-                              </button>
+                              <div>
+                                {productList
+                                  .filter(
+                                    (item2) =>
+                                      item2.product_id ===
+                                      parseInt(
+                                        filteredItem.purchase_item_cnct_id
+                                      )
+                                  )
+                                  .map((item3) => (
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleChange2(item3);
+                                        handleIncrease(
+                                          filteredItem.purchase_item_cnct_id
+                                        );
+                                      }}
+                                      className="px-3 text-blue-600  hover:bg-blue-200 transition-all ease-in"
+                                    >
+                                      Add
+                                    </button>
+                                  ))}
+                              </div>
                             )}
                           </div>
-
-                          {console.log(
-                            "filteredItem.qty : ",
-                            filteredItem.qty,
-                            nerArr
-                          )}
-                          {filteredItem.qty !== null &&
-                          filteredItem.qty !== 0 ? (
+                          {filteredItem.deleted === 1 ? <div> items </div> : ""}
+                          
+                          
+                          {filteredItem.purchase_item_qty !== "null" ? (
                             <div>
                               {nerArr
                                 .filter(
                                   (code) =>
-                                    code.product_id ===
-                                      filteredItem.product_id &&
-                                    code.item_qty !== 0 &&
+                                  parseInt(code.product_id) ===
+                                      parseInt(
+                                        filteredItem.purchase_item_cnct_id
+                                      ) &&
+                                    parseInt(code.item_qty) !== 0 &&
                                     code.item_cat === 1
                                 )
                                 .map((item) => (
                                   <div>
-                                    {console.log(
-                                      "filteredItem.qty : ",
-                                      item.item_qty
-                                    )}
                                     <div>
                                       {item.tax === "1" ? (
                                         <Box className="box-sec margin-top-zero ">
@@ -856,7 +972,9 @@ const PurchaseForm = () => {
                                             defaultChecked
                                             color="success"
                                             onChange={() =>
-                                              handleTaxIncluded(item.product_id)
+                                              handleTaxIncluded(
+                                                item.purchase_item_cnct_id
+                                              )
                                             }
                                           />
                                         </Box>
@@ -869,7 +987,9 @@ const PurchaseForm = () => {
                                             {...label}
                                             color="success"
                                             onChange={() =>
-                                              handleTaxIncluded(item.product_id)
+                                              handleTaxIncluded(
+                                                item.product_id
+                                              )
                                             }
                                           />
                                         </Box>
@@ -947,7 +1067,9 @@ const PurchaseForm = () => {
                                             readOnly: true,
                                           }}
                                           onClick={() => {
-                                            handleAddHsnCode(item.product_id);
+                                            handleAddHsnCode(
+                                              item.product_id
+                                            );
                                           }}
                                         />
 
@@ -985,7 +1107,9 @@ const PurchaseForm = () => {
                                             readOnly: true,
                                           }}
                                           onClick={() => {
-                                            handleAddGst(item.product_id);
+                                            handleAddGst(
+                                              item.product_id
+                                            );
                                           }}
                                         />
                                       </Box>
@@ -1208,7 +1332,7 @@ const PurchaseForm = () => {
           >
             <button
               onClick={() => {
-                setSelectedItems(true), setAddInvoiceItems(false);
+                setSelectedItems(true), setEditInvoiceItems(false);
               }}
               className="text-blue-600  py-2 px-4 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
               style={{ border: "1px solid rgb(37, 99, 235)" }}
@@ -1229,7 +1353,7 @@ const PurchaseForm = () => {
     purchaseData.payment_out_prefix_no = 1;
   } else {
     purchaseData.payment_out_prefix_no = parseInt(paymentOutPrefixNo) + 1;
-  };
+  }
 
   purchaseData.purchase_amt_paid = amountPaid;
   purchaseData.purchase_amt_due = totalGrossValue - parseInt(amountPaid);
@@ -1239,12 +1363,6 @@ const PurchaseForm = () => {
   purchaseData.purchase_name = supData.sup_name;
   purchaseData.sup_cnct_id = supData.sup_id;
 
-  prefixValue === ""
-    ? ((purchaseData.purchase_prefix = "Invoice"),
-      (purchaseData.purchase_prefix_no = parseInt(defaultPrefixNo) + 1))
-    : ((purchaseData.purchase_prefix = temp),
-      (purchaseData.purchase_prefix_no = prefixNo));
-
   purchaseData.invoiceItemsList = filteredInvoiceItems;
 
   purchaseData.purchase_amt_type !== "unpaid"
@@ -1252,6 +1370,8 @@ const PurchaseForm = () => {
     : null;
 
   amountPaid === "0" ? (purchaseData.purchase_amt_type = "unpaid") : "";
+
+  console.log("purchaseData : " , purchaseData)
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -1277,10 +1397,10 @@ const PurchaseForm = () => {
     <React.Fragment>
       <Drawer
         anchor="right"
-        open={state["add"]}
-        onClose={toggleDrawer("add", false)}
+        open={state["edit"]}
+        onClose={toggleDrawer("edit", false)}
       >
-        {list("add")}
+        {list("edit")}
       </Drawer>
       <div className="salesform">
         <Navbar />
@@ -1324,44 +1444,14 @@ const PurchaseForm = () => {
                   type="text"
                   className="border p-2 rounded-lg w-[90%] border-slate-400"
                   placeholder="Party Name"
-                  onClick={(e) => setSupplierList(true)}
-                  value={supData.sup_name}
+                  value={supplierData.sup_name}
                 />
-                {supplierList ? (
-                  <div className="absolute bg-white z-10 p-3">
-                    {supplierData.map((item, index) => (
-                      <div
-                        className="flex justify-between"
-                        onClick={() => {
-                          setSupplierList(false),
-                            setSupData({
-                              ...supData,
-                              sup_id: item.sup_id,
-                              sup_name: item.sup_name,
-                              sup_number: item.sup_number,
-                              sup_gst: item.sup_gstin,
-                              sup_flat: item.sup_sflat,
-                              sup_area: item.sup_sarea,
-                              sup_city: item.sup_scity,
-                              sup_state: item.sup_sstate,
-                              sup_pin: item.sup_spin,
-                            });
-                        }}
-                      >
-                        <div>{item.sup_name}</div>
-                        <div>{item.sup_amt}</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  ""
-                )}
 
                 <input
                   type="text"
                   className="border p-2 rounded-lg w-[90%] border-slate-400"
                   placeholder="Phone Number"
-                  value={supData.sup_number}
+                  value={supplierData.sup_number}
                 />
                 <div>
                   <input
@@ -1369,15 +1459,15 @@ const PurchaseForm = () => {
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Address (Optional)"
                     value={
-                      supData.sup_flat +
+                      supplierData.sup_sflat +
                       ", " +
-                      supData.sup_area +
+                      supplierData.sup_sarea +
                       ", " +
-                      supData.sup_city +
+                      supplierData.sup_scity +
                       ", " +
-                      supData.sup_state +
+                      supplierData.sup_sstate +
                       ", " +
-                      supData.sup_pin
+                      supplierData.sup_spin
                     }
                   />
                 </div>
@@ -1385,7 +1475,7 @@ const PurchaseForm = () => {
                   type="text"
                   className="border p-2 rounded-lg w-[90%] border-slate-400"
                   placeholder="GSTIN (Optional)"
-                  value={supData.sup_gst}
+                  value={supplierData.sup_gstin}
                 />
               </div>
             </div>
@@ -1399,115 +1489,20 @@ const PurchaseForm = () => {
                     type="text"
                     className="border p-2 rounded-lg w-[58%] border-slate-400 h-[90%]"
                     placeholder="Invoice Number"
-                    value={prefixValue === "" ? "Invoice" : prefixValue}
-                    onClick={() => setAddPrefix(true)}
+                    value={purchaseDataById.purchase_prefix}
                   />
                   <input
                     type="text"
                     className="border p-2 rounded-lg w-[32%] border-slate-400 h-[90%]"
                     placeholder="Invoice Number"
-                    value={
-                      prefixValue === "" || prefixValue === undefined
-                        ? parseInt(defaultPrefixNo) + 1
-                        : prefixNo
-                    }
+                    value={purchaseDataById.purchase_prefix_no}
                     name="prefix_number"
                   />
-                </div>
-                <div className=" absolute z-10 bg-white">
-                  {addPrefix ? (
-                    <div className=" category p-3 shadow-[0_0px_10px_rgba(0,0,0,0.25)]">
-                      <div className="w-full ">
-                        {/* <TextField
-                          label="Enter Prefix"
-                          name="enter_prefix_name"
-                          id="outlined-basic"
-                          variant="outlined"
-                          className="w-full"
-                          size="small"
-                          onChange={(e) => {
-                            setTemp(e.target.value), setPrefixNo(1);
-                          }}
-                          required
-                        /> */}
-                        <input
-                          type="text"
-                          className="border p-2 rounded-lg w-[58%] border-slate-400 h-[90%]"
-                          placeholder="Invoice Number"
-                          onChange={(e) => {
-                            setTemp(e.target.value), setPrefixNo(1);
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <p className="py-3">Select from added prefixes </p>
-                        <div className="flex gap-3">
-                          {defaultPrefixNo === 0 ? (
-                            <p
-                              className={`border cursor-pointer rounded-[10px] py-2 px-3 ${
-                                temp === "Invoice" ? "selected_prefix" : ""
-                              }`}
-                              onClick={() => {
-                                setTemp("Invoice");
-                                setPrefixValue(prefixSelectorHandler);
-                                setPrefixNo(1);
-                              }}
-                            >
-                              Invoice
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          {purchasePrefixData.map((item) => (
-                            <div
-                              className={`flex flex-wrap  border cursor-pointer rounded-[10px] py-2 px-3 ${
-                                temp === item.purchase_prefix
-                                  ? "selected_prefix"
-                                  : ""
-                              }`}
-                              onClick={() => {
-                                setTemp(item.purchase_prefix);
-                                setPrefixValue(prefixSelectorHandler);
-                              }}
-                            >
-                              {item.purchase_prefix}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="w-full flex py-3 pt-5">
-                        <div
-                          className=" pr-6"
-                          onClick={() => {
-                            setPrefixValue(temp), setAddPrefix(false);
-                          }}
-                        >
-                          <button
-                            className="text-green-600 w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-green-600 transition-all ease-in"
-                            style={{ border: "1px solid #16a34a" }}
-                          >
-                            Save
-                          </button>
-                        </div>
-                        <div className="" onClick={() => setAddPrefix(false)}>
-                          <button
-                            className="text-red-600 w-full py-2 px-4 rounded-[5px] hover:text-white hover:bg-red-600 transition-all ease-in"
-                            style={{ border: "1px solid #dc2626" }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
                 </div>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    value={transactionDate}
+                    value={dayjs(purchaseDataById.purchase_date)}
                     onChange={(newValue) => setTransactionDate(newValue)}
                     format="LL"
                     className="w-[90%]"
@@ -1562,6 +1557,7 @@ const PurchaseForm = () => {
                 <div>Action</div>
               </div>
               <div className="h-[37vh] overflow-y-scroll">
+                {console.log("filteredInvoiceItems : " , filteredInvoiceItems)}
                 <PurchaseTran filteredInvoiceItems={filteredInvoiceItems} />
               </div>
             </div>
@@ -1573,12 +1569,13 @@ const PurchaseForm = () => {
                 border: "1px solid #2563eb",
                 transition: "all 400ms ease-in-out",
               }}
-              onClick={toggleDrawer("add", true)}
+              onClick={toggleDrawer("edit", true)}
             >
               <IconPlus className="w-5 h-5" />
               Add Items from Inventory
             </button>
             <div>
+              {console.log("amtPayMethod : " , amtPayMethod , purchaseDataById.purchase_amt_type)}
               <FormControl>
                 <RadioGroup
                   row
@@ -1608,16 +1605,16 @@ const PurchaseForm = () => {
 
             {amtPayMethod !== "unpaid" ? (
               <div className="flex gap-2 text-lg font-semibold text-slate-600">
-                {/* <div>Amount Paid (₹) :</div> */}
+                
                 <div>
                   <input
                     type="text"
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Amount Paid (₹)"
-                    //defaultValue={totalGrossValue}
+                    defaultValue={purchaseDataById.purchase_amt_paid}
                     onChange={(e) =>
                       setAmountPaid(
-                        e.target.value <= totalGrossValue ? e.target.value : 0
+                        e.target.value <= parseFloat(totalGrossValue) ? e.target.value : 0
                       )
                     }
                   />
@@ -1631,15 +1628,14 @@ const PurchaseForm = () => {
               <div>Balance Due :</div>
               <div>
                 ₹{" "}
-                {totalGrossValue.toFixed(2) -
+
+                { parseFloat(totalGrossValue).toFixed(2) -
                   parseInt(amountPaid ? amountPaid : 0)}
               </div>
             </div>
             <div className="flex gap-2 text-lg">
               <div className="font-semibold">Total Amount :</div>
-              <div>
-                {totalGrossValue > 0 ? totalGrossValue.toFixed(2) : "0"}
-              </div>
+              <div>{purchaseDataById.purchase_amt}</div>
             </div>
           </div>
         </div>
@@ -1648,4 +1644,4 @@ const PurchaseForm = () => {
   );
 };
 
-export default PurchaseForm;
+export default PurchaseEdit;

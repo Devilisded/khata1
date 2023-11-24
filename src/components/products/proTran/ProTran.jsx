@@ -1,9 +1,33 @@
 import { IconPointFilled } from "@tabler/icons-react";
+import { useContext } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import { useNavigate } from "react-router-dom";
 
 const ProTran = (props) => {
-  
+  const navigate = useNavigate();
+  const { changeSaleId , changePurchaseId } = useContext(UserContext);
+  console.log("props.data.sale_cnct_id : " , props.data.sale_cnct_id)
+  const changeS = () => {
+    changeSaleId(props.data.sale_cnct_id);
+    navigate("/sales");
+  };
+  const changeP = () => {
+    changePurchaseId(props.data.sale_cnct_id);
+    navigate("/purchase");
+  };
+  const checkNavigate = () => {
+    if (
+      props.data.sale_cnct_id !== null && props.data.product_stock_out !== null) {
+      changeS();
+    } else if (props.data.sale_cnct_id !== null && props.data.product_stock_in !== null) {
+      changeP();
+    }
+    else {
+      ""
+    }  
+  };
   return (
-    <div className="transaction cursor-pointer">
+    <div className="transaction cursor-pointer" onClick={checkNavigate}>
       
       <div className="details flex flex-col gap-1 ">
         <div className="date font-semibold flex items-center gap-1 text-slate-800">
