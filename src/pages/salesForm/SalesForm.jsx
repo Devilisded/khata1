@@ -143,7 +143,7 @@ const SalesForm = () => {
   const [defaultPrefixValue, setDefaultPrefixValue] = useState("");
 
   const [businessGst, setBusinessGst] = useState("");
-  const [paymentInPrefixNo , setPaymentInPrefixNo] = useState("");
+  const [paymentInPrefixNo, setPaymentInPrefixNo] = useState("");
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch`)
@@ -234,40 +234,7 @@ const SalesForm = () => {
   var i = 0;
   let [nerArr, setNerArr] = useState([]);
 
-  // const removeNullNerArr = () => {
-  //   for (let i = 0; i < nerArr.length; i++) {
-  //     console.log("nerArr[i].item_qty : " , nerArr[i].item_qty)
-  //     if (nerArr[i].item_qty === 0) {
-  //       nerArr.pop(nerArr[i]);
-  //     }
-  //   }
-  // }
-
-
-  
-
-  function removeDuplicates(nerArr) {
-    // //console.log(nerArr);
-    // for (let i = 0; i < nerArr.length; i++) {
-    //   console.log(nerArr.length)
-    //   if (nerArr[i].item_qty <= 0) {
-    //     //console.log("nerArr[i] : " , nerArr[i])
-    //     nerArr.pop(nerArr[i]);
-    //   }
-    // }
-    nerArr.filter((item, index) => nerArr.indexOf(item.product_id) === index);
-}
-  
-//console.log(nerArr);
   const handleChange2 = (item) => {
-  //   nerArr = nerArr.filter((obj, index) => {
-  //     return index === nerArr.findIndex(o => obj.project_id === o.project_id);
-  // });
-   
-  //console.log(nerArr);
-    //removeNullNerArr(),
-    //removeDuplicates(nerArr),
-    //console.log("after removeDuplicates : ",nerArr),
     addProducts
       ? setNerArr([
           {
@@ -317,9 +284,9 @@ const SalesForm = () => {
         ]);
   };
 
-  
-    
- 
+  useEffect(() => {
+    setNerArr((prevNerArr) => prevNerArr.filter((item) => item.item_qty !== 0));
+  }, [nerArr]);
 
   const handleAddHsnCode = (productId) => {
     setNerArr((nerArr) =>
@@ -448,7 +415,6 @@ const SalesForm = () => {
   };
 
   const handleIncrease = (productId) => {
-    
     addProducts
       ? setProductList((productList) =>
           productList.map((item) =>
@@ -473,7 +439,6 @@ const SalesForm = () => {
   };
 
   const handleIncrease2 = (productId) => {
-    
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.item_id && item.item_cat === 1
@@ -487,7 +452,6 @@ const SalesForm = () => {
   };
 
   const handleIncrease3 = (productId) => {
-    
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.item_id && item.item_cat === 0
@@ -501,7 +465,6 @@ const SalesForm = () => {
   };
 
   const handleDecrease = (productId) => {
-    
     addProducts
       ? setProductList((productList) =>
           productList.map((item) =>
@@ -525,27 +488,24 @@ const SalesForm = () => {
         );
   };
 
-  
-
   const handleDecrease2 = (productId) => {
-    
     setNerArr((nerArr) =>
-      nerArr.map((item) =>
-      
-        productId === item.item_id && item.item_qty >= 1 && item.item_cat === 1
-          ? {
-              ...item,
-              item_qty: item.item_qty - 1,
-            }
-          : item ,
-          //nerArr.pop(nerArr[productId])
-           
+      nerArr.map(
+        (item) =>
+          productId === item.item_id &&
+          item.item_qty >= 1 &&
+          item.item_cat === 1
+            ? {
+                ...item,
+                item_qty: item.item_qty - 1,
+              }
+            : item
+        //nerArr.pop(nerArr[productId])
       )
     );
   };
 
   const handleDecrease3 = (productId) => {
-    
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.item_id && item.item_qty >= 1 && item.item_cat === 0
@@ -553,8 +513,7 @@ const SalesForm = () => {
               ...item,
               item_qty: item.item_qty - 1,
             }
-          : item ,
-          
+          : item
       )
     );
   };
@@ -906,8 +865,6 @@ const SalesForm = () => {
                                               ? filteredItem.product_id
                                               : filteredItem.ser_id
                                           ),
-                                          
-                                         
                                           addProducts
                                             ? handleDecrease2(
                                                 filteredItem.product_id
@@ -933,7 +890,6 @@ const SalesForm = () => {
                                             ? filteredItem.product_id
                                             : filteredItem.ser_id
                                         ),
-                                        
                                           // handleIncrease2(
                                           //   addProducts
                                           //     ? filteredItem.product_id
@@ -973,8 +929,6 @@ const SalesForm = () => {
                             )}
                           </div>
 
-                          
-
                           {(addProducts
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== null &&
@@ -982,7 +936,6 @@ const SalesForm = () => {
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== 0 ? (
                             <div>
-                              
                               {/* {nerArr
                                 .filter(
                                   (code) => 
@@ -1372,7 +1325,7 @@ const SalesForm = () => {
     saleData.payment_in_prefix_no = 1;
   } else {
     saleData.payment_in_prefix_no = parseInt(paymentInPrefixNo) + 1;
-  };
+  }
 
   saleData.sale_amt_paid = amountPaid;
   saleData.sale_amt_due = totalGrossValue - parseInt(amountPaid);

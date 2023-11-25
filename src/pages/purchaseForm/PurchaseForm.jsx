@@ -141,7 +141,7 @@ const PurchaseForm = () => {
   const [defaultPrefixValue, setDefaultPrefixValue] = useState("");
 
   const [businessGst, setBusinessGst] = useState("");
-  const [paymentOutPrefixNo , setPaymentOutPrefixNo] = useState("");
+  const [paymentOutPrefixNo, setPaymentOutPrefixNo] = useState("");
 
   useEffect(() => {
     axios
@@ -190,8 +190,6 @@ const PurchaseForm = () => {
       });
   }, []);
 
-
-  
   const [supData, setSupData] = useState({
     sup_id: "",
     sup_name: "",
@@ -439,11 +437,15 @@ const PurchaseForm = () => {
     );
   };
 
-  for (let i = 0; i < nerArr.length; i++) {
-    if (nerArr[i].item_qty === 0) {
-      nerArr.pop(nerArr[i]);
-    }
-  }
+  // for (let i = 0; i < nerArr.length; i++) {
+  //   if (nerArr[i].item_qty === 0) {
+  //     nerArr.pop(nerArr[i]);
+  //   }
+  // }
+
+  useEffect(() => {
+    setNerArr((prevNerArr) => prevNerArr.filter((item) => item.item_qty !== 0));
+  }, [nerArr]);
 
   const [isGstBusiness, setIsGstBusiness] = useState(true);
   const handleBusinessGst = () => {
@@ -633,7 +635,6 @@ const PurchaseForm = () => {
 
   const [amountPaid, setAmountPaid] = useState(0);
 
-  
   const [purchaseData, setPurchaseData] = useState({
     sup_cnct_id: "",
     purchase_prefix: "",
@@ -650,7 +651,6 @@ const PurchaseForm = () => {
     payment_out_prefix_no: "",
   });
 
-  
   const total_amt = filteredInvoiceItems
     .map(
       (item) =>
@@ -1229,7 +1229,7 @@ const PurchaseForm = () => {
     purchaseData.payment_out_prefix_no = 1;
   } else {
     purchaseData.payment_out_prefix_no = parseInt(paymentOutPrefixNo) + 1;
-  };
+  }
 
   purchaseData.purchase_amt_paid = amountPaid;
   purchaseData.purchase_amt_due = totalGrossValue - parseInt(amountPaid);

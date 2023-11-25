@@ -72,11 +72,11 @@ const Navbar = () => {
       icon: <IconBriefcase />,
       linkto: "/account",
     },
-    {
-      name: "Settings",
-      icon: <IconSettings />,
-      linkto: "/settings",
-    },
+    // {
+    //   name: "Settings",
+    //   icon: <IconSettings />,
+    //   linkto: "/settings",
+    // },
   ];
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

@@ -46,7 +46,10 @@ const PurInvoice = () => {
   });
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchDataById/${purchaseId}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchDataById/${purchaseId}`
+      )
       .then((response) => {
         setData({
           ...data,
@@ -57,7 +60,10 @@ const PurInvoice = () => {
         });
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchPurchaseTran/${purchaseId}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchPurchaseTran/${purchaseId}`
+      )
       .then((response) => {
         setPurchaseRightTranData(response.data);
       });
@@ -73,13 +79,17 @@ const PurInvoice = () => {
       });
   }, [change, purchaseId]);
 
-  console.log("data.sup_cnct_id : " , data.sup_cnct_id , data.purchaseId , data.amtDue)
+  console.log(
+    "data.sup_cnct_id : ",
+    data.sup_cnct_id,
+    data.purchaseId,
+    data.amtDue
+  );
 
   useEffect(() => {
     axios
-    .get(
-        import.meta.env.VITE_BACKEND +
-          `/api/sup/fetchSup/${data.sup_cnct_id}`
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${data.sup_cnct_id}`
       )
       .then((response) => {
         setSupData(response.data);
@@ -204,12 +214,18 @@ const PurInvoice = () => {
                           {item.purchase_item_disc_unit
                             ? item.purchase_item_disc_unit
                             : "-"}
+                          {item.purchase_item_disc_val
+                            ? item.purchase_item_disc_val +
+                              "|" +
+                              item.purchase_item_disc_unit
+                            : "-"}
                         </td>
                         <td>{item.purchase_item_qty}</td>
                         <td>
                           ₹
                           {(
-                            item.purchase_item_disc_price * item.purchase_item_qty
+                            item.purchase_item_disc_price *
+                            item.purchase_item_qty
                           ).toFixed(2)}
                         </td>
                         <td>

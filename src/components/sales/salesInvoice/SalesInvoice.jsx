@@ -199,8 +199,10 @@ const SalesInvoice = () => {
                         <td>{item.sale_item_name}</td>
                         <td>₹ {item.sale_item_price}</td>
                         <td>
-                          {item.sale_item_disc_unit
-                            ? item.sale_item_disc_unit
+                          {item.sale_item_disc_val
+                            ? item.sale_item_disc_val +
+                              "|" +
+                              item.sale_item_disc_unit
                             : "-"}
                         </td>
                         <td>{item.sale_item_qty}</td>
