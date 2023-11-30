@@ -1351,17 +1351,20 @@ const SalesForm = () => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/sale/addSales", saleData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/sale/addSales",
+        saleData
+      );
       if (filteredInvoiceItems.some((i) => i.in_cat === 1)) {
         await axios.put(
-          "http://localhost:8000/api/sale/updateProductStockQty",
+          import.meta.env.VITE_BACKEND + "/api/sale/updateProductStockQty",
           saleData
         );
       }
 
       if (filteredInvoiceItems.some((i) => i.in_cat === 0)) {
         await axios.put(
-          "http://localhost:8000/api/sale/updateServicesSalesQty",
+          import.meta.env.VITE_BACKEND + "/api/sale/updateServicesSalesQty",
           saleData
         );
       }
