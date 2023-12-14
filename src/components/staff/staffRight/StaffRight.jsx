@@ -1,4 +1,7 @@
 import { IconEdit, IconUser } from "@tabler/icons-react";
+import Bill from "../../../assets/Bill.png";
+import inventory from "../../../assets/inventory.png";
+import Parties from "../../../assets/Parties.png";
 
 const StaffRight = () => {
   return (
@@ -26,21 +29,21 @@ const StaffRight = () => {
               View & Add for All Bills (Sales/Purchase/Returns) & Cashbook
             </div>
           </div>
-          <img src="../src/assets/Bill.png" alt="" className="w-24" />
+          <img src={Bill} alt="" className="w-24" />
         </div>
         <div className="px-4 shadow py-2 bg-yellow-100/20 rounded flex justify-between items-center">
           <div>
             <div className="text-lg">Inventory</div>
             <div>Add Items & Stock In/Out</div>
           </div>
-          <img src="../src/assets/inventory.png" alt="" className="w-24" />
+          <img src={inventory} alt="" className="w-24" />
         </div>
         <div className="px-4 shadow py-2 bg-blue-100/20 rounded flex justify-between items-center">
           <div>
             <div className="text-lg">Parties</div>
             <div>View Entries & Send Reminders</div>
           </div>
-          <img src="../src/assets/Parties.png" alt="" className="w-24" />
+          <img src={Parties} alt="" className="w-24" />
         </div>
       </div>
     </div>
