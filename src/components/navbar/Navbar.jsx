@@ -8,21 +8,54 @@ import {
   IconLogout,
   IconReportAnalytics,
   IconServer,
-  IconSettings,
   IconShoppingCart,
   IconTruckDelivery,
   IconTruckLoading,
   IconUser,
+  IconUsers,
 } from "@tabler/icons-react";
 import "./navbar.scss";
 import { useState, useEffect, useContext } from "react";
-import { Menu, MenuItem } from "@mui/material";
-import Fade from "@mui/material/Fade";
 import { Link, useLocation } from "react-router-dom";
-import { UserContext } from "../../context/UserIdContext";
+import { useAnimate, stagger, motion } from "framer-motion";
+
+const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
+
+function useMenuAnimation(isOpen) {
+  const [scope, animate] = useAnimate();
+  useEffect(() => {
+    animate(
+      "ul",
+      {
+        clipPath: isOpen
+          ? "inset(0% 0% 0% 0% round 10px)"
+          : "inset(10% 50% 90% 50% round 10px)",
+      },
+      {
+        type: "spring",
+        bounce: 0,
+        duration: 0.5,
+      }
+    );
+
+    animate(
+      "li",
+      isOpen
+        ? { opacity: 1, scale: 1, filter: "blur(0px)" }
+        : { opacity: 0, scale: 0.3, filter: "blur(20px)" },
+      {
+        duration: 0.1,
+        delay: isOpen ? staggerMenuItems : 0,
+      }
+    );
+  }, [isOpen]);
+
+  return scope;
+}
 const Navbar = () => {
-  const { change } = useContext(UserContext);
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const scope = useMenuAnimation(isOpen);
   const items = [
     {
       name: "Customer",
@@ -68,26 +101,18 @@ const Navbar = () => {
       linkto: "/custReport",
     },
     {
+      name: "Staff",
+      icon: <IconUsers />,
+      linkto: "/staff",
+    },
+    {
       name: "Account",
       icon: <IconBriefcase />,
       linkto: "/account",
     },
-    // {
-    //   name: "Settings",
-    //   icon: <IconSettings />,
-    //   linkto: "/settings",
-    // },
   ];
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   return (
-    <div className="navbar flex items-center w-full justify-between shadow-md">
+    <div className="navbar flex items-center w-full justify-around shadow-md">
       <div className="left flex items-center">
         <IconBook2 className="text-[#008cff] h-16 w-16" />
         <div className="text-[50px] text-[#008cff]">
@@ -117,39 +142,40 @@ const Navbar = () => {
         </div>
       </div>
       <div className="right">
-        <div className="profile">
-          <div onClick={handleClick} className=" cursor-pointer">
+        <div className="profile" ref={scope}>
+          <motion.div
+            whileTap={{ scale: 0.75 }}
+            onClick={() => setIsOpen(!isOpen)}
+            className=" cursor-pointer"
+          >
             AB
-          </div>
-          <Menu
-            id="fade-menu"
-            MenuListProps={{
-              "aria-labelledby": "fade-button",
+          </motion.div>
+          <ul
+            style={{
+              pointerEvents: isOpen ? "auto" : "none",
+              clipPath: "inset(10% 50% 90% 50% round 10px)",
             }}
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            TransitionComponent={Fade}
+            className="absolute flex flex-col gap-3 bg-white p-2"
           >
             <Link to="/home">
-              <MenuItem className="gap-2">
+              <li className="flex gap-1 items-center">
                 <IconHome2 className="text-slate-600 w-5" />
                 Home
-              </MenuItem>
+              </li>
             </Link>
             <Link to="/contact">
-              <MenuItem className="gap-2">
+              <li className="flex gap-1 items-center">
                 <IconHelpCircle className="text-slate-600 w-5" />
                 Contact Us
-              </MenuItem>
+              </li>
             </Link>
             <Link to="/login">
-              <MenuItem className="gap-2">
+              <li className="flex gap-1 items-center">
                 <IconLogout className="text-slate-600 w-5" />
                 Logout
-              </MenuItem>
+              </li>
             </Link>
-          </Menu>
+          </ul>
         </div>
       </div>
     </div>

@@ -21,6 +21,7 @@ import Purchase from "./pages/purchase/Purchase";
 import PurchaseForm from "./pages/purchaseForm/PurchaseForm";
 import PurchaseEdit from "./pages/purchaseEdit/PurchaseEdit";
 import PurchaseReport from "./pages/purchaseReport/PurchaseReport";
+import Staff from "./pages/staff/Staff";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -110,6 +111,10 @@ const App = () => {
     {
       path: "/purchaseReport",
       element: <PurchaseReport />,
+    },
+    {
+      path: "/staff",
+      element: <Staff />,
     },
   ]);
   return (
