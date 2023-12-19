@@ -1,5 +1,4 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import MainPage from "./pages/mainpage/MainPage";
 import NotFound from "./pages/notfound/NotFound";
@@ -23,21 +22,36 @@ import PurchaseEdit from "./pages/purchaseEdit/PurchaseEdit";
 import PurchaseReport from "./pages/purchaseReport/PurchaseReport";
 import Staff from "./pages/staff/Staff";
 import Setting from "./pages/setting/Setting";
-import MainLeft from "./components/mainpage/mainLeft/MainLeft";
 import SettingAccount from "./components/setting/settingAccount/SettingAccount";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
+import { Navigate } from "react-router-dom";
 const App = () => {
+  const { currentUser } = useContext(AuthContext);
+  const ProtectedRoute = ({ children }) => {
+    if (!currentUser) {
+      return <Navigate to="/login" />;
+    }
+
+    return children;
+  };
   const router = createBrowserRouter([
     {
       path: "/login",
       element: <Login />,
     },
-    {
-      path: "/register",
-      element: <Register />,
-    },
+    // {
+    //   path: "/register",
+    //   element: <Register />,
+    // },
     {
       path: "/",
-      element: <MainPage />,
+
+      element: (
+        <ProtectedRoute>
+          <MainPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "*",
@@ -57,71 +71,139 @@ const App = () => {
     },
     {
       path: "/supplier",
-      element: <Supplier />,
+      element: (
+        <ProtectedRoute>
+          <Supplier />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/services",
-      element: <Services />,
+      element: (
+        <ProtectedRoute>
+          <Services />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/products",
-      element: <Products />,
+      element: (
+        <ProtectedRoute>
+          <Products />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/cashbook",
-      element: <Cashbook />,
+      element: (
+        <ProtectedRoute>
+          <Cashbook />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/expenses",
-      element: <Expenses />,
+      element: (
+        <ProtectedRoute>
+          <Expenses />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/sales",
-      element: <Sales />,
+      element: (
+        <ProtectedRoute>
+          <Sales />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/salesform",
-      element: <SalesForm />,
+      element: (
+        <ProtectedRoute>
+          <SalesForm />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/custReport",
-      element: <CustomerReport />,
+      element: (
+        <ProtectedRoute>
+          <CustomerReport />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/supReport",
-      element: <SupplierReport />,
+      element: (
+        <ProtectedRoute>
+          <SupplierReport />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/cashReport",
-      element: <CashReport />,
+      element: (
+        <ProtectedRoute>
+          <CashReport />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/salesReport",
-      element: <SalesReport />,
+      element: (
+        <ProtectedRoute>
+          <SalesReport />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/purchase",
-      element: <Purchase />,
+      element: (
+        <ProtectedRoute>
+          <Purchase />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/purchaseForm",
-      element: <PurchaseForm />,
+      element: (
+        <ProtectedRoute>
+          <PurchaseForm />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/purchaseEdit",
-      element: <PurchaseEdit />,
+      element: (
+        <ProtectedRoute>
+          <PurchaseEdit />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/purchaseReport",
-      element: <PurchaseReport />,
+      element: (
+        <ProtectedRoute>
+          <PurchaseReport />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/staff",
-      element: <Staff />,
+      element: (
+        <ProtectedRoute>
+          <Staff />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/settings",
-      element: <Setting />,
+      element: (
+        <ProtectedRoute>
+          <Setting />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "account",

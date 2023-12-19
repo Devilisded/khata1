@@ -1,7 +1,47 @@
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import "./login.scss";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 const Login = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [otp, setOtp] = useState(0);
+  const [cotp, setCotp] = useState(0);
+  const [email, setEmail] = useState("");
+  const [otpdrop, setOtpdrop] = useState(false);
+  const [otpmsg, setOtpmsg] = useState("Next");
+
+  const fetchOtp = () => {
+    try {
+      setOtpdrop(true);
+      setOtpmsg("Resend Otp");
+      axios
+        .get(import.meta.env.VITE_BACKEND + `/api/log/sendmail/${email}`)
+        .then((res) => {
+          setCotp(res.data);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const checklogin = async () => {
+    if (cotp > 0) {
+      if (otp == cotp) {
+        try {
+          console.log("Entered");
+          await login(email);
+          navigate("/");
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
+  };
+  useEffect(() => {
+    checklogin();
+  }, [otp]);
   return (
     <motion.div className="bg-no-repeat bg-cover bg-center relative front">
       <div className="absolute bg-gradient-to-b from-blue-500 to-blue-400 opacity-75 inset-0 z-0"></div>
@@ -39,52 +79,34 @@ const Login = () => {
                   type=""
                   placeholder="mail@gmail.com"
                   whileTap={{ scale: 0.97 }}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <label className="mb-5 text-sm font-medium text-gray-700 tracking-wide">
-                  Password
-                </label>
-                <motion.input
-                  className="w-full content-center text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
-                  type=""
-                  placeholder="Enter your password"
-                  whileTap={{ scale: 0.97 }}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember_me"
-                    name="remember_me"
-                    type="checkbox"
-                    className="h-4 w-4 bg-blue-500 focus:ring-blue-400 border-gray-300 rounded"
-                  />
-                  <label
-                    for="remember_me"
-                    className="ml-2 block text-sm text-gray-800"
-                  >
-                    Remember me
+              <div>{cotp}</div>
+              {otpdrop ? (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 tracking-wide">
+                    OTP
                   </label>
+                  <motion.input
+                    className="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+                    type=""
+                    placeholder="Enter your otp..."
+                    whileTap={{ scale: 0.97 }}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
                 </div>
-                <div className="text-sm">
-                  <a href="#" className="text-blue-400 hover:text-blue-500">
-                    Forgot your password?
-                  </a>
-                </div>
-              </div>
+              ) : (
+                <div></div>
+              )}
               <div>
-                <Link to="/">
-                  <motion.button className="w-full flex justify-center bg-blue-400 hover:bg-blue-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500">
-                    Sign in
-                  </motion.button>
-                </Link>
-              </div>
-              <div className="text-center">
-                Don't have an Account Yet?&nbsp;
-                <Link to="/register">
-                  <span className="text-blue-500">Sign Up</span>
-                </Link>
+                <motion.button
+                  className="w-full flex justify-center bg-blue-400 hover:bg-blue-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={fetchOtp}
+                >
+                  {otpmsg}
+                </motion.button>
               </div>
             </div>
             <div className="pt-5 text-center text-gray-400 text-xs">
