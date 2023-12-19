@@ -8,6 +8,7 @@ import {
   IconLogout,
   IconReportAnalytics,
   IconServer,
+  IconSettings,
   IconShoppingCart,
   IconTruckDelivery,
   IconTruckLoading,
@@ -106,10 +107,15 @@ const Navbar = () => {
       linkto: "/staff",
     },
     {
-      name: "Account",
-      icon: <IconBriefcase />,
-      linkto: "/account",
+      name: "Settings",
+      icon: <IconSettings />,
+      linkto: "/settings",
     },
+    // {
+    //   name: "Account",
+    //   icon: <IconBriefcase />,
+    //   linkto: "/account",
+    // },
   ];
   return (
     <div className="navbar flex items-center w-full justify-around shadow-md">

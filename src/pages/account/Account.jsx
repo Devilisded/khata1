@@ -94,7 +94,7 @@ export default function Account() {
   };
   return (
     <div className="b-form ">
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="business_acc_section-wrapper">
         {info.length > 0 ? (
           <div>

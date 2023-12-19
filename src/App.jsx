@@ -22,6 +22,9 @@ import PurchaseForm from "./pages/purchaseForm/PurchaseForm";
 import PurchaseEdit from "./pages/purchaseEdit/PurchaseEdit";
 import PurchaseReport from "./pages/purchaseReport/PurchaseReport";
 import Staff from "./pages/staff/Staff";
+import Setting from "./pages/setting/Setting";
+import MainLeft from "./components/mainpage/mainLeft/MainLeft";
+import SettingAccount from "./components/setting/settingAccount/SettingAccount";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -115,6 +118,16 @@ const App = () => {
     {
       path: "/staff",
       element: <Staff />,
+    },
+    {
+      path: "/settings",
+      element: <Setting />,
+      children: [
+        {
+          path: "account",
+          element: <SettingAccount />,
+        },
+      ],
     },
   ]);
   return (
