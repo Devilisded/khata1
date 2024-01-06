@@ -4,6 +4,7 @@ import "./procardtran.scss";
 import { Skeleton } from "@mui/material";
 
 const ProCardTran = (props) => {
+  
   return (
     <div className="cardItem1 cursor-pointer">
       <div
@@ -42,6 +43,7 @@ const ProCardTran = (props) => {
           <Skeleton variant="rounded" width={140} height={48} />
         ) : (
           <button
+            disabled={props.inventory === 2 ? false : true}
             className="flex gap-1 items-center editbtn text-blue-600"
             onClick={props.edit}
           >

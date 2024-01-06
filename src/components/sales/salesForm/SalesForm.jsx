@@ -1285,10 +1285,7 @@ const SalesForm = () => {
         import.meta.env.VITE_BACKEND + "/api/sale/addSales",
         saleData
       );
-      //await axios.put("http://localhost:8000/api/sale/updateStockQty", saleData);
-
-      // changeChange();
-      // props.snack();
+      
       navigate("/sales");
     } catch (err) {
       console.log(err);

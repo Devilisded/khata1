@@ -26,7 +26,8 @@ import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 
 const PurchaseEdit = () => {
-  const { change, changeChange, purchaseId } = useContext(UserContext);
+  const { change, changeChange, purchaseId, accountId } =
+    useContext(UserContext);
   const states = [
     {
       state_name: "Haryana",
@@ -109,24 +110,8 @@ const PurchaseEdit = () => {
 
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
-  const [isClicked2, setIsClicked2] = useState(false);
-  const [gstValue1, setGstValue1] = useState("GST %");
-  const [gstValue2, setGstValue2] = useState("");
-  const [hsnCode, setHsnCode] = useState("HSN Code");
-  const [hsnValue1, setHsnValue1] = useState(null);
   const [customGst, setcustomGst] = useState("");
   const [customeCess, setCustomeCess] = useState(null);
-
-  const custom_gst_details =
-    "(" +
-    customGst / 2 +
-    "% CSTS + " +
-    customGst / 2 +
-    "% SGST/UT GST ; " +
-    customGst +
-    "% IGST ; " +
-    customeCess +
-    "% CESS )";
 
   const [supplierData, setSupplierData] = useState({});
   const [productList, setProductList] = useState([]);
@@ -148,12 +133,12 @@ const PurchaseEdit = () => {
   };
 
   const [amountPaid, setAmountPaid] = useState(0);
+  const [payOutAmt, setPayOutAmt] = useState(0);
 
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup`)
       .then((response) => {
-        //setSupplierData(response.data);
         setSupplierData({
           ...supplierData,
           sup_name: response.data[0].sup_name,
@@ -178,7 +163,6 @@ const PurchaseEdit = () => {
           `/api/purchase/fetchDataById/${purchaseId}`
       )
       .then((response) => {
-        //setPurchaseDataById(response.data);
         setPurchaseDataById({
           ...purchaseDataById,
           purchase_date: response.data[0].purchase_date,
@@ -197,24 +181,12 @@ const PurchaseEdit = () => {
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData/${accountId}`
+      )
       .then((response) => {
         setProductList(response.data);
       });
-
-    // axios
-    //   .get(
-    //     import.meta.env.VITE_BACKEND + `/api/purchase/fetchPurchasePrefixData`
-    //   )
-    //   .then((response) => {
-    //     //setPurchasePrefixData(response.data);
-    //     setDefaultPrefixNo(response.data[0].purchase_prefix_no);
-    //     setDefaultPrefixValue(
-    //       response.data[0].purchase_prefix == "Invoice"
-    //         ? response.data[0].purchase_prefix
-    //         : ("Invoice", setDefaultPrefixNo(0))
-    //     );
-    //   });
 
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
@@ -224,7 +196,7 @@ const PurchaseEdit = () => {
     axios
       .get(
         import.meta.env.VITE_BACKEND +
-          `/api/purchase/invoiceItemList/${purchaseId}`
+          `/api/purchase/invoiceItemList/${purchaseId}/${accountId}`
       )
       .then((response) => {
         setProductListInItems(response.data);
@@ -242,7 +214,7 @@ const PurchaseEdit = () => {
     axios
       .get(
         import.meta.env.VITE_BACKEND +
-          "/api/purchase/fetchPurchasePayPrefixData"
+          `/api/purchase/fetchPurchasePayPrefixData/${accountId}`
       )
       .then((response) => {
         setPaymentOutPrefixNo(response.data[0].purchase_pay_out_prefix_no);
@@ -256,7 +228,6 @@ const PurchaseEdit = () => {
           `/api/sup/fetchSup/${purchaseDataById.sup_cnct_id}`
       )
       .then((response) => {
-        //setSupplierData(response.data);
         setSupplierData({
           ...supplierData,
           sup_name: response.data[0].sup_name,
@@ -271,19 +242,6 @@ const PurchaseEdit = () => {
       });
   }, [purchaseDataById]);
 
-  console.log("setAmountPaid : " , amountPaid)
-  const [supData, setSupData] = useState({
-    sup_id: "",
-    sup_name: "",
-    sup_number: "",
-    sup_gst: "",
-    sup_flat: "",
-    sup_area: "",
-    sup_city: "",
-    sup_state: "",
-    sup_pin: "",
-  });
-
   const [searchValue, setSearchValue] = useState("");
 
   const today = new Date();
@@ -293,18 +251,11 @@ const PurchaseEdit = () => {
   const current_date = `${month}/${date}/${year}`;
   const todaysDate = dayjs(current_date);
   const [transactionDate, setTransactionDate] = useState(todaysDate);
-  
+
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [editInvoiceItems, setEditInvoiceItems] = useState(false);
-  const [selectedItems, setSelectedItems] = useState(false);
-
   const { enqueueSnackbar } = useSnackbar();
-
-  var i = 0;
-  //const [nerArr, setNerArr] = useState([]);
-
   const [nerArr, setNerArr] = useState({
     product_id: "",
     product_name: "",
@@ -327,14 +278,14 @@ const PurchaseEdit = () => {
 
   useEffect(() => {
     setNerArr((nerArr) =>
-      invoiceItemList.map((item) => 
+      invoiceItemList.map((item) =>
         item.purchase_item_qty > 0
           ? {
               product_id: item.purchase_item_cnct_id,
               product_name: item.purchase_item_name,
               primary_unit: item.purchase_item_unit,
               purchase_price: item.purchase_item_price,
-              tax: "",
+              tax: item.purchase_tax,
               balance_stock: "",
               hsn_code: item.purchase_item_code,
               hsn_desc: "",
@@ -353,7 +304,6 @@ const PurchaseEdit = () => {
     );
   }, [invoiceItemList]);
 
-  
   const handleChange2 = (item) => {
     setNerArr([
       {
@@ -379,7 +329,6 @@ const PurchaseEdit = () => {
     ]);
   };
 
-  console.log("nerarr : " , nerArr , productListInItems);
   const handleAddHsnCode = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
@@ -411,7 +360,7 @@ const PurchaseEdit = () => {
   const handleTaxIncluded = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-        productId === item.product_id
+        parseInt(productId) === parseInt(item.product_id)
           ? {
               ...item,
               tax: item.tax === "1" ? "0" : "1",
@@ -422,7 +371,6 @@ const PurchaseEdit = () => {
   };
 
   const handlePriceChange = (productId, e) => {
-    console.log(productId , e.target.value)
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.product_id
@@ -510,7 +458,7 @@ const PurchaseEdit = () => {
   const handleIncrease = (productId) => {
     setProductListInItems((productListInItems) =>
       productListInItems.map((item) =>
-      parseInt(productId) === parseInt(item.purchase_item_cnct_id)
+        parseInt(productId) === parseInt(item.purchase_item_cnct_id)
           ? {
               ...item,
               purchase_item_qty: item.purchase_item_qty
@@ -525,7 +473,7 @@ const PurchaseEdit = () => {
   const handleIncrease2 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-      parseInt(productId) === parseInt(item.product_id) && item.item_cat === 1
+        parseInt(productId) === parseInt(item.product_id) && item.item_cat === 1
           ? {
               ...item,
               item_qty: parseInt(item.item_qty) + 1,
@@ -536,10 +484,9 @@ const PurchaseEdit = () => {
   };
 
   const handleDecrease = (productId) => {
-   
     setProductListInItems((productListInItems) =>
       productListInItems.map((item) =>
-      parseInt(productId) === parseInt(item.purchase_item_cnct_id)
+        parseInt(productId) === parseInt(item.purchase_item_cnct_id)
           ? {
               ...item,
               purchase_item_qty: parseInt(item.purchase_item_qty) - 1,
@@ -552,7 +499,7 @@ const PurchaseEdit = () => {
   const handleDecrease2 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
-      parseInt(productId) === parseInt(item.product_id) &&
+        parseInt(productId) === parseInt(item.product_id) &&
         item.item_qty >= 1 &&
         item.item_cat === 1
           ? {
@@ -564,19 +511,15 @@ const PurchaseEdit = () => {
     );
   };
 
-  for (let i = 0; i < nerArr.length; i++) {
-    
-    if (parseInt(nerArr[i].item_qty) === 0) {
-      nerArr.pop(nerArr[i]);
-    }
-  }
+  useEffect(() => {
+    setNerArr((prevNerArr) => prevNerArr.filter((item) => item.item_qty !== 0));
+  }, [nerArr]);
 
   const [isGstBusiness, setIsGstBusiness] = useState(true);
   const handleBusinessGst = () => {
     setIsGstBusiness(isGstBusiness ? false : true);
   };
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const [invoiceItems, setInvoiceItems] = useState({
     in_serial_no: 0,
     in_items: "Ghee",
@@ -607,12 +550,12 @@ const PurchaseEdit = () => {
       in_total_amt: "",
       in_cat: "",
       in_b_stock: "",
-      //in_purchase_no: "",
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
         item.item_qty > 0
           ? {
+              in_tax: 0,
               in_id: item.product_id,
               in_items: item.product_name,
               in_hsn_sac: item.hsn_code,
@@ -637,12 +580,10 @@ const PurchaseEdit = () => {
                 : "amount",
               in_total_amt: "",
               in_cat: item.item_cat,
-              //in_purchase_no: item.item_purchase + item.item_qty,
             }
           : invoiceItems
       )
     );
-    setSelectedItems(true);
   };
 
   const handleContinue3 = () => {
@@ -660,12 +601,12 @@ const PurchaseEdit = () => {
       in_total_amt: "",
       in_cat: "",
       in_b_stock: "",
-      //in_purchase_no: "",
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
         parseInt(item.item_qty) > 0
           ? {
+              in_tax: item.tax,
               in_id: item.product_id,
               in_items: item.product_name,
               in_hsn_sac: item.hsn_code,
@@ -719,12 +660,10 @@ const PurchaseEdit = () => {
                     item.purchase_price / (item.igst / 100 + 1),
               in_total_amt: "",
               in_cat: item.item_cat,
-              //in_purchase_no: item.item_purchase + item.item_qty,
             }
           : invoiceItems
       )
     );
-    setSelectedItems(true);
   };
 
   const filteredInvoiceItems = [];
@@ -734,29 +673,24 @@ const PurchaseEdit = () => {
     }
   }
 
-  
-    const totalGrossValue = 
-
-    filteredInvoiceItems.length != 0 ?
-    filteredInvoiceItems
-    .map(
-      (item) =>
-        parseFloat(item.in_qty) *
-        (parseFloat(item.in_discount_price) +
-          parseFloat(item.in_gst_amt ? item.in_gst_amt : 0))
-    )
-    .reduce((acc, current) => {
-      return acc + current;
-    }, 0) : purchaseDataById.purchase_amt;
-  
-  
-
-  
+  const totalGrossValue =
+    filteredInvoiceItems.length != 0
+      ? filteredInvoiceItems
+          .map(
+            (item) =>
+              parseFloat(item.in_qty) *
+              (parseFloat(item.in_discount_price) +
+                parseFloat(item.in_gst_amt ? item.in_gst_amt : 0))
+          )
+          .reduce((acc, current) => {
+            return acc + current;
+          }, 0)
+      : purchaseDataById.purchase_amt;
 
   const [purchaseData, setPurchaseData] = useState({
-    sup_cnct_id: "",
     purchase_prefix: "",
     purchase_prefix_no: "",
+    sup_cnct_id: "",
     purchase_date: filteredDate,
     purchase_name: "",
     purchase_amt: "2500",
@@ -767,6 +701,9 @@ const PurchaseEdit = () => {
     purchase_desc: "",
     payment_out_prefix: "PaymentOut",
     payment_out_prefix_no: "",
+    purchase_payOut_Id: "",
+    purchase_id: "",
+    purchase_acc_id: "",
   });
 
   const total_amt = filteredInvoiceItems
@@ -792,6 +729,7 @@ const PurchaseEdit = () => {
     }
     setState({ ...state, [anchor]: open });
   };
+
   const list = (anchor) => (
     <Box sx={{ width: 450 }} role="presentation">
       {anchor === "edit" ? (
@@ -945,14 +883,13 @@ const PurchaseEdit = () => {
                             )}
                           </div>
                           {filteredItem.deleted === 1 ? <div> items </div> : ""}
-                          
-                          
+
                           {filteredItem.purchase_item_qty !== "null" ? (
                             <div>
                               {nerArr
                                 .filter(
                                   (code) =>
-                                  parseInt(code.product_id) ===
+                                    parseInt(code.product_id) ===
                                       parseInt(
                                         filteredItem.purchase_item_cnct_id
                                       ) &&
@@ -972,9 +909,7 @@ const PurchaseEdit = () => {
                                             defaultChecked
                                             color="success"
                                             onChange={() =>
-                                              handleTaxIncluded(
-                                                item.purchase_item_cnct_id
-                                              )
+                                              handleTaxIncluded(item.product_id)
                                             }
                                           />
                                         </Box>
@@ -987,9 +922,7 @@ const PurchaseEdit = () => {
                                             {...label}
                                             color="success"
                                             onChange={() =>
-                                              handleTaxIncluded(
-                                                item.product_id
-                                              )
+                                              handleTaxIncluded(item.product_id)
                                             }
                                           />
                                         </Box>
@@ -1067,9 +1000,7 @@ const PurchaseEdit = () => {
                                             readOnly: true,
                                           }}
                                           onClick={() => {
-                                            handleAddHsnCode(
-                                              item.product_id
-                                            );
+                                            handleAddHsnCode(item.product_id);
                                           }}
                                         />
 
@@ -1107,9 +1038,7 @@ const PurchaseEdit = () => {
                                             readOnly: true,
                                           }}
                                           onClick={() => {
-                                            handleAddGst(
-                                              item.product_id
-                                            );
+                                            handleAddGst(item.product_id);
                                           }}
                                         />
                                       </Box>
@@ -1146,21 +1075,6 @@ const PurchaseEdit = () => {
                                                 key={hsnItem.hsn_code}
                                                 className="flex card-sec"
                                                 onClick={() => {
-                                                  setHsnCode(hsnItem.hsn_code),
-                                                    setHsnValue1(
-                                                      hsnItem.hsn_desc
-                                                    ),
-                                                    setGstValue1(hsnItem.igst),
-                                                    setGstValue2(
-                                                      "( " +
-                                                        hsnItem.cgst +
-                                                        "% CGST + " +
-                                                        hsnItem.sgst +
-                                                        "% SGST/UT GST ; " +
-                                                        hsnItem.igst +
-                                                        "% IGST )"
-                                                    );
-
                                                   handleAddHsnCode(
                                                     item.product_id
                                                   );
@@ -1224,18 +1138,6 @@ const PurchaseEdit = () => {
                                                       id="gst_on_selected_item"
                                                       name="gst"
                                                       onChange={() => {
-                                                        setGstValue1(
-                                                          gstItem.label1
-                                                        ),
-                                                          setGstValue2(
-                                                            "( " +
-                                                              gstItem.label1 +
-                                                              "% IGST + " +
-                                                              gstItem.label2 +
-                                                              "% SGST/UT GST ; " +
-                                                              gstItem.label3 +
-                                                              "% CGST )"
-                                                          );
                                                         handleAddGst(
                                                           item.product_id
                                                         );
@@ -1292,16 +1194,11 @@ const PurchaseEdit = () => {
                                           <button
                                             onClick={(e) => {
                                               e.preventDefault(),
-                                                setGstValue1(customGst),
-                                                setGstValue2(
-                                                  custom_gst_details
+                                                handleCustomGstChange(
+                                                  item.product_id,
+                                                  customGst,
+                                                  customeCess ? customeCess : 0
                                                 );
-                                              setIsClicked2(false);
-                                              handleCustomGstChange(
-                                                item.product_id,
-                                                customGst,
-                                                customeCess ? customeCess : 0
-                                              );
                                             }}
                                           >
                                             Add Custome Gst
@@ -1331,9 +1228,6 @@ const PurchaseEdit = () => {
             className="flex justify-between p-3 px-5"
           >
             <button
-              onClick={() => {
-                setSelectedItems(true), setEditInvoiceItems(false);
-              }}
               className="text-blue-600  py-2 px-4 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
               style={{ border: "1px solid rgb(37, 99, 235)" }}
             >
@@ -1355,44 +1249,65 @@ const PurchaseEdit = () => {
     purchaseData.payment_out_prefix_no = parseInt(paymentOutPrefixNo) + 1;
   }
 
+  purchaseData.purchase_id = purchaseId;
   purchaseData.purchase_amt_paid = amountPaid;
   purchaseData.purchase_amt_due = totalGrossValue - parseInt(amountPaid);
-  purchaseData.purchase_amt_type = amtPayMethod;
 
-  purchaseData.purchase_amt = total_amt;
-  purchaseData.purchase_name = supData.sup_name;
-  purchaseData.sup_cnct_id = supData.sup_id;
+  (purchaseData.purchase_prefix = purchaseDataById.purchase_prefix),
+    (purchaseData.purchase_prefix_no = purchaseDataById.purchase_prefix_no),
+    (purchaseData.purchase_amt = totalGrossValue
+      ? totalGrossValue
+      : purchaseDataById.purchase_amt);
+  purchaseData.purchase_name = supplierData.sup_name;
+  purchaseData.sup_cnct_id = purchaseDataById.sup_cnct_id;
 
   purchaseData.invoiceItemsList = filteredInvoiceItems;
 
-  purchaseData.purchase_amt_type !== "unpaid"
+  amtPayMethod !== "unpaid"
     ? (purchaseData.purchase_desc = "PAYMENT OUT")
     : null;
 
   amountPaid === "0" ? (purchaseData.purchase_amt_type = "unpaid") : "";
-
-  console.log("purchaseData : " , purchaseData)
-
+  purchaseData.purchase_amt_type = amtPayMethod;
+  purchaseData.purchase_acc_id = accountId;
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      await axios.delete(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/deletePurchaseItems/${purchaseId}`
+      );
       await axios.post(
-        import.meta.env.VITE_BACKEND + "/api/purchase/addPurchase",
+        import.meta.env.VITE_BACKEND + "/api/purchase/updatePurchaseItems",
         purchaseData
       );
       await axios.put(
-        import.meta.env.VITE_BACKEND + "/api/purchase/updateProductStockQty",
+        import.meta.env.VITE_BACKEND + "/api/purchase/updatePurchaseModuleTran",
         purchaseData
       );
 
-      // changeChange();
-      // props.snack();
       navigate("/purchase");
     } catch (err) {
       console.log(err);
     }
   };
 
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      
+      filteredInvoiceItems.length > 0 &&
+      purchaseData.purchase_amt_paid >= 0 &&
+      purchaseData.purchase_amt_paid < purchaseData.purchase_amt
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [
+    filteredInvoiceItems,
+    purchaseData.purchase_amt_paid,
+  ]);
   return (
     <React.Fragment>
       <Drawer
@@ -1414,7 +1329,7 @@ const PurchaseEdit = () => {
               >
                 <IconArrowLeft />
               </Link>
-              <div className="text-md font-semibold">Create purchase</div>
+              <div className="text-md font-semibold">Edit purchase</div>
             </div>
             <div className="flex items-center font-semibold gap-8">
               <div className="flex items-center">
@@ -1422,15 +1337,22 @@ const PurchaseEdit = () => {
                 <Switch defaultChecked onChange={handleBusinessGst} />
               </div>
               <button
-                className="p-2 rounded text-green-600 hover:bg-green-600 hover:text-white"
+                className={
+                  submitDisabled === false
+                    ? " p-2 rounded text-green-600 hover:bg-green-600 hover:text-white"
+                    : " cursor-not-allowed text-slate-600  p-2 rounded"
+                }
                 style={{
-                  border: "1px solid #109E5B",
+                  border:
+                    submitDisabled === false
+                      ? "1px solid #109E5B"
+                      : "1px solid rgb(71, 85, 105)",
                   transition: "all 400ms ease-in-out",
                 }}
                 onClick={handleClick}
                 disabled={submitDisabled}
               >
-                Create purchase
+                Edit purchase
               </button>
             </div>
           </div>
@@ -1557,7 +1479,6 @@ const PurchaseEdit = () => {
                 <div>Action</div>
               </div>
               <div className="h-[37vh] overflow-y-scroll">
-                {console.log("filteredInvoiceItems : " , filteredInvoiceItems)}
                 <PurchaseTran filteredInvoiceItems={filteredInvoiceItems} />
               </div>
             </div>
@@ -1572,10 +1493,9 @@ const PurchaseEdit = () => {
               onClick={toggleDrawer("edit", true)}
             >
               <IconPlus className="w-5 h-5" />
-              Add Items from Inventory
+              Edit Items from Inventory
             </button>
             <div>
-              {console.log("amtPayMethod : " , amtPayMethod , purchaseDataById.purchase_amt_type)}
               <FormControl>
                 <RadioGroup
                   row
@@ -1603,9 +1523,8 @@ const PurchaseEdit = () => {
               </FormControl>
             </div>
 
-            {amtPayMethod !== "unpaid" ? (
+            {/* {amtPayMethod !== "unpaid" ? (
               <div className="flex gap-2 text-lg font-semibold text-slate-600">
-                
                 <div>
                   <input
                     type="text"
@@ -1614,8 +1533,34 @@ const PurchaseEdit = () => {
                     defaultValue={purchaseDataById.purchase_amt_paid}
                     onChange={(e) =>
                       setAmountPaid(
-                        e.target.value <= parseFloat(totalGrossValue) ? e.target.value : 0
+                        e.target.value <= parseFloat(totalGrossValue)
+                          ? e.target.value
+                          : 0
                       )
+                    }
+                  />
+                </div>
+                {payOutAmt}
+              </div>
+            ) : (
+              ""
+            )} */}
+
+            {amtPayMethod !== "unpaid" ? (
+              <div className="flex gap-2 text-lg font-semibold text-slate-600">
+                <div>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Amount Paid (₹)"
+                    className="border p-2 rounded-lg w-[90%] border-slate-400"
+                    onChange={(e) =>
+                      setAmountPaid(e.target.value > 0 ? e.target.value : 0)
+                    }
+                    helperText={
+                      parseFloat(amountPaid) > parseFloat(totalGrossValue)
+                        ? "Error"
+                        : ""
                     }
                   />
                 </div>
@@ -1628,14 +1573,19 @@ const PurchaseEdit = () => {
               <div>Balance Due :</div>
               <div>
                 ₹{" "}
-
-                { parseFloat(totalGrossValue).toFixed(2) -
+                {parseFloat(totalGrossValue).toFixed(2) -
                   parseInt(amountPaid ? amountPaid : 0)}
               </div>
             </div>
             <div className="flex gap-2 text-lg">
               <div className="font-semibold">Total Amount :</div>
-              <div>{purchaseDataById.purchase_amt}</div>
+              <div>
+                {parseInt(
+                  totalGrossValue
+                    ? totalGrossValue
+                    : purchaseDataById.purchase_amt
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -15,37 +15,32 @@ import { UserContext } from "../../../context/UserIdContext";
 
 const ProLeft = (props) => {
   const [skeleton, setSkeleton] = useState(true);
-  const { change, pId } = useContext(UserContext);
+  const { change, pId, accountId  } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [result2, setResult2] = useState([]);
   const [data, setData] = useState([]);
+  
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchProductData")
-      .then((response) => {
-        setResult(response.data);
-        setSkeleton(false);
-      });
-
-    axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTotalStockValue`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchTotalStockValue/${accountId}`)
       .then((response) => {
         setResult2(response.data);
+        setSkeleton(false);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/ser/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData/${accountId}`)
       .then((res) => {
         setData(res.data);
       });
   }, [change]);
 
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("recent");
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
   const [filter2, setFilter2] = useState("All");
   const [searchValue, setSearchValue] = useState("");
-  let sortedUsers = [...result];
+  let sortedUsers = [...result2];
 
   if (sortOption === "recent") {
     sortedUsers.sort((a, b) => b.product_id - a.product_id);
@@ -54,12 +49,22 @@ const ProLeft = (props) => {
   } else if (sortOption === "name") {
     sortedUsers.sort((a, b) => a.product_name.localeCompare(b.product_name));
   } else if (sortOption === "stockHighToLow") {
-    sortedUsers.sort((a, b) => b.balance_stock - a.balance_stock);
+    sortedUsers.sort((a, b) => b.balStock - a.balStock);
   } else if (sortOption === "stockLowToHigh") {
-    sortedUsers.sort((a, b) => a.balance_stock - b.balance_stock);
+    sortedUsers.sort((a, b) => a.balStock - b.balStock);
   }
 
   const location = useLocation();
+
+  const lowStock = result2.reduce(function (prev, current) {
+    return prev + +current.lowStockStatus;
+  }, 0);
+
+  const stockValue = result2.reduce(function (prev, current) {
+    return prev + +(current.balStock * current.sale_price);
+  }, 0);
+
+
   return (
     <div className="proleft">
       <div className="heading text-lg font-semibold">
@@ -71,7 +76,7 @@ const ProLeft = (props) => {
           }
         >
           Products
-          <p className=" text-sky-600 num font-semibold">{result.length}</p>
+          <p className=" text-sky-600 num font-semibold">{result2.length}</p>
         </div>
         <Link to="/services">
           <div
@@ -104,26 +109,23 @@ const ProLeft = (props) => {
             </button>
           </div>
         ) : (
-          result2.map((item, index) => (
-            <div className="flex gap-20">
-              <div className="total text-slate-400 text-lg font-semibold">
-                Total Stock Value :
-                <span className="text-black font-semibold">
-                  {item.stockValue ? item.stockValue.toFixed(2) : "0"}
-                </span>
-              </div>
-              <div className="low text-slate-400 text-lg font-semibold">
-                Low Stock Products :{" "}
-                <span className="text-red-600 font-semibold">
-                  {item.lowStockProducts ? item.lowStockProducts : "0"}
-                </span>
-              </div>
-              <button className="flex gap-1" onClick={props.add}>
-                <IconPlus className="w-5" />
-                Add Product
-              </button>
+          <div className="flex gap-20">
+            <div className="total text-slate-400 text-lg font-semibold">
+              Total Stock Value :
+              <span className="text-black font-semibold">
+                {stockValue}
+              </span>
             </div>
-          ))
+            <div className="low text-slate-400 text-lg font-semibold">
+              Low Stock Products :
+              <span className="text-red-600 font-semibold">{lowStock}</span>
+            </div>
+            <button className="flex gap-1" onClick={props.add}>
+
+              <IconPlus className="w-5" />
+              Add Product
+            </button>
+          </div>
         )}
       </div>
 
@@ -198,13 +200,13 @@ const ProLeft = (props) => {
               </div>
               <div className="w-[95px]">
                 <div className="text-slate-800 text-lg">
-                  {" "}
+                  
                   <Skeleton variant="rectangular" width={100} height={20} />
                 </div>
               </div>
               <div className="w-[70px]">
                 <div className="qty text-slate-800 text-lg">
-                  {" "}
+                 
                   <Skeleton variant="rectangular" width={60} height={20} />
                 </div>
               </div>
@@ -215,7 +217,7 @@ const ProLeft = (props) => {
 
             .filter((code) => {
               if (filter2 === "lowStock") {
-                return code.balance_stock <= code.low_stock;
+                return code.balStock <= code.low_stock;
               } else if (filter2 === "All") {
                 return true;
               }
@@ -226,7 +228,7 @@ const ProLeft = (props) => {
                 .startsWith(searchValue.toLowerCase())
             )
             .map((filteredItem, index) => (
-              <ProCard key={index} data={filteredItem} />
+              <ProCard key={index} data={filteredItem}  />
             ))
         )}
       </div>

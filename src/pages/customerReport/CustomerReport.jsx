@@ -9,12 +9,14 @@ import {
 import Navbar from "../../components/navbar/Navbar";
 import SideBar from "../../components/report/sideBar/SideBar";
 import CustTran from "../../components/report/custTran/CustTran";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useContext } from "react";
 import axios from "axios";
 import { ExportToExcel } from "../../components/report/excelDownload/ExcelDownload";
 import { Box, Drawer } from "@mui/material";
 import CustomerPDF from "../../components/report/customerPdf/CustomerPDF";
+import { UserContext } from "../../context/UserIdContext";
 const CustomerReport = () => {
+  const {accountId} = useContext(UserContext);
   const [state, setState] = useState({
     pdf: false,
   });
@@ -41,7 +43,7 @@ const CustomerReport = () => {
   year.setDate(year.getDate() - 365);
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/rep/fetchBoth")
+      .get(import.meta.env.VITE_BACKEND + `/api/rep/fetchBoth/${accountId}`)
       .then((res) => {
         setData(res.data);
       });
@@ -199,7 +201,7 @@ const CustomerReport = () => {
                 <div className="flex gap-10">
                   <div className="stat flex rounded-lg bg-red-300/50 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
-                      <div className="text-2xl font-semibold">₹ {pay}</div>
+                      <div className="text-2xl font-semibold">₹ {pay.toFixed(2)}</div>
                       <div className="text-red-800 font-semibold">You Gave</div>
                     </div>
                     <div>
@@ -208,7 +210,7 @@ const CustomerReport = () => {
                   </div>
                   <div className="stat flex rounded-lg bg-green-300/30 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
-                      <div className="text-2xl font-semibold">₹ {receive}</div>
+                      <div className="text-2xl font-semibold">₹ {receive.toFixed(2)}</div>
                       <div className="text-green-800 font-semibold">
                         You Got
                       </div>
@@ -220,7 +222,9 @@ const CustomerReport = () => {
                   <div className="stat flex rounded-lg bg-yellow-300/30 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
                       <div className="text-2xl font-semibold">
-                        ₹ {receive - pay}
+                        
+
+                        ₹ {(receive - pay).toFixed(2)}
                       </div>
                       <div className="text-yellow-800 font-semibold">
                         NET BALANCE

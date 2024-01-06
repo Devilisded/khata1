@@ -7,6 +7,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import "./pay.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
+import { IconX } from "@tabler/icons-react";
+
 const Pay = (props) => {
   const { userId, changeChange } = useContext(UserContext);
   const today = new Date();
@@ -16,60 +18,25 @@ const Pay = (props) => {
   const current_date = `${month}/${date}/${year}`;
   const todaysDate = dayjs(current_date);
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
-  const maxFileSize = 2000000;
-  const [file, setFile] = useState("File Name");
-  const [fileExists, setFileExists] = useState(false);
+  const maxFileSize = 20000;
+  const [file, setFile] = useState("");
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
-
-  const [custAmt, setCustAmt] = useState(0);
-  const [amtType, setAmtType] = useState("");
-  const [bal, setBal] = useState(null);
-  console.log("file : ", file);
-  useEffect(() => {
-    axios
-      .get(
-        import.meta.env.VITE_BACKEND + `/api/auth/fetchDataUsingId/${userId}`
-      )
-      .then((response) => {
-        setCustAmt(response.data[0].cust_amt);
-        setAmtType(response.data[0].amt_type);
-      });
-    axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchLastTran/${userId}`)
-      .then((response) => {
-        setBal(response.data[0].balance);
-      });
-  }, [userId]);
 
   const [values, setValues] = useState({
     tran_date: "",
     tran_pay: "",
     tran_description: "",
     cnct_id: userId,
-    balance: "",
   });
   const handleChange = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  const [error, setError] = useState(null);
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      if (amtType === "pay") {
-        if (bal === null) {
-          values.balance = custAmt + parseInt(values.tran_pay);
-        } else {
-          values.balance = bal + parseInt(values.tran_pay);
-        }
-      } else if (amtType === "receive") {
-        if (bal === null) {
-          values.balance = custAmt - parseInt(values.tran_pay);
-        } else {
-          values.balance = bal - parseInt(values.tran_pay);
-        }
-      }
-
       const formData = new FormData();
       values.tran_date = filteredDate;
       formData.append("image", file);
@@ -77,26 +44,71 @@ const Pay = (props) => {
       formData.append("tran_description", values.tran_description);
       formData.append("cnct_id", values.cnct_id);
       formData.append("tran_date", values.tran_date);
-      formData.append("balance", values.balance);
       await axios.post(
         import.meta.env.VITE_BACKEND + "/api/auth/sendTran",
         formData
       );
       changeChange();
-      props.snack();
+      //props.snack();
     } catch (err) {
       console.log(err);
     }
   };
 
+  const [formatError, setFormatError] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
-    if (values.tran_pay !== "") {
+    if (
+      values.tran_pay !== "" &&
+      values.tran_pay > 0 &&
+      error === null &&
+      fileSizeExceeded === false &&
+      formatError === false
+    ) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
-  }, [values.tran_pay]);
+  }, [values.tran_pay, error, fileSizeExceeded, formatError]);
+
+  const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
+
+  const handleImage = (event) => {
+    setFile(event[0]);
+    var pattern = /image-*/;
+    if (!event[0].type.match(pattern)) {
+      setFormatError(true);
+      setFileSizeExceeded(false);
+    } else if (event[0].size > maxFileSize) {
+      setFileSizeExceeded(true);
+      setFormatError(false);
+      return;
+    } else {
+      setFileSizeExceeded(false);
+      setFormatError(false);
+    }
+  };
+
+  //const [dragActive, setDragActive] = useState(false);
+  const handleDrag = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // if (e.type === "dragenter" || e.type === "dragover") {
+    //   setDragActive(true);
+    // } else if (e.type === "dragleave") {
+    //   setDragActive(false);
+    // }
+  };
+
+  const handleDrop = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    //setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      console.log("e.dataTransfer.files : ", e.dataTransfer.files);
+      handleImage(e.dataTransfer.files);
+    }
+  };
 
   return (
     <form className="block overflow-hidden" method="post">
@@ -122,17 +134,16 @@ const Pay = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="tran_pay"
-                //onChange={handleChange}
+                inputProps={{ maxLength: 10 }}
                 value={values.tran_pay}
-                
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    tran_pay: e.target.value.replace(/\D/g, ""),
-                    //tran_pay: e.target.value,
+
+                    //tran_pay: e.target.value.replace(/^\.|[^0-9.]/g, "").replace(/(\.\d*\.)/, "$1").replace(/^(\d*\.\d{0,2}).*$/, "$1")
+                    tran_pay: e.target.value.replace(numberValidation, "$1"),
                   })
                 }
-                
                 required
               />
             </Box>
@@ -165,6 +176,9 @@ const Pay = (props) => {
                     format="LL"
                     className="w-full"
                     maxDate={todaysDate}
+                    onError={(newError) => {
+                      setError(newError);
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -179,20 +193,15 @@ const Pay = (props) => {
                 className="hidden sr-only w-full"
                 accept="image/x-png,image/gif,image/jpeg"
                 onChange={(event) => {
-                  setFile(event.target.files[0]);
-                  setFileExists(true);
-                  const get_file_size = event.target.files[0];
-
-                  if (get_file_size.size > maxFileSize) {
-                    setFileSizeExceeded(true);
-                    return;
-                  } else {
-                    setFileSizeExceeded(false);
-                  }
+                  handleImage(event.target.files);
                 }}
               />
 
               <label
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
                 htmlFor="file-1"
                 id="file-1"
                 className="relative flex  items-center justify-center rounded-md text-center border border-dashed border-[#b6b6b6] py-8 px-16"
@@ -213,26 +222,36 @@ const Pay = (props) => {
               </label>
             </div>
 
-            {fileExists ? (
+            {file !== "" && file !== undefined ? (
               <div className=" rounded-md bg-[#F5F7FB] py-4 px-8">
                 <div className="flex items-center justify-between">
                   <span className="truncate pr-3 text-base font-medium text-[#07074D]">
                     {file.name}
                   </span>
+                  <button
+                    class="text-[#07074D]"
+                    onClick={(e) => {
+                      e.preventDefault(), setFile("");
+                      setFileSizeExceeded(false);
+                      setFormatError(false);
+                    }}
+                  >
+                    <IconX className= " static h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ) : (
               <div></div>
             )}
 
+
             {fileSizeExceeded && (
-              <>
-                <p className="error">
-                  File size exceeded the limit of
-                  {maxFileSize / 1000000} MB
-                </p>
-              </>
+              <p className="error">
+                File size exceeded the limit of
+                {maxFileSize / 1000000} MB
+              </p>
             )}
+            {formatError && <p className="error">Invalid Format</p>}
           </div>
         </div>
       </div>

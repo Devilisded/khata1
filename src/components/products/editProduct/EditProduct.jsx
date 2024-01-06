@@ -4,11 +4,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IconX, IconTrash, IconAlertOctagonFilled } from "@tabler/icons-react";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-  DatePicker,
-  LocalizationProvider,
-  yearCalendarClasses,
-} from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -119,18 +115,21 @@ const EditProduct = (props) => {
   };
 
   const [result, setResult] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
-    .then((response) => {
-      setResult(response.data);
-    });
-
   const [result2, setResult2] = useState([]);
-  axios
-    .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
-    .then((response) => {
-      setResult2(response.data);
-    });
+
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
+      .then((response) => {
+        setResult(response.data);
+      });
+
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .then((response) => {
+        setResult2(response.data);
+      });
+  }, []);
 
   const { pId, change, changeChange, changeProduct } = useContext(UserContext);
   const [data, setData] = useState({
@@ -181,6 +180,8 @@ const EditProduct = (props) => {
           conversion: response.data[0].conversion,
           cgst: response.data[0].cgst,
         });
+        setFile(response.data[0].product_image);
+        setSecondaryUnitValue(response.data[0].secondary_unit);
         setIsOn(response.data[0].secondary_unit !== "" ? true : false);
         setIsOn2(response.data[0].tax === "1" ? true : false);
       });
@@ -201,10 +202,6 @@ const EditProduct = (props) => {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const handleChange = (e) => {
-    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const [primaryUnitValue, setPrimaryUnitValue] = useState(data.primary_unit);
@@ -270,15 +267,13 @@ const EditProduct = (props) => {
   };
 
   const [searchValue, setSearchValue] = useState("0");
-
-  const [customGst, setcustomGst] = useState("");
-  const [customeCess, setCustomeCess] = useState("");
-
   const [fileSizeExceeded, setFileSizeExceeded] = React.useState(false);
   const maxFileSize = 20000;
   const [file, setFile] = useState("File Name");
   const [fileExists, setFileExists] = useState(false);
 
+  const [formatError, setFormatError] = useState(false);
+  const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   useEffect(() => {
     if (
@@ -287,13 +282,56 @@ const EditProduct = (props) => {
       data.sale_price > 0 &&
       data.purchase_price !== null &&
       data.purchase_price > 0 &&
-      data.low_stock < data.opening_stock
+      data.low_stock < data.opening_stock &&
+      error === null &&
+      fileSizeExceeded === false &&
+      formatError === false
     ) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
-  }, [data.product_name, data.sale_price, data.purchase_price, data.low_stock]);
+  }, [
+    data.product_name,
+    data.sale_price,
+    data.purchase_price,
+    data.low_stock,
+    error,
+    fileSizeExceeded,
+    formatError,
+  ]);
+
+  const handleImage = (event) => {
+    setFile(event[0]);
+    var pattern = /image-*/;
+    if (!event[0].type.match(pattern)) {
+      setFormatError(true);
+      setFileSizeExceeded(false);
+    } else if (event[0].size > maxFileSize) {
+      setFileSizeExceeded(true);
+      setFormatError(false);
+      return;
+    } else {
+      setFileSizeExceeded(false);
+      setFormatError(false);
+    }
+  };
+
+  const handleDrag = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      console.log("e.dataTransfer.files : ", e.dataTransfer.files);
+      handleImage(e.dataTransfer.files);
+    }
+  };
+
+  const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
 
   return (
     <div>
@@ -323,9 +361,18 @@ const EditProduct = (props) => {
                     className="w-full"
                     size="small"
                     required
-                    onChange={handleChange}
                     name="product_name"
                     value={data.product_name}
+                    inputProps={{ maxLength: 20 }}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        product_name: e.target.value.replace(
+                          /[^A-Z a-z.]/g,
+                          ""
+                        ),
+                      })
+                    }
                   />
                 </Box>
 
@@ -337,19 +384,14 @@ const EditProduct = (props) => {
                       className="hidden sr-only w-full"
                       accept="image/x-png,image/gif,image/jpeg"
                       onChange={(event) => {
-                        setFile(event.target.files[0]);
-                        setFileExists(true);
-                        const get_file_size = event.target.files[0];
-                        console.log(get_file_size);
-                        if (get_file_size.size > maxFileSize) {
-                          setFileSizeExceeded(true);
-                          return;
-                        } else {
-                          setFileSizeExceeded(false);
-                        }
+                        handleImage(event.target.files);
                       }}
                     />
                     <label
+                      onDragEnter={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDragOver={handleDrag}
+                      onDrop={handleDrop}
                       htmlFor="file-1"
                       id="file-1"
                       className="relative flex  items-center justify-center rounded-md text-center border border-dashed border-[#e0e0e0] py-8 px-16"
@@ -367,21 +409,21 @@ const EditProduct = (props) => {
                       </div>
                     </label>
                   </div>
-                  {fileExists ? (
+                  {file !== "" && file !== undefined && file !== null ? (
                     <div class=" rounded-md bg-[#F5F7FB] py-4 px-8">
                       <div class="flex items-center justify-between">
                         <span class="truncate pr-3 text-base font-medium text-[#07074D]">
-                          {file.name}
+                          {file.name ? file.name : file}
                         </span>
                         <button
                           class="text-[#07074D]"
                           onClick={(e) => {
                             e.preventDefault(), setFile("");
-                            setFileExists(false);
+                            setFormatError(false);
                             setFileSizeExceeded(false);
                           }}
                         >
-                          <IconX />
+                          <IconX className="static h-4 w-4" />
                         </button>
                       </div>
                     </div>
@@ -389,20 +431,20 @@ const EditProduct = (props) => {
                     <div></div>
                   )}
                   {fileSizeExceeded && (
-                    <>
-                      <p className="error">
-                        File size exceeded the limit of {maxFileSize / 1000} KB
-                      </p>
-                    </>
+                    <p className="error">
+                      File size exceeded the limit of {maxFileSize / 1000} KB
+                    </p>
                   )}
+                  {formatError && <p className="error">Invalid Format</p>}
                 </div>
 
                 <Autocomplete
                   options={result.map((item) => item.unit_code)}
                   id="disable-close-on-select"
-                  className="box-sec margin-bottom-zero "
+                  className="box-sec margin-bottom-zero"
                   value={data.primary_unit}
                   onChange={(event, newValue) => {
+                    setSecondaryUnitValue("");
                     setPrimaryUnitValue(newValue);
                     setFlag1(true);
                   }}
@@ -420,7 +462,6 @@ const EditProduct = (props) => {
 
                 {isOn ? (
                   <Box className="box-sec margin-top-zero margin-bottom-zero">
-                    {""}
                     <label className="pl-3">Add Secondary Unit</label>
                     <Switch
                       {...label}
@@ -444,7 +485,7 @@ const EditProduct = (props) => {
                   <Box className="box-sec margin-top-zero">
                     <Autocomplete
                       options={result.map((item) => item.unit_code)}
-                      value={data.secondary_unit}
+                      value={secondaryUnitValue}
                       id="disable-close-on-select"
                       className="w-full sec-1 mt-0 pl-3 pb-3"
                       onChange={(event, newValue) => {
@@ -469,9 +510,18 @@ const EditProduct = (props) => {
                         label="Conversion"
                         className="sec-2 w-full pr-3 pb-3"
                         size="small"
-                        onChange={handleChange}
                         name="conversion"
                         value={data.conversion}
+                        inputProps={{ maxLength: 10 }}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            conversion: e.target.value.replace(
+                              numberValidation,
+                              "$1"
+                            ),
+                          })
+                        }
                       />
                     </div>
                   </Box>
@@ -486,9 +536,18 @@ const EditProduct = (props) => {
                     label="Sale Price"
                     className="sec-1 w-full"
                     size="small"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        sale_price: e.target.value.replace(
+                          numberValidation,
+                          "$1"
+                        ),
+                      })
+                    }
+                    inputProps={{ maxLength: 10 }}
+                    value={data.sale_price}
                     name="sale_price"
-                    value={parseInt(data.sale_price)}
                   />
 
                   <TextField
@@ -497,10 +556,18 @@ const EditProduct = (props) => {
                     label="Purchase Price"
                     className="sec-2 w-full"
                     size="small"
-                    onChange={handleChange}
                     name="purchase_price"
-                    value={parseInt(data.purchase_price)}
-                    //value={2}
+                    value={data.purchase_price}
+                    inputProps={{ maxLength: 10 }}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        purchase_price: e.target.value.replace(
+                          numberValidation,
+                          "$1"
+                        ),
+                      })
+                    }
                   />
                 </Box>
 
@@ -535,9 +602,15 @@ const EditProduct = (props) => {
                     label="Opening stock"
                     className="sec-1 w-full"
                     size="small"
-                    onChange={handleChange}
                     name="opening_stock"
                     value={data.opening_stock}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        opening_stock: e.target.value.replace(/\D/g, ""),
+                      })
+                    }
+                    inputProps={{ maxLength: 5 }}
                   />
 
                   <TextField
@@ -546,7 +619,13 @@ const EditProduct = (props) => {
                     label="Low stock"
                     className="sec-2 w-full"
                     size="small"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        low_stock: e.target.value.replace(/\D/g, ""),
+                      })
+                    }
+                    inputProps={{ maxLength: 5 }}
                     name="low_stock"
                     value={data.low_stock}
                   />
@@ -564,6 +643,9 @@ const EditProduct = (props) => {
                         maxDate={todaysDate}
                         onChange={(newValue) => {
                           setTransactionDate(newValue), setFlag(true);
+                        }}
+                        onError={(newError) => {
+                          setSubmitDisabled(true), setError(newError);
                         }}
                       />
                     </DemoContainer>
@@ -639,44 +721,53 @@ const EditProduct = (props) => {
                         }}
                       />
 
-                      {result2
-                        .filter(
-                          (code) =>
-                            code.hsn_code.toString().startsWith(searchValue) ||
-                            code.hsn_desc.startsWith(searchValue)
-                        )
-                        .map((filteredItem) => (
-                          <div
-                            className="flex card-sec"
-                            onClick={() => {
-                              console.log(filteredItem.hsn_code);
+                      {searchValue !== null &&
+                        (searchValue !== "") === true &&
+                        result2
+                          .filter(
+                            (code) =>
+                              code.hsn_code
+                                .toString()
+                                .startsWith(searchValue) ||
+                              code.hsn_desc
+                                .toString()
+                                .toLowerCase()
+                                .startsWith(
+                                  searchValue.toString().toLowerCase()
+                                )
+                          )
+                          .map((filteredItem) => (
+                            <div
+                              className="flex card-sec"
+                              onClick={() => {
+                                console.log(filteredItem.hsn_code);
 
-                              setIsClicked(false);
-                              setSearchValue("0");
-                              setCustomeCess(0);
-                              setData({
-                                ...data,
-                                igst: filteredItem.igst,
-                                cgst: filteredItem.cgst,
-                                sgst: filteredItem.sgst,
-                                hsn_code: filteredItem.hsn_code,
-                                hsn_desc: filteredItem.hsn_desc,
-                              });
-                            }}
-                          >
-                            <div className="gst-card-text">
-                              <div className="flex gap-6 pb-4">
-                                <h2 className=" rounded bg-slate-300 px-6 py-1 ">
-                                  {filteredItem.hsn_code}
-                                </h2>
-                                <h2 className=" rounded bg-slate-300 px-4 py-1 ">
-                                  {filteredItem.igst + " GST %"}
-                                </h2>
+                                setIsClicked(false);
+                                setSearchValue("0");
+                                //setCustomeCess(0);
+                                setData({
+                                  ...data,
+                                  igst: filteredItem.igst,
+                                  cgst: filteredItem.cgst,
+                                  sgst: filteredItem.sgst,
+                                  hsn_code: filteredItem.hsn_code,
+                                  hsn_desc: filteredItem.hsn_desc,
+                                });
+                              }}
+                            >
+                              <div className="gst-card-text">
+                                <div className="flex gap-6 pb-4">
+                                  <h2 className=" rounded bg-slate-300 px-6 py-1 ">
+                                    {filteredItem.hsn_code}
+                                  </h2>
+                                  <h2 className=" rounded bg-slate-300 px-4 py-1 ">
+                                    {filteredItem.igst + " GST %"}
+                                  </h2>
+                                </div>
+                                <p>{filteredItem.hsn_desc}</p>
                               </div>
-                              <p>{filteredItem.hsn_desc}</p>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                     </>
                   ) : (
                     <span className=" m-0"></span>
@@ -710,7 +801,7 @@ const EditProduct = (props) => {
                                   name="gst"
                                   onChange={() => {
                                     setIsClicked2(false);
-                                    setCustomeCess(0);
+                                    //setCustomeCess(0);
                                     setData({
                                       ...data,
                                       igst: item.label1,
@@ -734,8 +825,22 @@ const EditProduct = (props) => {
                         className="sec-1 w-full"
                         size="small"
                         required
+                        inputProps={{ maxLength: 10 }}
+                        value={data.igst}
                         onChange={(e) => {
-                          setcustomGst(e.target.value);
+                          setData({
+                            ...data,
+                            igst: e.target.value.replace(
+                              numberValidation,
+                              "$1"
+                            ),
+                            cgst:
+                              e.target.value.replace(numberValidation, "$1") /
+                              2,
+                            sgst:
+                              e.target.value.replace(numberValidation, "$1") /
+                              2,
+                          });
                         }}
                       />
                       <TextField
@@ -745,26 +850,18 @@ const EditProduct = (props) => {
                         className="sec-2 w-full"
                         size="small"
                         required
+                        inputProps={{ maxLength: 10 }}
+                        value={data.cess}
                         onChange={(e) => {
-                          setCustomeCess(e.target.value);
-                        }}
-                      />
-                    </Box>
-                    <Box className="box-sec">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault(), setIsClicked2(false);
                           setData({
                             ...data,
-                            igst: customGst,
-                            cgst: customGst / 2,
-                            sgst: customGst / 2,
-                            cess: customeCess,
+                            cess: e.target.value.replace(
+                              numberValidation,
+                              "$1"
+                            ),
                           });
                         }}
-                      >
-                        Add Custome Gst
-                      </button>
+                      />
                     </Box>
                   </>
                 ) : (

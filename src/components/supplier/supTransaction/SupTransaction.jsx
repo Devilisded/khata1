@@ -45,16 +45,17 @@ const SupTransaction = (props) => {
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
         <div className="text-sm text-slate-600">
-          Balance : {props.totalBalance}
+          Balance : {props.totalBalance.toFixed(2)}
         </div>
       </div>
       <div className="flex gap-56 mr-36">
+
         <div className="text-red-600">
-          {props.data.sup_tran_pay ? "₹ " + props.data.sup_tran_pay : "-"}
+          {props.data.sup_tran_pay !== null ? "₹ " + parseFloat(props.data.sup_tran_pay).toFixed(2) : "-"}
         </div>
         <div className="text-green-600">
-          {props.data.sup_tran_receive
-            ? "₹ " + props.data.sup_tran_receive
+          {props.data.sup_tran_receive !== null
+            ? "₹ " + parseFloat(props.data.sup_tran_receive).toFixed(2)
             : "-"}
         </div>
       </div>

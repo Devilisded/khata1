@@ -5,7 +5,7 @@ import "./serright.scss";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const SerRight = (props) => {
-  const { serId, change } = useContext(UserContext);
+  const { serId, change} = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [data, setData] = useState([]);
 
@@ -58,7 +58,8 @@ const SerRight = (props) => {
           <div className="grItems">
             <div className="flex flex-col items-center">
               <div className="font-semibold text-lg text-slate-800">
-                {item.ser_igst !== null ? "GST@" + item.ser_igst + "%" : "-"}
+                {item.ser_igst > 0 && item.ser_cess > 0 ? item.ser_igst + "%" + " +" + item.ser_cess + "%" : item.ser_igst> 0 ? "GST@ " + item.ser_igst + "%" : "-"}
+                
               </div>
               <div className="text-xs text-slate-600">GST %</div>
             </div>

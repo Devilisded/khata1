@@ -7,27 +7,33 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 
-
 const PurLeft = () => {
-
-  const { change } = useContext(UserContext);
+  const { change, accountId, purchaseId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios.get(import.meta.env.VITE_BACKEND + "/api/purchase/fetchData").then((response) => {
-      setResult(response.data);
-    });
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/purchase/fetchData/${accountId}`)
+      .then((response) => {
+        setResult(response.data);
+      });
   }, [change]);
 
   const total_amt = result.reduce((acc, current) => {
     return acc + +current.purchase_amt;
   }, 0);
 
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("recent");
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
+
   const [filter2, setFilter2] = useState("All");
+  const handleChange2 = (e) => {
+    setFilter2(e.target.value);
+  };
+
   const [searchValue, setSearchValue] = useState("");
   let sortedUsers = [...result];
 
@@ -39,15 +45,40 @@ const PurLeft = () => {
     sortedUsers.sort((a, b) => a.purchase_name.localeCompare(b.purchase_name));
   }
 
+  // const totalAmtPaid = tran
+  //   .filter(
+  //     (filteredItem) =>
+  //       parseInt(filteredItem.purchase_pay_out_id) ===
+  //       parseInt(purchaseDataById.purchase_id)
+  //   )
+  //   .reduce(function (prev, current) {
+  //     return prev + +current.purchase_amt_paid;
+  //   }, 0);
+
+  const [totalAmtPaid, setTotalAmtPaid] = useState(0);
+  const t = (id) => {
+    console.log("id : ", id);
+    setTotalAmtPaid(
+      result
+        .filter(
+          (filteredItem) =>
+            parseInt(filteredItem.purchase_pay_out_id) === parseInt(id)
+        )
+        .reduce(function (prev, current) {
+          return prev + +current.purchase_amt_paid;
+        }, 0)
+    );
+  };
+  console.log("totalAmtPaid : ", totalAmtPaid);
   return (
     <div className="left bg-white shadow-lg w-full flex flex-col h-full">
       <div className="heading text-xl font-semibold">
         Purchase
-        <p className=" text-sky-600 num font-semibold">5</p>
+        <p className=" text-sky-600 num font-semibold">{result.length}</p>
       </div>
       <div className="flex justify-between p-5 border-b border-slate-300">
         <div className="give text-gray-500 flex gap-1 items-center">
-          Sales :<span className="text-gray-700 font-bold">₹ 20000</span>
+          Purchase :<span className="text-gray-700 font-bold">₹ {total_amt.toFixed(2)}</span>
           <IconArrowDownLeft className="text-green-600" />
         </div>
         <Link to="/purchaseForm">
@@ -69,7 +100,7 @@ const PurLeft = () => {
           <input
             type="text"
             className="focus:outline-none p-1 w-56"
-            placeholder="Name Or Phone Number"
+            placeholder="Name Or Invoice Number"
             onChange={(e) => {
               setSearchValue(e.target.value);
             }}
@@ -104,11 +135,15 @@ const PurLeft = () => {
               labelId="demo-select-small-label"
               id="demo-select-small"
               label="Filter By"
+              onChange={handleChange2}
             >
               <MenuItem value=""></MenuItem>
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="unpaid">Unpaid</MenuItem>
-              <MenuItem value="partial">Partially Paid</MenuItem>
+              <MenuItem value="pur">Purchase</MenuItem>
+              <MenuItem value="payOut">Paymenet Out</MenuItem>
+              <MenuItem value="payRe">Paymenet Return</MenuItem>
+              <MenuItem value="un">Unpaid</MenuItem>
+              <MenuItem value="pp">Partially paid</MenuItem>
               <MenuItem value="full">Fully Paid</MenuItem>
             </Select>
           </FormControl>
@@ -120,22 +155,56 @@ const PurLeft = () => {
       </div>
       <div className="cards2">
         {sortedUsers
-          .filter((code) =>
-            code.purchase_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          .filter(
+            (code) =>
+              code.purchase_prefix_no.toString().startsWith(searchValue) ||
+              code.purchase_name
+                .toLowerCase()
+                .startsWith(searchValue.toLowerCase())
           )
           .filter((code) => {
-            if (filter2 === "unpaid") {
-              return code.purchase_amt_due === code.purchase_amt;
-            } else if (filter2 === "partial") {
-              return code.purchase_amt_due > "0" && code.purchase_amt_due < code.purchase_amt;
-            } else if (filter2 === "full") {
-              return code.purchase_amt_due === "0";
+            if (filter2 === "pur") {
+              return (
+                code.purchase_pay_out_id === null &&
+                code.purchase_re_id === null
+              );
+            } else if (filter2 === "payOut") {
+              return code.purchase_pay_out_id !== null;
+            } else if (filter2 === "payRe") {
+              return code.purchase_re_id !== null;
             } else if (filter2 === "All") {
               return true;
+            } else if (filter2 === "pp") {
+              () => t(code.purchase_id);
+              console.log(
+                code.purchase_pay_out_id,
+                code.purchase_re_id,
+                code.purchase_amt,
+                totalAmtPaid
+              );
+              return (
+                code.purchase_pay_out_id === null &&
+                code.purchase_re_id === null &&
+                totalAmtPaid < parseFloat(code.purchase_amt)
+              );
+            } else if (filter2 === "full") {
+              () => t(code.purchase_id);
+              console.log(
+                code.purchase_pay_out_id,
+                code.purchase_re_id,
+                code.purchase_amt,
+                totalAmtPaid
+              );
+              return (
+                code.purchase_pay_out_id === null &&
+                code.purchase_re_id === null &&
+                totalAmtPaid === parseFloat(code.purchase_amt)
+              );
             }
           })
           .map((filteredItem, index) => (
             <PurTran
+              allTran={result}
               key={index}
               result={tran}
               //click={props.click}

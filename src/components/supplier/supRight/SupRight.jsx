@@ -12,9 +12,8 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 
 const SupRight = (props) => {
-  const { supId, change } = useContext(UserContext);
+  const { supId, change, parties, accountId } = useContext(UserContext);
   const [result, setResult] = useState([]);
-  const [supAmt, setSupAmt] = useState([]);
   const [supAmtType, setSupAmtType] = useState([]);
 
   useEffect(() => {
@@ -23,14 +22,13 @@ const SupRight = (props) => {
       .then((response) => {
         setResult(response.data);
       });
-      axios
+    axios
       .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${supId}`)
       .then((response) => {
-        setSupAmt(response.data[0].sup_amt);
         setSupAmtType(response.data[0].sup_amt_type);
       });
   }, [supId, change]);
-  console.log("result : " , result);
+
   return (
     <div className="supright">
       <div className="customer">
@@ -64,13 +62,15 @@ const SupRight = (props) => {
           <div className="get">You'll Receive</div>
         </div>
       </div>
-      
+
       <div className="transactions">
         {result.length > 0 ? (
           result.map((item, index) => {
             if (supAmtType === "receive") {
               const sum = result
-                .filter((filteredItem) => filteredItem.tran_id <= item.tran_id)
+                .filter(
+                  (filteredItem) => filteredItem.sup_tran_id <= item.sup_tran_id
+                )
                 .reduce(function (prev, current) {
                   if (current.sup_tran_pay) {
                     return prev + +current.sup_tran_pay;
@@ -81,33 +81,35 @@ const SupRight = (props) => {
               return (
                 <SupTransaction
                   key={index}
-                  transactions={item}
+                  data={item}
                   editPay={props.editPay}
                   editReceive={props.editReceive}
                   totalBalance={sum}
                 />
               );
             } else {
-            const sum = result
-            .filter((filteredItem) => filteredItem.sup_tran_id <= item.sup_tran_id )
-            .reduce(function (prev , current) {
-              if (current.sup_tran_pay) {
-              return prev+ +current.sup_tran_pay;
-            } else {
-              return prev- +current.sup_tran_receive;
+              const sum = result
+                .filter(
+                  (filteredItem) => filteredItem.sup_tran_id <= item.sup_tran_id
+                )
+                .reduce(function (prev, current) {
+                  if (current.sup_tran_pay) {
+                    return prev + +current.sup_tran_pay;
+                  } else {
+                    return prev - +current.sup_tran_receive;
+                  }
+                }, 0);
+              return (
+                <SupTransaction
+                  data={item}
+                  key={index}
+                  editPay={props.editPay}
+                  editReceive={props.editReceive}
+                  totalBalance={sum}
+                />
+              );
             }
-          } , 0); return (
-            
-            <SupTransaction
-            data={item}
-            key={index}
-            editPay={props.editPay}
-            editReceive={props.editReceive}
-            totalBalance = {sum}
-            />
-          )
-            }
-        })
+          })
         ) : (
           <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">
             <div>
@@ -117,14 +119,31 @@ const SupRight = (props) => {
           </div>
         )}
       </div>
-      <div className="btn shadow-lg">
-        <button className="pay text-red-600" onClick={props.pay}>
-          Pay ₹
-        </button>
-        <button className="receive text-green-600" onClick={props.receive}>
-          Receive ₹
-        </button>
-      </div>
+      {parties === 2 || parties === 3 ? (
+        <div className="btn shadow-lg">
+          <button className="pay text-red-600" onClick={props.pay}>
+            Pay ₹
+          </button>
+          <button className="receive text-green-600 " onClick={props.receive}>
+            Receive ₹
+          </button>
+        </div>
+      ) : (
+        <div className="btn shadow-lg  text-slate-600">
+          <button
+            className=" w-full cursor-not-allowed text-slate-600 bg-slate-200 p-3 rounded-[5px]"
+            disabled
+          >
+            Pay ₹
+          </button>
+          <button
+            className="w-full cursor-not-allowed text-slate-600 bg-slate-200 p-3 rounded-[5px]"
+            disabled
+          >
+            Receive ₹
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -16,11 +16,9 @@ import axios from "axios";
 import { useSnackbar } from "notistack";
 
 const PaymentIn = (props) => {
-  const {change, changeChange, saleId } = useContext(UserContext);
-  const [salesPrefixData, setSalesPrefixData] = useState([]);
-  
+  const {change, changeChange, saleId, accountId } = useContext(UserContext);
   const [defaultPaymentPrefixNo, setDefaultPaymentPrefixNo] = useState(0);
-
+  const [paymentInData , setPaymentInData] = useState([]);
   
   const [saleData, setSaleData] = useState({
     sale_name : "",
@@ -35,7 +33,7 @@ const PaymentIn = (props) => {
 
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${saleId}`)
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataByIdAndPaymentInId/${saleId}`)
       .then((response) => {
         setSaleData({
           ...saleData,
@@ -50,16 +48,16 @@ const PaymentIn = (props) => {
           sale_id: response.data[0].sale_id,
           sale_amt_paid: response.data[0].sale_amt_paid,
         });
+        setPaymentInData(response.data)
       });
       axios
-      .get(import.meta.env.VITE_BACKEND + "/api/sale/fetchPaymentPrefixData")
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchPaymentPrefixData/${accountId}`)
       .then((response) => {
-        setSalesPrefixData(response.data);
         setDefaultPaymentPrefixNo(response.data[0].sale_payment_in_prefix_no);
       });
   }, [change]);
 
-  console.log("saleData : " , saleData)
+  
   
 
   const [searchValue, setSearchValue] = useState("");
@@ -75,43 +73,35 @@ const PaymentIn = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [addPrefix, setAddPrefix] = useState(false);
-  const [prefixValue, setPrefixValue] = useState("");
-  const [temp, setTemp] = useState("");
-
-  const [prefixSelected, setprefixSelected] = useState(true);
-  const prefixSelectorHandler = () => {
-    setprefixSelected(!prefixSelected);
-  };
-
-  
- 
   const { enqueueSnackbar } = useSnackbar();
   const handleClickVariant = (variant, anchor1, msg) => {
     enqueueSnackbar(msg, { variant });
   };
 
   const [prefixNo, setPrefixNo] = useState(1);
-  useEffect(() => {
-    salesPrefixData
-      .filter((code) => code.sale_payment_in_prefix === prefixValue)
-      .map(
-        (item) => setPrefixNo(item.sale_payment_in_prefix_no + 1)
-        //setPrefixValue("Expenses")
-      );
-  }, [addPrefix]);
 
+  useEffect(() => {
+    if (defaultPaymentPrefixNo === null) {
+      setPrefixNo(1)
+    } else {
+      setPrefixNo(parseInt(defaultPaymentPrefixNo) + 1)
+    }
+  }, [defaultPaymentPrefixNo]);
+
+  
   const [amtIn , SetAmtIn] = useState(0);
   const [payMode, setPayMode] = useState("cash");
 
+  const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
-  //   useEffect(() => {
-  //     if (sum !== "" && sum !== 0 && categoryName !== "Choose Category") {
-  //       setSubmitDisabled(false);
-  //     } else {
-  //       setSubmitDisabled(true);
-  //     }
-  //   }, [sum, categoryName]);
+  useEffect(() => {
+    if (parseFloat(amtIn) !== 0 && parseFloat(amtIn) <= (parseFloat(saleData.sale_amt).toFixed(2) - parseFloat(totalAmtPaid)) && error === null ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [amtIn, error]);
+
 
   const [payData ,setPayData] = useState({
     sale_prefix: "",
@@ -125,34 +115,46 @@ const PaymentIn = (props) => {
     sale_amt_in_mode : "",
     sale_cust_cnct_id : "",
     amt_paid: "",
-    amt_due : ""
+    amt_due : "",
+    sale_acc_id : "",
   })
 
+  payData.sale_acc_id = accountId;
   payData.sale_prefix = saleData.sale_prefix;
   payData.sale_prefix_no = saleData.sale_prefix_no;
   payData.sale_name = saleData.sale_name;
   payData.sale_cnct_id = saleData.sale_id;
   payData.sale_cust_cnct_id = saleData.cust_cnct_id;
   payData.sale_payment_in_prefix = "PaymentIn";
-  payData.sale_payment_in_prefix_no = parseInt(defaultPaymentPrefixNo) + 1;
+  payData.sale_payment_in_prefix_no = prefixNo;
   payData.sale_amt_in = amtIn;
   payData.sale_amt_in_date = filteredDate;
   payData.sale_amt_in_mode = payMode;
   payData.sale_desc = "PAYMENT IN";
-  payData.amt_paid = parseInt(saleData.sale_amt_paid) + parseInt(amtIn);
+  payData.amt_paid = parseFloat(saleData.sale_amt_paid) + parseFloat(amtIn);
   payData.amt_due = saleData.sale_amt_due - amtIn;
 
   const handleClick = async (e) => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:8000/api/sale/addSalePayment", payData);
-      await axios.put("http://localhost:8000/api/sale/updateBalanceDue", payData);
+      //await axios.put("http://localhost:8000/api/sale/updateBalanceDue", payData);
       changeChange();
      props.snack();
     } catch (err) {
       console.log(err);
     }
   };
+
+  const totalAmtPaid = paymentInData
+    .filter(
+      (filteredItem) =>
+        parseInt(filteredItem.sale_payment_in_id) ===
+        parseInt(saleData.sale_id)
+    )
+    .reduce(function (prev, current) {
+      return prev + +current.sale_amt_paid;
+    }, 0);
 
   return (
     <div>
@@ -183,13 +185,13 @@ const PaymentIn = (props) => {
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
-                  value={
-                    prefixValue === "" || prefixValue === undefined
-                      ? parseInt(defaultPaymentPrefixNo) + 1
-                      : prefixNo
-                  }
+                  // value={
+                  //   prefixValue === "" || prefixValue === undefined
+                  //     ? parseInt(defaultPaymentPrefixNo) + 1
+                  //     : prefixNo
+                  // }
+                  value={prefixNo}
                   name="prefix_number"
-                  
                   className=" w-[35%]"
                   required
                 />
@@ -206,6 +208,9 @@ const PaymentIn = (props) => {
                       format="LL"
                       maxDate={todaysDate}
                       onChange={(e) => setTransactionDate(e)}
+                      onError={(newError) => {
+                        setError(newError);
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -218,7 +223,7 @@ const PaymentIn = (props) => {
                 <div>{saleData.sale_prefix_no}</div>
               </div>
               <div>Total Amount : {parseFloat(saleData.sale_amt).toFixed(2)}</div>
-              <div>Balance Due : {parseFloat(saleData.sale_amt_due).toFixed(2)}</div>
+              <div>Balance Due : {parseFloat(saleData.sale_amt).toFixed(2) - parseFloat(totalAmtPaid)}</div>
             </div>
             <div className="box-sec">
               <TextField
@@ -228,10 +233,12 @@ const PaymentIn = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="amt_received"
-               
-                onChange={(e) => SetAmtIn(e.target.value.replace(/\D/g, ""))}
-                // onChange={(e) => SetAmtIn(e.target.value)}
-                //step="0.01"
+                value={amtIn}
+                inputProps={{maxLength : 10}}
+                 onChange={(e) => SetAmtIn(e.target.value.replace(/^\.|[^0-9.]/g, "")
+                 .replace(/(\.\d*\.)/, "$1")
+                 .replace(/^(\d*\.\d{0,2}).*$/, "$1"))}
+                
                 required
               />
             </div>
@@ -258,10 +265,8 @@ const PaymentIn = (props) => {
               </div>
             </div>
             <div>
-              Remaning Amount : {(parseFloat(saleData.sale_amt_due) - parseFloat(amtIn)).toFixed(2)}
+              Remaning Amount : {((parseFloat(saleData.sale_amt).toFixed(2) - parseFloat(totalAmtPaid)) - parseFloat(amtIn)).toFixed(2)}
             </div>
-            
-            {console.log(parseFloat(saleData.sale_amt_due) , parseFloat(amtIn))}
           </Box>
           <div className="cashout-btn-wrapper">
             {submitDisabled ? (

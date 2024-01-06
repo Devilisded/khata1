@@ -1,13 +1,30 @@
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import StaffObj from "../staffObj/StaffObj";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../../context/UserIdContext";
+import axios from "axios";
 
-const StaffLeft = () => {
+const StaffLeft = (props) => {
+  //const uId = 5;
+  const { change , accountId, staffId, uId } = useContext(UserContext);
+  const [staffData , setStaffData] = useState([]);
+  const [searchValue , setSearchValue] = useState("");
+
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/st/fetch/${accountId}/${uId}`)
+      .then((response) => {
+        setStaffData(response.data);
+      });
+  }, [change]);
+
   return (
+
     <div className="bg-white shadow-lg w-full flex flex-col h-full">
       <div className="text-xl font-semibold flex p-5 gap-2 text-[#008cffb4] items-center border-b border-slate-300">
         Staff
         <p className="font-semibold text-sm px-5 bg-blue-300/20 py-1 rounded-full text-sky-600">
-          5
+          {staffData.length}
         </p>
       </div>
       <div className="p-5 border-b border-slate-300 grid grid-cols-12">
@@ -29,6 +46,7 @@ const StaffLeft = () => {
             border: "1px solid #109e5b",
             transition: "all 400ms ease-in-out",
           }}
+          onClick={props.add}
         >
           <IconPlus className="w-5" />
           Add Staff
@@ -39,8 +57,18 @@ const StaffLeft = () => {
           <div>Staff Information</div>
         </div>
         <div className="flex flex-col gap-1 h-[calc(100vh-280px)] overflow-y-scroll">
-          <StaffObj />
-          <StaffObj />
+          
+          {staffData.
+          filter(
+              (code) =>
+                code.staff_email.toString().toLowerCase().startsWith(searchValue.toString().toLowerCase()) ||
+                code.staff_name
+                  .toLowerCase()
+                  .startsWith(searchValue.toLowerCase())
+            )
+          .map((filteredItem, index) => (
+            <StaffObj data={filteredItem} key={index} />
+          ))}
         </div>
       </div>
     </div>

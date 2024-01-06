@@ -6,20 +6,20 @@ import { useNavigate } from "react-router-dom";
 const ProTran = (props) => {
   const navigate = useNavigate();
   const { changeSaleId , changePurchaseId } = useContext(UserContext);
-  console.log("props.data.sale_cnct_id : " , props.data.sale_cnct_id)
+  
   const changeS = () => {
     changeSaleId(props.data.sale_cnct_id);
     navigate("/sales");
   };
   const changeP = () => {
-    changePurchaseId(props.data.sale_cnct_id);
+    changePurchaseId(props.data.pur_cnct_id);
     navigate("/purchase");
   };
   const checkNavigate = () => {
     if (
-      props.data.sale_cnct_id !== null && props.data.product_stock_out !== null) {
+      props.data.sale_cnct_id !== null) {
       changeS();
-    } else if (props.data.sale_cnct_id !== null && props.data.product_stock_in !== null) {
+    } else if (props.data.pur_cnct_id !== null) {
       changeP();
     }
     else {
@@ -50,7 +50,9 @@ const ProTran = (props) => {
           </div>
         </div>
         <div>
+        {props.data.pur_cnct_id}
           <span className="text-slate-600">
+            
             {props.data.product_stock_in ? "IN " + props.data.product_stock_in +" "+ props.data.selected_unit : ""}
           </span>
           <div className="text-green-600">

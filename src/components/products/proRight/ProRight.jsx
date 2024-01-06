@@ -7,7 +7,7 @@ import axios from "axios";
 import { Skeleton } from "@mui/material";
 
 const ProRight = (props) => {
-  const { pId, change } = useContext(UserContext);
+  const { pId, change, inventory } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [openingStock, setOpeningStock] = useState([]);
   const [result2, setResult2] = useState([]);
@@ -28,17 +28,24 @@ const ProRight = (props) => {
       });
   }, [pId, change]);
 
+  const balStock = result2.reduce(function (prev, current) {
+    if (current.product_stock_in) {
+      return prev + +current.product_stock_in;
+    } else {
+      return prev - +current.product_stock_out;
+    }
+  }, 0);
+
   return (
     <div className="proright">
       <div className="product">
         <ProCardTran
-          pid={result.primary_id}
-          product_name={
-            result.product_name ? result.product_name : "Product Name"
-          }
+          pid={result ? result.primary_id : 0}
+          product_name={result ? result.product_name : "Product Name"}
           data={result}
           edit={props.edit}
           skeleton={skeleton}
+          inventory={inventory}
         />
       </div>
 
@@ -94,12 +101,12 @@ const ProRight = (props) => {
                   className="mb-2"
                 />
               ) : (
-                result.balance_stock
+                balStock
               )}
             </div>
             <div
               className={
-                result.balance_stock <= result.low_stock
+                balStock <= result.low_stock
                   ? "text-xs text-red-600"
                   : "text-xs "
               }
@@ -198,7 +205,7 @@ const ProRight = (props) => {
         <div className="grItems">
           <div className="flex flex-col items-center">
             <div className="font-semibold text-lg text-slate-800">
-              {skeleton ? (
+              {/* {skeleton ? (
                 <Skeleton
                   variant="rectangular"
                   width={60}
@@ -211,8 +218,22 @@ const ProRight = (props) => {
                 "GST @ " + result.igst + "%"
               ) : (
                 "-"
+              )} */}
+
+              {skeleton ? (
+                <Skeleton
+                  variant="rectangular"
+                  width={60}
+                  height={20}
+                  className="mb-2"
+                />
+              ) : result.igst > 0 && result.cess > 0 ? (
+                result.igst + "%" + " +" + result.cess + "%"
+              ) : (
+                result.igst > 0 ? (
+                  "GST @ " + result.igst + "%"
+                ) : ""
               )}
-              {}
             </div>
             <div className="text-xs text-slate-600">GST%</div>
           </div>
@@ -237,8 +258,8 @@ const ProRight = (props) => {
               } else {
                 return prev - +current.product_stock_out;
               }
-            }, openingStock);
-          return <ProTran key={index} data={item}  balanceStock={sum} />;
+            }, 0);
+          return <ProTran key={index} data={item} balanceStock={sum} />;
         })}
       </div>
       <div className="btn shadow-lg">

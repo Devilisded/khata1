@@ -6,12 +6,12 @@ import jsPDF from "jspdf";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 const PurInvoice = () => {
-  const { purchaseId, change } = useContext(UserContext);
+  const { purchaseId, change, accountId } = useContext(UserContext);
   const pdfRef = useRef();
-  const [data, setData] = useState({
+  const [purchaseDataById, setPurchaseDataById] = useState({
     purchaseId: "",
     sup_cnct_id: 0,
-    amtPaid: "",
+    purchase_amt: "",
     amtDue: "",
   });
   const downloadPDF = () => {
@@ -44,31 +44,39 @@ const PurInvoice = () => {
     imgLink: "",
     act_name: "",
   });
+  const [payOutData , setPayOutData] = useState([]);
   useEffect(() => {
     axios
-      .get(
-        import.meta.env.VITE_BACKEND +
-          `/api/purchase/fetchDataById/${purchaseId}`
-      )
+      .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchDataByIdAndPayOutId/${purchaseId}`)
       .then((response) => {
-        setData({
-          ...data,
+        setPurchaseDataById({
+          ...purchaseDataById,
           purchaseId: response.data[0].purchase_id,
           sup_cnct_id: response.data[0].sup_cnct_id,
-          amtPaid: response.data[0].purchase_amt_paid,
-          amtDue: response.data[0].purchase_amt_due,
+          purchase_amt: response.data[0].purchase_amt,
+          //amtDue: response.data[0].purchase_amt_due,
         });
+        setPayOutData(response.data)
       });
+    
+    // axios
+    //   .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchDataById/${purchaseId}`)
+    //   .then((response) => {
+    //     purchaseDataById({
+    //       ...data,
+    //       purchaseId: response.data[0].purchase_id,
+    //       sup_cnct_id: response.data[0].sup_cnct_id,
+    //       purchase_amt: response.data[0].purchase_amt_paid,
+    //       amtDue: response.data[0].purchase_amt_due,
+    //     });
+    //   });
     axios
-      .get(
-        import.meta.env.VITE_BACKEND +
-          `/api/purchase/fetchPurchaseTran/${purchaseId}`
-      )
+      .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchPurchaseTran/${purchaseId}`)
       .then((response) => {
         setPurchaseRightTranData(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/act/fetchData/${accountId}`)
       .then((res) => {
         setAcct(res.data);
         setImg({
@@ -79,22 +87,27 @@ const PurInvoice = () => {
       });
   }, [change, purchaseId]);
 
-  console.log(
-    "data.sup_cnct_id : ",
-    data.sup_cnct_id,
-    data.purchaseId,
-    data.amtDue
-  );
+  const totalAmtPaid = payOutData
+    .filter(
+      (filteredItem) =>
+        parseInt(filteredItem.purchase_pay_out_id) ===
+        parseInt(purchaseDataById.purchaseId)
+    )
+    .reduce(function (prev, current) {
+      return prev + +current.purchase_amt_paid;
+    }, 0);
 
+    
   useEffect(() => {
     axios
-      .get(
-        import.meta.env.VITE_BACKEND + `/api/sup/fetchSup/${data.sup_cnct_id}`
+    .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/sup/fetchSup/${purchaseDataById.sup_cnct_id}`
       )
       .then((response) => {
         setSupData(response.data);
       });
-  }, [data]);
+  }, [purchaseDataById]);
   const totalRate = purchaseRightTranData.reduce(function (prev, current) {
     return prev + +current.purchase_item_disc_price * current.purchase_item_qty;
   }, 0);
@@ -148,7 +161,7 @@ const PurInvoice = () => {
                   <p>
                     <span className="text-bold">Invoice No:</span>
                     {date.toLocaleDateString().split("/")}
-                    {data.purchasesId}
+                    {purchaseDataById.purchasesId}
                   </p>
                 </div>
               </div>
@@ -214,18 +227,12 @@ const PurInvoice = () => {
                           {item.purchase_item_disc_unit
                             ? item.purchase_item_disc_unit
                             : "-"}
-                          {item.purchase_item_disc_val
-                            ? item.purchase_item_disc_val +
-                              "|" +
-                              item.purchase_item_disc_unit
-                            : "-"}
                         </td>
                         <td>{item.purchase_item_qty}</td>
                         <td>
                           ₹
                           {(
-                            item.purchase_item_disc_price *
-                            item.purchase_item_qty
+                            item.purchase_item_disc_price * item.purchase_item_qty
                           ).toFixed(2)}
                         </td>
                         <td>
@@ -273,14 +280,14 @@ const PurInvoice = () => {
                     </div>
                   </div>
 
-                  {data.amtPaid ? (
+                  {totalAmtPaid !== 0 ? (
                     <>
                       <div className="invoice-body-info-item border-bottom">
                         <div className="info-item-td text-end text-bold">
                           Amount Paid:
                         </div>
                         <div className="info-item-td text-end">
-                          ₹ {data.amtPaid}
+                          ₹ {totalAmtPaid}
                         </div>
                       </div>
 
@@ -289,7 +296,7 @@ const PurInvoice = () => {
                           Balance Due:
                         </div>
                         <div className="info-item-td text-end">
-                          ₹ {parseFloat(data.amtDue).toFixed(2)}
+                          ₹ {parseFloat(purchaseDataById.purchase_amt - totalAmtPaid).toFixed(2)}
                         </div>
                       </div>
                     </>

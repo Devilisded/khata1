@@ -18,8 +18,12 @@ import { UserContext } from "../../../context/UserIdContext";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import SaleRightTran from "../saleRightTran/SaleRightTran";
+import { Link } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 const SaleRight = (props) => {
+  
+
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -29,10 +33,11 @@ const SaleRight = (props) => {
     setOpen(false);
   };
 
-  const { change, saleId, changeChange, changeSaleId } =
+  const { change, saleId, changeChange, changeSaleId, accountId, bills } =
     useContext(UserContext);
   const [saleRightTranData, setSaleRightTranData] = useState([]);
   const [custData, setCustData] = useState({});
+  const[saleData , setSaleData]= useState([]);
 
   const [data, setData] = useState({
     sale_prefix: "",
@@ -44,10 +49,18 @@ const SaleRight = (props) => {
   });
   useEffect(() => {
     axios
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/sale/fetchData/${accountId}`
+      )
+      .then((response) => {
+        setSaleData(response.data);
+      });
+    axios
       .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${saleId}`)
       .then((response) => {
         setData({
           ...data,
+          sale_id: response.data[0].sale_id,
           sale_prefix: response.data[0].sale_prefix,
           sale_prefix_no: response.data[0].sale_prefix_no,
           sale_name: response.data[0].sale_name,
@@ -61,6 +74,10 @@ const SaleRight = (props) => {
           sale_payment_in_prefix: response.data[0].sale_payment_in_prefix,
           sale_payment_in_prefix_no: response.data[0].sale_payment_in_prefix_no,
           sale_amt_paid: response.data[0].sale_amt_paid,
+          sale_re_id: response.data[0].sale_re_id,
+          sale_re_prefix: response.data[0].sale_re_prefix,
+          sale_re_prefix_no:
+            response.data[0].sale_re_prefix_no,
         });
       });
     axios
@@ -69,6 +86,7 @@ const SaleRight = (props) => {
         setSaleRightTranData(response.data);
       });
   }, [change, saleId]);
+
 
   useEffect(() => {
     axios
@@ -87,6 +105,11 @@ const SaleRight = (props) => {
       });
   }, [data]);
 
+  const { enqueueSnackbar } = useSnackbar()
+  const handleClickVariant = (variant, msg) => {
+    enqueueSnackbar(msg, { variant });
+  };
+
   const deleteSales = async () => {
     try {
       await axios.delete(
@@ -94,13 +117,43 @@ const SaleRight = (props) => {
       );
       changeChange();
       changeSaleId(0);
-      props.snack();
+      handleClickVariant('success',"Deleted Successfully")
       handleClose();
     } catch (err) {
       console.log(err);
     }
   };
 
+  const delPayIn = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/sale/delPayIn/${saleId}`
+      );
+      changeChange();
+      
+      handleClickVariant("success", "Deleted Successfully")
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const delSaleReturn = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.delete(
+        import.meta.env.VITE_BACKEND + `/api/sale/delSaleReturn/${saleId}`
+      );
+      changeChange();
+      handleClickVariant('success',"Deleted Successfully")
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  
   const time1 = new Date(data.sale_time);
   const hours = time1.getHours();
   const minutes = time1.getMinutes();
@@ -119,6 +172,19 @@ const SaleRight = (props) => {
       return acc + current;
     }, 0);
 
+    const totalAmtPaid = saleData
+    .filter(
+      (filteredItem) =>
+        parseInt(filteredItem.sale_payment_in_id) ===
+        parseInt(data.sale_id)
+    )
+    .reduce(function (prev, current) {
+      return prev + +current.sale_amt_paid;
+    }, 0);
+
+  //const s = "cursor-not-allowed edit flex items-center gap-2 p-2 rounded";
+    
+
   return (
     <div className="saleRight">
       <div className="saleCard">
@@ -126,20 +192,24 @@ const SaleRight = (props) => {
           <div className="flex gap-4">
             <div className="details flex flex-col gap-2 ">
               <div className="date font-semibold flex items-center gap-2 text-slate-900 text-xl">
-                {console.log("data.sale_prefix_no : ", data.sale_prefix_no)}
-                {data.sale_payment_in_id === null
+              {data.sale_payment_in_id === null && data.sale_re_id === null
                   ? data.sale_prefix + "#" + data.sale_prefix_no
-                  : data.sale_payment_in_prefix +
+                  : data.sale_payment_in_id !== null
+                  ? data.sale_payment_in_prefix +
                     "#" +
-                    data.sale_payment_in_prefix_no}
+                    data.sale_payment_in_prefix_no
+                  : data.sale_re_prefix +
+                    "#" +
+                    data.sale_re_prefix_no}
+                
               </div>
               <div className="text-sm text-slate-500 font-semibold">
                 {fhours + ":" + fminutes + " " + AMPM} , {data.sale_date}
               </div>
             </div>
           </div>
-          <div className="editndel flex justify-center gap-4 self-center">
-            {data.sale_payment_in_id === null ? (
+          <div className="editndel flex justify-end gap-4 self-center">
+            {data.sale_payment_in_id === null && data.sale_re_id === null ?(
               <button
                 className="flex items-center gap-2 rounded text-emerald-600 p-1 hover:bg-emerald-600 hover:text-white"
                 style={{
@@ -155,7 +225,7 @@ const SaleRight = (props) => {
               ""
             )}
 
-            {data.sale_amt_due > 0 ? (
+            {data.sale_payment_in_id === null && parseFloat(totalAmtPaid).toFixed(2) < parseFloat(data.sale_amt).toFixed(2) && data.sale_re_id === null ? (
               <button
                 className="flex items-center gap-2 p-2 rounded text-amber-400 hover:text-white hover:bg-amber-500"
                 onClick={props.addPayment}
@@ -170,15 +240,56 @@ const SaleRight = (props) => {
             ) : (
               " "
             )}
-            <button className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700">
-              <IconEdit className="w-5 h-5" /> Edit
-            </button>
+            
+            {data.sale_payment_in_id === null && totalAmtPaid === 0 && data.sale_re_id === null ?   (
+              <Link to="/salesEdit">
+                <button
+                  className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+                  style={{
+                    border: "1px solid #2b59da",
+                    transition: "all 300ms ease-in-out",
+                  }}
+                  disabled={bills === 2 ? false : true}
+                >
+                  <IconEdit className="w-5 h-5" /> Edit
+                </button>
+              </Link>
+            ) :  totalAmtPaid === 0  && data.sale_re_id === null ? (
+              <button
+                className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+                style={{
+                  border: "1px solid #2b59da",
+                  transition: "all 300ms ease-in-out",
+                }}
+                onClick={props.edit}
+                disabled={bills === 2 ? false : true}
+              >
+                <IconEdit className="w-5 h-5" /> Edit
+              </button>
+            ): "" }
+            
+            {data.sale_payment_in_id === null && totalAmtPaid === parseInt(data.sale_amt) && data.sale_re_id === null ?
+            <Link to="/saleReturn">
+                <button
+                  className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+                  style={{
+                    border: "1px solid #2b59da",
+                    transition: "all 300ms ease-in-out",
+                  }}
+                >
+                  <IconEdit className="w-5 h-5" /> Sale Return
+                </button>
+              </Link> 
+              : ""}
+              
             <button
               className="flex items-center gap-2 del p-2 rounded text-red-600 hover:text-white hover:bg-red-600"
+              disabled={bills === 2 ? false : true}
               onClick={handleClickOpen}
             >
               <IconTrash className="w-5 h-5" /> Delete
             </button>
+            
             <Dialog
               open={open}
               onClose={handleClose}
@@ -205,7 +316,7 @@ const SaleRight = (props) => {
                     </button>
                     <button
                       className="delete-btn text-red-600 pb-3 pr-3"
-                      onClick={deleteSales}
+                      onClick={data.sale_payment_in_id === null ? deleteSales : data.sale_re_id === null ? delSaleReturn : delPayIn}
                       autoFocus
                     >
                       Delete Entry
@@ -234,9 +345,9 @@ const SaleRight = (props) => {
             </div>
           </div>
 
-          {data.sale_payment_in_id === null ? (
+          {data.sale_payment_in_id === null && data.sale_re_id === null ? (
             <div>
-              {data.sale_amt_due === data.sale_amt ? (
+              {totalAmtPaid === 0 ? (
                 <div className="flex items-center  flex-col">
                   <div className="text-slate-700">
                     ₹ {parseFloat(data.sale_amt).toFixed(2)}
@@ -249,7 +360,7 @@ const SaleRight = (props) => {
                     ₹ {parseFloat(data.sale_amt).toFixed(2)}
                   </div>
                   <div>
-                    {data.sale_amt_due > 0 ? "Partially Paid" : "Fully Paid"}
+                    {totalAmtPaid < parseInt(data.sale_amt) ? "Partially Paid" : "Fully Paid"}
                   </div>
                 </div>
               )}
@@ -267,7 +378,8 @@ const SaleRight = (props) => {
       <div className="p-2 m-5 bg-slate-100 text-lg font-semibold text-slate-800">
         <div>{data.sale_payment_in_id === null ? "Items" : "Enteries"}</div>
       </div>
-      {data.sale_payment_in_id === null ? (
+      {data.sale_payment_in_id === null && data.sale_re_id === null ? (
+      
         <div className="information">
           {saleRightTranData.map((item, index) => (
             <div key={index}>
@@ -279,10 +391,9 @@ const SaleRight = (props) => {
             </div>
           ))}
         </div>
-      ) : (
+      ) :  data.sale_payment_in_id !== null ? (
         <div className="information">
           <div>
-            {console.log("data.sale_prefix_no : ", data.sale_prefix_no)}
             <SaleRightTran
               sale_payment_in_id={data.sale_payment_in_id}
               sale_amt_paid={data.sale_amt_paid}
@@ -292,6 +403,20 @@ const SaleRight = (props) => {
             />
           </div>
         </div>
+      ) : (
+        <div className="information1">
+        <div>
+          <SaleRightTran
+            sale_re_id={data.sale_re_id }
+            sale_amt_paid={data.sale_amt_paid}
+            sale_re_prefix={data.sale_re_prefix}
+            sale_re_prefix_no={data.sale_re_prefix_no}
+            sale_prefix={data.sale_prefix}
+              sale_prefix_no={data.sale_prefix_no}
+            total_amt={total_amt}
+          />
+        </div>
+      </div>
       )}
       <div className="flex justify-between px-7 py-5 border-t border-slate-300 text-lg border-l">
         <div className="font-semibold">Net Amount</div>

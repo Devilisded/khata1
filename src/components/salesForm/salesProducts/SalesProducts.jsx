@@ -2,6 +2,7 @@ import { IconTrash } from "@tabler/icons-react";
 
 const SalesProducts = (props) => {
   let i = 1;
+
   return (
     <>
       {props.filteredInvoiceItems.map((item) => (
@@ -9,12 +10,15 @@ const SalesProducts = (props) => {
           <div className="border-r border-slate-300 p-4">{i++}</div>
           <div className="border-r border-slate-300 p-4">{item.in_items}</div>
 
-          <div className="border-r border-slate-300 p-4">{item.in_hsn_sac ? item.in_hsn_sac : "-"}</div>
+          <div className="border-r border-slate-300 p-4">
+            {item.in_hsn_sac ? item.in_hsn_sac : "-"}
+          </div>
           <div className="border-r border-slate-300 p-4">
             {item.in_qty} | {item.in_unit}
           </div>
           <div className="border-r border-slate-300 p-4">
-            {item.in_sale_price} | {item.in_discount_price.toFixed(2)}
+            {item.in_sale_price} |{" "}
+            {parseFloat(item.in_discount_price).toFixed(2)}
           </div>
           {item.in_discount_value ? (
             <div className="border-r border-slate-300 p-4">
@@ -24,18 +28,22 @@ const SalesProducts = (props) => {
           ) : (
             <div className="border-r border-slate-300 p-4">-</div>
           )}
-          
+
           <div className="border-r border-slate-300 p-4">
-            {item.in_gst_prectentage && item.in_gst_prectentage !== null && item.in_gst_prectentage !== "-" 
-              ? item.in_gst_prectentage + "% |" + item.in_gst_amt.toFixed(2)
+            {item.in_gst_prectentage &&
+            item.in_gst_prectentage !== null &&
+            item.in_gst_prectentage !== "-"
+              ? item.in_gst_prectentage +
+                "% |" +
+                parseFloat(item.in_gst_amt).toFixed(2)
               : "-"}
           </div>
           <div className="border-r border-slate-300 p-4">
             ₹
             {(
-              item.in_qty *
-              ((item.in_discount_price ) +
-                (item.in_gst_amt ? item.in_gst_amt : 0))
+              parseInt(item.in_qty) *
+              (parseFloat(item.in_discount_price) +
+                parseFloat(item.in_gst_amt ? item.in_gst_amt : 0))
             ).toFixed(2)}
           </div>
           <div className="grid place-items-center">

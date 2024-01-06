@@ -19,7 +19,7 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 
 const CashRight = (props) => {
-  const { cashId, changeCashId, changeChange, change } =
+  const { cashId, changeCashId, changeChange, change, bills } =
     useContext(UserContext);
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -98,19 +98,30 @@ const CashRight = (props) => {
               </div>
             </div>
           </div>
-          <div className="editndel flex justify-center gap-20 self-center">
+          <div className="editndel flex justify-end gap-5 self-center">
             <button
-              className="edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+              className={
+                bills === 2
+                  ? "edit flex items-center gap-2 p-2 rounded text-blue-700 hover:text-white hover:bg-blue-700"
+                  : "cursor-not-allowed edit flex items-center gap-2 p-2 rounded "
+              }
               onClick={data.cash_pay ? props.editOut : props.editIn}
+              disabled={bills === 2 ? false : true}
             >
               <IconEdit className="w-5 h-5" /> Edit
             </button>
             <button
-              className="flex items-center gap-2 del p-2 rounded text-red-600 hover:text-white hover:bg-red-600"
+              className={
+                bills === 2
+                  ? "flex items-center gap-2 del p-2 rounded text-red-600 hover:text-white hover:bg-red-600"
+                  : "cursor-not-allowed edit flex items-center gap-2 p-2 rounded "
+              }
               onClick={handleClickOpen}
+              disabled={bills === 2 ? false : true}
             >
               <IconTrash className="w-5 h-5" /> Delete
             </button>
+
             <Dialog
               open={open}
               onClose={handleClose}
@@ -151,7 +162,7 @@ const CashRight = (props) => {
       </div>
       <div className="grid grid-cols-1 p-1 border-b border-slate-200 py-3">
         <div className="justify-self-end flex justify-end flex-col items-end text-lg font-semibold text-slate-600 ">
-          ₹ {data.cash_pay ? data.cash_pay : data.cash_receive}
+          ₹ {data.cash_pay ? parseFloat(data.cash_pay).toFixed(2) : parseFloat(data.cash_receive).toFixed(2)}
           <div className="text-blue-600 text-sm uppercase">
             {data.cash_mode}
           </div>

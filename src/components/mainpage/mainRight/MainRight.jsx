@@ -6,7 +6,8 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 import { IconBook } from "@tabler/icons-react";
 const MainRight = (props) => {
-  const { change, userId } = useContext(UserContext);
+  
+  const { change, userId, parties } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [custAmt, setCustAmt] = useState([]);
   const [custAmtType, setCustAmtType] = useState([]);
@@ -24,9 +25,11 @@ const MainRight = (props) => {
       });
   }, [change, userId]);
 
+  //var parties = "1";
   return (
     <div className="right bg-white shadow-xl w-full">
       <div className="customer">
+      
         <CardTran edit={props.edit} />
       </div>
       <div className="heading text-slate-600">
@@ -36,25 +39,7 @@ const MainRight = (props) => {
           <div className="get">Received</div>
         </div>
       </div>
-      {/* <div className="transactions">
-        {result.length > 0 ? (
-          result.map((item, index) => (
-            <Transaction
-              key={index}
-              transactions={item}
-              editPay={props.editPay}
-              editReceive={props.editReceive}
-            />
-          ))
-        ) : (
-          <div className="w-[100%] h-[100%] flex items-center justify-center flex-col">
-            <div>
-              <IconBook className="w-32 h-32 text-slate-600" />
-            </div>
-            <div>No Entries Added</div>
-          </div>
-        )}
-      </div> */}
+     
       <div className="transactions">
         {result.length > 0 ? (
           result.map((item, index) => {
@@ -63,9 +48,9 @@ const MainRight = (props) => {
                 .filter((filteredItem) => filteredItem.tran_id <= item.tran_id)
                 .reduce(function (prev, current) {
                   if (current.tran_pay) {
-                    return prev + +current.tran_pay;
+                    return prev + +parseFloat(current.tran_pay);
                   } else {
-                    return prev - +current.tran_receive;
+                    return prev - +parseFloat(current.tran_receive);
                   }
                 }, 0);
               return (
@@ -82,9 +67,9 @@ const MainRight = (props) => {
                 .filter((filteredItem) => filteredItem.tran_id <= item.tran_id)
                 .reduce(function (prev, current) {
                   if (current.tran_pay) {
-                    return prev + +current.tran_pay;
+                    return prev + +parseFloat(current.tran_pay);
                   } else {
-                    return prev - +current.tran_receive;
+                    return prev - +parseFloat(current.tran_receive);
                   }
                 }, 0);
               return (
@@ -107,14 +92,25 @@ const MainRight = (props) => {
           </div>
         )}
       </div>
+      {parties === 2 || parties === 3 ? 
       <div className="btn shadow-lg">
-        <button className="pay text-red-600" onClick={props.pay}>
+        <button className="pay text-red-600" onClick={props.pay} >
           Pay ₹
         </button>
-        <button className="receive text-green-600 " onClick={props.receive}>
+        <button className="receive text-green-600 " onClick={props.receive} >
           Receive ₹
         </button>
       </div>
+      : 
+      <div className="btn shadow-lg text-slate-600">
+      <button className=" w-full cursor-not-allowed text-slate-600 bg-slate-200 p-3 rounded-[5px]" disabled>
+        Pay ₹
+      </button>
+      <button className="w-full cursor-not-allowed text-slate-600 bg-slate-200 p-3 rounded-[5px]" disabled>
+        Receive ₹
+      </button>
+    </div>
+      }
     </div>
   );
 };

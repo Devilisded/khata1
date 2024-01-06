@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 
 const AddService = (props) => {
-  const { changeChange } = useContext(UserContext);
+  const { changeChange, accountId } = useContext(UserContext);
   const gst = [
     {
       value: "gst0",
@@ -73,7 +73,7 @@ const AddService = (props) => {
   ];
 
   const [productUnits, setProductUnits] = useState([]);
-  const [productHsnCodes, setProductHsnCodes] = useState([]);
+  const [sacCodes, setSacCodes] = useState([]);
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductUnits`)
@@ -82,9 +82,9 @@ const AddService = (props) => {
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchSacCodes`)
       .then((response) => {
-        setProductHsnCodes(response.data);
+        setSacCodes(response.data);
       });
   }, []);
 
@@ -101,37 +101,27 @@ const AddService = (props) => {
     setIsClicked(false);
   };
 
-  const [gstValue1, setGstValue1] = useState("GST %");
-  const [gstValue2, setGstValue2] = useState("");
-
-  const [hsnCode, setHsnCode] = useState("SAC Code");
-  const [hsnValue1, setHsnValue1] = useState("");
-
-  const [searchValue, setSearchValue] = useState("0");
-
-  const [customGst, setcustomGst] = useState("");
-  const [customeCess, setCustomeCess] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [flag, setFlag] = useState(false);
   const [data, setData] = useState({
     ser_name: "",
     ser_unit: "",
     ser_price: "",
-    ser_tax_included: "",
+    ser_tax_included: 0,
     ser_sac: "",
-    ser_sac_desc: "",
-    ser_sgst: null,
-    ser_igst: null,
-    ser_cgst: null,
-    ser_cess: null,
+    ser_ser_sac_desc: "",
+    ser_sgst: "",
+    ser_igst: "",
+    ser_cgst: "",
+    ser_cess: "",
+    ser_acc_id: "",
   });
-  const handleChange = (e) => {
-    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+
+  data.ser_acc_id = accountId;
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      //data.ser_gst = gstValue1;
       console.log("data : ", data);
       await axios.post(
         import.meta.env.VITE_BACKEND + "/api/ser/sendData",
@@ -156,14 +146,35 @@ const AddService = (props) => {
       data.ser_name !== "" &&
       data.ser_unit !== null &&
       data.ser_unit !== "" &&
-      data.ser_price !== null &&
-      data.ser_price !== ""
+      data.ser_price > 0 
     ) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
   }, [data.ser_name, data.ser_unit, data.ser_price]);
+
+  const gst_details =
+    "(" +
+    data.ser_igst / 2 +
+    "% CGST + " +
+    data.ser_igst / 2 +
+    "% SGST/UT GST ; " +
+    data.ser_igst +
+    "% IGST ); ";
+
+  const custom_gst_details =
+    "(" +
+    data.ser_igst / 2 +
+    "% CGST + " +
+    data.ser_igst / 2 +
+    "% SGST/UT GST ; " +
+    data.ser_igst +
+    "% IGST ; " +
+    data.ser_cess +
+    "% CESS )";
+
+  const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
 
   return (
     <div>
@@ -190,7 +201,14 @@ const AddService = (props) => {
                     className="w-full"
                     size="small"
                     name="ser_name"
-                    onChange={handleChange}
+                    inputProps={{ maxLength: 20 }}
+                    value={data.ser_name}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        ser_name: e.target.value.replace(/[^A-Z a-z.]/g, ""),
+                      })
+                    }
                     required
                   />
                 </Box>
@@ -223,12 +241,15 @@ const AddService = (props) => {
                     className=" w-full"
                     size="small"
                     name="ser_price"
-                    //onChange={handleChange}
                     required
+                    inputProps={{ maxLength: 10 }}
                     onChange={(e) =>
                       setData({
                         ...data,
-                        ser_price: e.target.value.replace(/\D/g, ""),
+                        ser_price: e.target.value.replace(
+                          numberValidation,
+                          "$1"
+                        ),
                       })
                     }
                     value={data.ser_price}
@@ -248,8 +269,8 @@ const AddService = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    value={hsnCode}
-                    helperText={hsnValue1}
+                    value={data.ser_sac ? data.ser_sac : "SAC Code"}
+                    helperText={data.ser_sac_desc ? data.ser_sac_desc : ""}
                     className="sec-1 cursor-pointer"
                     size="small"
                     InputProps={{
@@ -263,8 +284,15 @@ const AddService = (props) => {
                   <TextField
                     id="outlined-basic"
                     variant="outlined"
-                    value={gstValue1}
-                    helperText={gstValue2}
+                    
+                    value={data.ser_igst ? data.ser_igst + "%" : "GST %"}
+                    helperText={
+                      data.ser_cess !== ""
+                        ? custom_gst_details
+                        : data.ser_igst !== ""
+                        ? gst_details
+                        : ""
+                    }
                     className="sec-2 cursor-pointer"
                     size="small"
                     InputProps={{
@@ -290,55 +318,52 @@ const AddService = (props) => {
                         }}
                       />
 
-                      {productHsnCodes
-                        .filter(
-                          (code) =>
-                            code.hsn_code.toString().startsWith(searchValue) ||
-                            code.hsn_desc.startsWith(searchValue)
-                        )
-                        .map((filteredItem) => (
-                          <div
-                            key={filteredItem.hsn_code}
-                            className="flex card-sec"
-                            onClick={() => {
-                              setData({
-                                ...data,
-                                ser_sac: filteredItem.hsn_code,
-                                ser_sac_desc: filteredItem.hsn_desc,
-                                ser_igst: filteredItem.igst,
-                                ser_cgst: filteredItem.cgst,
-                                ser_sgst: filteredItem.sgst,
-                              });
-                              setSearchValue("0");
+                      {searchValue !== null &&
+                        (searchValue !== "") === true &&
+                        sacCodes
+                          .filter(
+                            (code) =>
+                              code.sac_code
+                                .toString()
+                                .startsWith(searchValue) ||
+                              code.sac_desc
+                                .toString()
+                                .toLowerCase()
+                                .startsWith(
+                                  searchValue.toString().toLowerCase()
+                                )
+                          )
+                          .map((filteredItem) => (
+                            <div
+                              key={filteredItem.id}
+                              className="flex card-sec"
+                              onClick={() => {
+                                setData({
+                                  ...data,
+                                  ser_sac: filteredItem.sac_code,
+                                  ser_sac_desc: filteredItem.sac_desc,
+                                  ser_igst: filteredItem.sac_igst,
+                                  ser_cgst: filteredItem.sac_igst / 2,
+                                  ser_sgst: filteredItem.sac_igst / 2,
+                                });
+                                setSearchValue("");
 
-                              setHsnCode(filteredItem.hsn_code),
-                                setHsnValue1(filteredItem.hsn_desc),
-                                setGstValue1(filteredItem.igst),
-                                setGstValue2(
-                                  "( " +
-                                    filteredItem.cgst +
-                                    "% CGST + " +
-                                    filteredItem.sgst +
-                                    "% SGST/UT GST ; " +
-                                    filteredItem.igst +
-                                    "% IGST )"
-                                );
-                              setIsClicked(false);
-                            }}
-                          >
-                            <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded">
-                              <div className="flex gap-6 pb-4">
-                                <h2 className=" rounded bg-slate-300 px-6 py-1 ">
-                                  {filteredItem.hsn_code}
-                                </h2>
-                                <h2 className=" rounded bg-slate-300 px-4 py-1 ">
-                                  {filteredItem.igst + "% GST"}
-                                </h2>
+                                setIsClicked(false);
+                              }}
+                            >
+                              <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded">
+                                <div className="flex gap-6 pb-4">
+                                  <h2 className=" rounded bg-slate-300 px-6 py-1 ">
+                                    {filteredItem.sac_code}
+                                  </h2>
+                                  <h2 className=" rounded bg-slate-300 px-4 py-1 ">
+                                    {filteredItem.sac_igst + "% GST"}
+                                  </h2>
+                                </div>
+                                <p>{filteredItem.sac_desc}</p>
                               </div>
-                              <p>{filteredItem.hsn_desc}</p>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                     </>
                   ) : (
                     <div></div>
@@ -371,20 +396,7 @@ const AddService = (props) => {
                                   id="gst_on_selected_item"
                                   name="gst"
                                   onChange={() => {
-                                    console.log("clicked on gst rate");
-
-                                    setGstValue1(item.label1),
-                                      setGstValue2(
-                                        "( " +
-                                          item.label1 +
-                                          "% CGST + " +
-                                          item.label2 +
-                                          "% SGST/UT GST ; " +
-                                          item.label3 +
-                                          "% IGST )"
-                                      );
                                     setIsClicked2(false);
-
                                     setData({
                                       ...data,
                                       ser_igst: item.label1,
@@ -407,39 +419,48 @@ const AddService = (props) => {
                         variant="outlined"
                         className="sec-1"
                         required
+                        inputProps={{ maxLength: 10 }}
+                        value={data.ser_igst}
                         onChange={(e) => {
-                          setcustomGst(e.target.value);
+                          setData({
+                            ...data,
+                            ser_igst: e.target.value.replace(
+                              numberValidation,
+                              "$1"
+                            ),
+                            ser_cgst:
+                              e.target.value.replace(numberValidation, "$1") /
+                              2,
+                            ser_sgst:
+                              e.target.value.replace(numberValidation, "$1") /
+                              2,
+                          });
                         }}
                       />
+
                       <TextField
                         label="CESS"
                         id="outlined-basic"
                         variant="outlined"
                         className="sec-2"
                         required
+                        
+                        inputProps={{ maxLength: 10 }}
+                        value={data.ser_cess}
                         onChange={(e) => {
-                          setCustomeCess(e.target.value);
+                          setData({
+                            ...data,
+                            ser_cess: e.target.value
+                            .replace(
+                              numberValidation,
+                              "$1"
+                            ),
+                          });
                         }}
                       />
                     </Box>
 
-                    <Box className="box-sec">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault(),
-                            setData({
-                              ...data,
-                              ser_igst: customGst,
-                              ser_cgst: customGst / 2,
-                              ser_sgst: customGst / 2,
-                              ser_cess: customeCess,
-                            });
-                          setIsClicked2(false);
-                        }}
-                      >
-                        Add Custome Gst
-                      </button>
-                    </Box>
+                    
                   </>
                 ) : (
                   <div></div>

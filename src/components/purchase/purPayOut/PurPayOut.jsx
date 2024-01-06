@@ -2,10 +2,7 @@ import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import {
-  IconX,
-  IconTrashFilled,
-} from "@tabler/icons-react";
+
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -16,13 +13,13 @@ import axios from "axios";
 import { useSnackbar } from "notistack";
 
 const PayOut = (props) => {
-  const {change, changeChange, purchaseId } = useContext(UserContext);
-  const [purchasePrefixData, setPurchasePrefixData] = useState([]);
+  const { change, changeChange, purchaseId, accountId } =
+    useContext(UserContext);
   const [defaultPaymentPrefixNo, setDefaultPaymentPrefixNo] = useState(0);
 
-  
-  const [purchaseData, setPurchaseData] = useState({
-    purchase_name : "",
+  const [purchaseData, setPurchaseData] = useState([]);
+  const [purchaseDataById, setPurchaseDataById] = useState({
+    purchase_name: "",
     purchase_date: "",
     purchase_prefix: "",
     purchase_prefix_no: "",
@@ -34,10 +31,20 @@ const PayOut = (props) => {
 
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/purchase/fetchDataById/${purchaseId}`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/purchase/fetchData/${accountId}`
+      )
       .then((response) => {
-        setPurchaseData({
-          ...purchaseData,
+        setPurchaseData(response.data);
+      });
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchDataById/${purchaseId}`
+      )
+      .then((response) => {
+        setPurchaseDataById({
+          ...purchaseDataById,
           purchase_name: response.data[0].purchase_name,
           purchase_date: response.data[0].purchase_date,
           purchase_prefix: response.data[0].purchase_prefix,
@@ -50,18 +57,15 @@ const PayOut = (props) => {
           purchase_amt_paid: response.data[0].purchase_amt_paid,
         });
       });
-      axios
-      .get(import.meta.env.VITE_BACKEND + "/api/purchase/fetchPurchasePayPrefixData")
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/purchase/fetchPurchasePayPrefixData/${accountId}`
+      )
       .then((response) => {
-        setPurchasePrefixData(response.data);
         setDefaultPaymentPrefixNo(response.data[0].purchase_pay_out_prefix_no);
       });
   }, [change]);
-
-  console.log("purchaseData : " , purchaseData)
-  
-
-  const [searchValue, setSearchValue] = useState("");
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -74,80 +78,92 @@ const PayOut = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
 
-  const [addPrefix, setAddPrefix] = useState(false);
-  const [prefixValue, setPrefixValue] = useState("");
+  // const { enqueueSnackbar } = useSnackbar();
+  // const handleClickVariant = (variant, anchor1, msg) => {
+  //   enqueueSnackbar(msg, { variant });
+  // };
 
-  const [prefixSelected, setprefixSelected] = useState(true);
-  
+  const [prefixNo, setPrefixNo] = useState(0);
 
- 
-  const { enqueueSnackbar } = useSnackbar();
-  const handleClickVariant = (variant, anchor1, msg) => {
-    enqueueSnackbar(msg, { variant });
-  };
-
-  const [prefixNo, setPrefixNo] = useState(1);
   useEffect(() => {
-    purchasePrefixData
-      .filter((code) => code.purchase_pay_out_prefix === prefixValue)
-      .map(
-        (item) => setPrefixNo(item.purchase_pay_out_prefix_no + 1)
-        //setPrefixValue("Expenses")
-      );
-  }, [addPrefix]);
+    if (defaultPaymentPrefixNo === null) {
+      setPrefixNo(1);
+    } else {
+      setPrefixNo(parseInt(defaultPaymentPrefixNo) + 1);
+    }
+  }, [defaultPaymentPrefixNo]);
 
-  const [amtOut , SetAmtOut] = useState(0);
+  const [amtOut, SetAmtOut] = useState(0);
   const [payMode, setPayMode] = useState("cash");
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
-  //   useEffect(() => {
-  //     if (sum !== "" && sum !== 0 && categoryName !== "Choose Category") {
-  //       setSubmitDisabled(false);
-  //     } else {
-  //       setSubmitDisabled(true);
-  //     }
-  //   }, [sum, categoryName]);
+  const [error, setError] = useState(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (parseFloat(amtOut) <= (parseFloat(purchaseDataById.purchase_amt).toFixed(2) - parseFloat(totalAmtPaid)) &&  amtOut > 0 && error === null) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [amtOut, error]);
 
-  const [payData ,setPayData] = useState({
+
+  const [payData, setPayData] = useState({
     purchase_prefix: "",
     purchase_prefix_no: "",
-    purchase_name : "",
-    purchase_cnct_id : "",
-    purchase_pay_out_prefix : "",
-    purchase_pay_out_prefix_no : "",
-    purchase_amt_out : "",
-    purchase_amt_out_date : "",
-    purchase_amt_out_mode : "",
-    purchase_sup_cnct_id : "",
+    purchase_name: "",
+    purchase_cnct_id: "",
+    purchase_pay_out_prefix: "",
+    purchase_pay_out_prefix_no: "",
+    purchase_amt_out: "",
+    purchase_amt_out_date: "",
+    purchase_amt_out_mode: "",
+    purchase_sup_cnct_id: "",
     amt_paid: "",
-    amt_due : ""
-  })
+    amt_due: "",
+    purchase_acc_id: "",
+  });
 
-  payData.purchase_prefix = purchaseData.purchase_prefix;
-  payData.purchase_prefix_no = purchaseData.purchase_prefix_no;
-  payData.purchase_name = purchaseData.purchase_name;
-  payData.purchase_cnct_id = purchaseData.purchase_id;
-  payData.purchase_sup_cnct_id = purchaseData.sup_cnct_id;
+  payData.purchase_acc_id = accountId;
+  payData.purchase_prefix = purchaseDataById.purchase_prefix;
+  payData.purchase_prefix_no = purchaseDataById.purchase_prefix_no;
+  payData.purchase_name = purchaseDataById.purchase_name;
+  payData.purchase_cnct_id = purchaseDataById.purchase_id;
+  payData.purchase_sup_cnct_id = purchaseDataById.sup_cnct_id;
   payData.purchase_pay_out_prefix = "PaymentOut";
-  payData.purchase_pay_out_prefix_no = parseInt(defaultPaymentPrefixNo) + 1;
+  payData.purchase_pay_out_prefix_no = prefixNo;
   payData.purchase_amt_out = amtOut;
   payData.purchase_amt_out_date = filteredDate;
   payData.purchase_amt_out_mode = payMode;
   payData.purchase_desc = "PAYMENT OUT";
-  payData.amt_paid = parseInt(purchaseData.purchase_amt_paid) + parseInt(amtOut);
-  payData.amt_due = purchaseData.purchase_amt_due - amtOut;
+  payData.amt_paid =
+    parseFloat(purchaseDataById.purchase_amt_paid) + parseFloat(amtOut);
+  payData.amt_due = purchaseDataById.purchase_amt_due - amtOut;
+
+  console.log("payData.purchase_pay_out_prefix_no : " , payData.purchase_pay_out_prefix_no , defaultPaymentPrefixNo)
 
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(import.meta.env.VITE_BACKEND + "/api/purchase/addPurchasePayment", payData);
-      await axios.put(import.meta.env.VITE_BACKEND + "/api/purchase/updateBalanceDue", payData);
+      await axios.post(
+        import.meta.env.VITE_BACKEND + "/api/purchase/addPurchasePayment",
+        payData
+      );
       changeChange();
-     props.snack();
+      props.snack()
     } catch (err) {
       console.log(err);
     }
   };
+
+  const totalAmtPaid = purchaseData
+    .filter(
+      (filteredItem) =>
+        parseInt(filteredItem.purchase_pay_out_id) ===
+        parseInt(purchaseDataById.purchase_id)
+    )
+    .reduce(function (prev, current) {
+      return prev + +current.purchase_amt_paid;
+    }, 0);
 
   return (
     <div>
@@ -168,23 +184,17 @@ const PayOut = (props) => {
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
-                  value="PaymentIn"
+                  value="Payment Out"
                   name="prefix_name"
                   className=" w-[65%]"
                   required
-                  
                 />
-                
+
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
-                  value={
-                    prefixValue === "" || prefixValue === undefined
-                      ? parseInt(defaultPaymentPrefixNo) + 1
-                      : prefixNo
-                  }
+                  value={prefixNo}
                   name="prefix_number"
-                  
                   className=" w-[35%]"
                   required
                 />
@@ -201,19 +211,30 @@ const PayOut = (props) => {
                       format="LL"
                       maxDate={todaysDate}
                       onChange={(e) => setTransactionDate(e)}
+                      onError={(newError) => {
+                        setError(newError);
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
             </div>
-           
+
             <div className="box-sec">
               <div>
-                <div>{purchaseData.purchase_prefix}</div>
-                <div>{purchaseData.purchase_prefix_no}</div>
+                <div>{purchaseDataById.purchase_prefix}</div>
+                <div>{purchaseDataById.purchase_prefix_no}</div>
               </div>
-              <div>Total Amount : {parseFloat(purchaseData.purchase_amt).toFixed(2)}</div>
-              <div>Balance Due : {parseFloat(purchaseData.purchase_amt_due).toFixed(2)}</div>
+              
+              <div>
+                Total Amount :
+                {parseFloat(purchaseDataById.purchase_amt).toFixed(2)}
+              </div>
+              <div>
+                Balance Due :
+                {(parseFloat(purchaseDataById.purchase_amt).toFixed(2) -
+                  parseFloat(totalAmtPaid)).toFixed(2)}
+              </div>
             </div>
             <div className="box-sec">
               <TextField
@@ -223,15 +244,21 @@ const PayOut = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="amt_received"
-               
-                onChange={(e) => SetAmtOut(e.target.value.replace(/\D/g, ""))}
-                // onChange={(e) => SetAmtIn(e.target.value)}
-                //step="0.01"
+                value={amtOut}
+                inputProps={{ maxLength : 10 }}
+                onChange={(e) =>
+                  SetAmtOut(
+                    e.target.value
+                      .replace(/^\.|[^0-9.]/g, "")
+                      .replace(/(\.\d*\.)/, "$1")
+                      .replace(/^(\d*\.\d{0,2}).*$/, "$1")
+                  )
+                }
                 required
               />
             </div>
             <div>
-            <div>
+              <div>
                 <label>Payment Mode</label>
               </div>
               <div className="flex gap-2 p-2">
@@ -253,10 +280,13 @@ const PayOut = (props) => {
               </div>
             </div>
             <div>
-              Remaning Amount : {(parseFloat(purchaseData.purchase_amt_due) - parseFloat(amtOut)).toFixed(2)}
+              Remaning Amount :{" "}
+              {(
+                parseFloat(purchaseDataById.purchase_amt).toFixed(2) -
+                parseFloat(totalAmtPaid) -
+                parseFloat(amtOut)
+              ).toFixed(2)}
             </div>
-            
-            {console.log(parseFloat(purchaseData.purchase_amt_due) , parseFloat(amtOut))}
           </Box>
           <div className="cashout-btn-wrapper">
             {submitDisabled ? (

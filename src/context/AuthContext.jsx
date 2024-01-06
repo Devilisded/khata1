@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
@@ -13,12 +12,16 @@ export const AuthContextProvider = ({ children }) => {
       import.meta.env.VITE_BACKEND + "/api/log/checklog",
       { inputs }
     );
-
+    let userData = res.data;
+    console.log(userData);
     setCurrentUser(res.data);
-    console.log(res.data);
+    return userData;
   };
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(currentUser));
+    
+    
+      localStorage.setItem("user", JSON.stringify(currentUser));
+    
   }, [currentUser]);
   return (
     <AuthContext.Provider value={{ currentUser, login }}>

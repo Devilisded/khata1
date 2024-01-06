@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import { useNavigate } from "react-router-dom";
 const CashTran = (props) => {
-  const { changeCashId, cashId, changeExpId, changeSaleId , changePurchaseId } =
+  const { changeCashId, cashId, changeExpId, changeSaleId, changePurchaseId } =
     useContext(UserContext);
   const navigate = useNavigate();
   const time1 = new Date(props.data.cash_time);
@@ -13,7 +13,7 @@ const CashTran = (props) => {
   const fminutes = minutes < 10 ? "0" + minutes : minutes;
   const fhours = hours > 12 ? hours - 12 : hours;
   const AMPM = hours > 12 ? "PM" : "AM";
-  
+
   const changeE = () => {
     changeExpId(parseInt(props.data.cash_mode));
     navigate("/expenses");
@@ -26,21 +26,19 @@ const CashTran = (props) => {
     changeSaleId(props.data.cash_sale_cnct_id);
     navigate("/sales");
   };
-  
+
   const checkNavigate = () => {
-    if (
-      (props.data.cash_mode === "cash" || props.data.cash_mode === "online") &&
-      props.data.cash_description === "PAYMENT IN"
-    ) {
+    console.log(props.data.cash_sale_cnct_id);
+    if (props.data.cash_sale_cnct_id !== null) {
       changeS();
-    }
-    else if ((props.data.cash_mode === "cash" || props.data.cash_mode === "online") && props.data.cash_description === "PAYMENT OUT") {
+    } else if (props.data.cash_pur_cnct_id !== null) {
       changeP();
-    } 
-    else if (props.data.cash_mode === "cash" || props.data.cash_mode === "online") {
+    } else if (
+      props.data.cash_mode === "cash" ||
+      props.data.cash_mode === "online"
+    ) {
       changeCashId(props.data.cash_id);
-    } 
-    else {
+    } else {
       changeE();
     }
   };

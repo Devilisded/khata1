@@ -26,7 +26,7 @@ import "./salesform.scss";
 import { useNavigate } from "react-router-dom";
 
 const SalesForm = () => {
-  const { change, changeChange } = useContext(UserContext);
+  const { accountId } = useContext(UserContext);
   const states = [
     {
       state_name: "Haryana",
@@ -108,91 +108,96 @@ const SalesForm = () => {
   ];
 
   const label = { inputProps: { "aria-label": "Switch demo" } };
-  const [select, setSelect] = useState(false);
-
-  const [isClicked, setIsClicked] = useState(false);
-  const [isClicked2, setIsClicked2] = useState(false);
-  const [gstValue1, setGstValue1] = useState("GST %");
-  const [gstValue2, setGstValue2] = useState("");
-  const [hsnCode, setHsnCode] = useState("HSN Code");
-  const [hsnValue1, setHsnValue1] = useState(null);
-  const [customGst, setcustomGst] = useState("");
-  const [customeCess, setCustomeCess] = useState(null);
-
-  const custom_gst_details =
-    "(" +
-    customGst / 2 +
-    "% CSTS + " +
-    customGst / 2 +
-    "% SGST/UT GST ; " +
-    customGst +
-    "% IGST ; " +
-    customeCess +
-    "% CESS )";
 
   const [customerList, setCustomerList] = useState(false);
   const [customerData, setCustomerData] = useState([]);
 
   const [productList, setProductList] = useState([]);
   const [servicesList, setServicesList] = useState([]);
-  const [businessdata, setBusinessdata] = useState([]);
 
   const [hsnCodes, setHsnCodes] = useState([]);
   const [salesPrefixData, setSalesPrefixData] = useState([]);
   const [defaultPrefixNo, setDefaultPrefixNo] = useState(0);
-  const [defaultPrefixValue, setDefaultPrefixValue] = useState("");
 
   const [businessGst, setBusinessGst] = useState("");
   const [paymentInPrefixNo, setPaymentInPrefixNo] = useState("");
+  const [sacCodes, setSacCodes] = useState("");
+
+  const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
+
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch`)
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetch/${accountId}`)
       .then((response) => {
         setCustomerData(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/act/fetchData/${accountId}`)
       .then((response) => {
-        setBusinessdata(response.data);
         setBusinessGst(response.data[0].business_gst);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData`)
+      .get(
+        import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData/${accountId}`
+      )
       .then((response) => {
         setProductList(response.data);
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData`)
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData/${accountId}`)
       .then((response) => {
         setServicesList(response.data);
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSalesPrefixData`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/sale/fetchSalesPrefixData/${accountId}`
+      )
       .then((response) => {
         setSalesPrefixData(response.data);
         setDefaultPrefixNo(response.data[0].sale_prefix_no);
-        setDefaultPrefixValue(
-          response.data[0].sale_prefix == "Invoice"
-            ? response.data[0].sale_prefix
-            : ("Invoice", setDefaultPrefixNo(0))
-        );
       });
 
+    axios
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/sale/fetchPaymentPrefixData/${accountId}`
+      )
+      .then((response) => {
+        setPaymentInPrefixNo(response.data[0].sale_payment_in_prefix_no);
+      });
+  }, []);
+
+  const [state, setState] = useState({
+    add: false,
+  });
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setState({ ...state, [anchor]: open });
+  };
+
+  useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductHsnCodes`)
       .then((response) => {
         setHsnCodes(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/sale/fetchPaymentPrefixData")
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchSacCodes1`)
       .then((response) => {
-        setPaymentInPrefixNo(response.data[0].sale_payment_in_prefix_no);
+        setSacCodes(response.data);
       });
-  }, []);
+  }, [state]);
 
-  const [custAddress, setCustAddress] = useState(false);
+ 
+
   const [custData, setCustData] = useState({
     cust_id: "",
     cust_name: "",
@@ -206,6 +211,7 @@ const SalesForm = () => {
   });
 
   const [searchValue, setSearchValue] = useState("");
+  const [searchCode, setSearchCode] = useState("");
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -220,9 +226,6 @@ const SalesForm = () => {
   const [addPrefix, setAddPrefix] = useState(false);
   const [prefixValue, setPrefixValue] = useState("");
   const [temp, setTemp] = useState("");
-
-  const [addInvoiceItems, setAddInvoiceItems] = useState(false);
-  const [selectedItems, setSelectedItems] = useState(false);
 
   const [prefixSelected, setprefixSelected] = useState(true);
   const prefixSelectorHandler = () => {
@@ -256,6 +259,7 @@ const SalesForm = () => {
             add_hsn: false,
             add_gst: false,
             item_cat: 1, // products
+            sale_item_type: "pro",
           },
           ...nerArr,
         ])
@@ -279,14 +283,11 @@ const SalesForm = () => {
             add_gst: false,
             item_cat: 0, // Services
             item_sales: item.ser_sales,
+            sale_item_type: "ser",
           },
           ...nerArr,
         ]);
   };
-
-  useEffect(() => {
-    setNerArr((prevNerArr) => prevNerArr.filter((item) => item.item_qty !== 0));
-  }, [nerArr]);
 
   const handleAddHsnCode = (productId) => {
     setNerArr((nerArr) =>
@@ -335,7 +336,7 @@ const SalesForm = () => {
         productId === item.item_id
           ? {
               ...item,
-              item_price: e.target.value,
+              item_price: e.target.value.replace(numberValidation, "$1"),
             }
           : item
       )
@@ -361,7 +362,10 @@ const SalesForm = () => {
         productId === item.item_id
           ? {
               ...item,
-              item_discount_value: e.target.value,
+              item_discount_value: e.target.value.replace(
+                numberValidation,
+                "$1"
+              ),
             }
           : item
       )
@@ -399,14 +403,44 @@ const SalesForm = () => {
     );
   };
 
-  const handleCustomGstChange = (productId, igst, cess) => {
+  // const handleCustomGstChange = (productId, igst, cess) => {
+  //   console.log(productId, igst, cess);
+  //   setNerArr((nerArr) =>
+  //     nerArr.map((item) =>
+  //       productId === item.item_id
+  //         ? {
+  //             ...item,
+  //             item_igst: parseFloat(igst),
+  //             item_cgst: parseFloat(igst) / 2,
+  //             item_cess: cess,
+  //           }
+  //         : item
+  //     )
+  //   );
+  // };
+
+  const handleCustomGstChange = (productId, igst) => {
+    console.log(productId, igst);
     setNerArr((nerArr) =>
       nerArr.map((item) =>
         productId === item.item_id
           ? {
               ...item,
-              item_igst: igst,
-              item_cgst: igst / 2,
+              item_igst: parseFloat(igst),
+              item_cgst: parseFloat(igst) / 2,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleCustomCessChange = (productId, cess) => {
+    console.log(productId, cess);
+    setNerArr((nerArr) =>
+      nerArr.map((item) =>
+        productId === item.item_id
+          ? {
+              ...item,
               item_cess: cess,
             }
           : item
@@ -505,6 +539,10 @@ const SalesForm = () => {
     );
   };
 
+  useEffect(() => {
+    setNerArr((prevNerArr) => prevNerArr.filter((item) => item.item_qty !== 0));
+  }, [nerArr]);
+
   const handleDecrease3 = (productId) => {
     setNerArr((nerArr) =>
       nerArr.map((item) =>
@@ -530,11 +568,8 @@ const SalesForm = () => {
       .map((item) => setPrefixNo(parseInt(item.sale_prefix_no) + 1));
   }, [addPrefix]);
 
-  const [editCustAddress, setEditCustAddress] = useState(false);
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const [addProducts, setAddProducts] = useState(true);
   const [addServices, setAddServices] = useState(false);
-
   const [invoiceItems, setInvoiceItems] = useState({
     in_serial_no: 0,
     in_items: "Ghee",
@@ -566,11 +601,14 @@ const SalesForm = () => {
       in_cat: "",
       in_b_stock: "",
       in_sales_no: "",
+      sale_item_type: "",
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
         item.item_qty > 0
           ? {
+              sale_item_type: item.sale_item_type,
+              in_tax: item.item_tax,
               in_id: item.item_id,
               in_items: item.item_name,
               in_hsn_sac: item.item_code,
@@ -600,7 +638,52 @@ const SalesForm = () => {
           : invoiceItems
       )
     );
-    setSelectedItems(true);
+  };
+
+  const check1 = (item_discount_unit, item_price, item_discount_value) => {
+    const discount_value = item_discount_value ? item_discount_value : 0;
+    return item_discount_unit === "percentage"
+      ? parseFloat(item_price) - (item_price * discount_value) / 100
+      : item_price - discount_value;
+  };
+
+  const check2 = (item_discount_unit, item_price, item_discount_value) => {
+    const discount_value = item_discount_value ? item_discount_value : 0;
+    return item_discount_unit === "percentage"
+      ? ((item_price / (tax / 100 + 1)) * (100 - discount_value)) / 100
+      : item_price / (tax / 100 + 1) - discount_value;
+  };
+
+  const check3 = (
+    item_discount_unit,
+    item_price,
+    item_discount_value,
+    item_igst,
+    item_cess
+  ) => {
+    return (
+      ((parseFloat(item_igst) + parseFloat(item_cess)) *
+        (item_discount_unit === "percentage"
+          ? item_price - (item_price * item_discount_value) / 100
+          : item_price)) /
+      100
+    );
+  };
+
+  const check4 = (
+    item_discount_unit,
+    item_price,
+    item_discount_value,
+    item_igst,
+    item_cess
+  ) => {
+    const tax = parseFloat(item_igst) + parseFloat(item_cess);
+    return item_discount_unit === "percentage"
+      ? ((item_price / (tax / 100 + 1)) *
+          ((100 - item_discount_value) / 100) *
+          tax) /
+          100
+      : item_price - item_price / (tax / 100 + 1);
   };
 
   const handleContinue3 = () => {
@@ -619,11 +702,15 @@ const SalesForm = () => {
       in_cat: "",
       in_b_stock: "",
       in_sales_no: "",
+      sale_item_type: "",
+      in_tax: "",
     });
     setInvoiceItems((invoiceItems) =>
       nerArr.map((item) =>
         item.item_qty > 0
           ? {
+              in_tax: item.item_tax,
+              sale_item_type: item.sale_item_type,
               in_id: item.item_id,
               in_items: item.item_name,
               in_hsn_sac: item.item_code,
@@ -631,50 +718,45 @@ const SalesForm = () => {
               in_unit: item.item_unit,
               in_sale_price: item.item_price,
               in_b_stock: item.item_b_stock - item.item_qty,
-
               in_discount_value: item.item_discount_value,
-
               in_discount_price:
                 item.item_tax === "0"
-                  ? item.item_discount_unit === "percentage"
-                    ? parseFloat(item.item_price) -
-                      (item.item_price *
-                        (item.item_discount_value
-                          ? item.item_discount_value
-                          : 1)) /
-                        100
-                    : item.item_price -
-                      (item.item_discount_value ? item.item_discount_value : 0)
-                  : item.discount_unit === "percentage"
-                  ? ((item.item_price / (item.igst / 100 + 1)) *
-                      (100 -
-                        (item.item_discount_value
-                          ? item.item_discount_value
-                          : 0))) /
-                    100
-                  : item.item_price / (item.item_igst / 100 + 1) -
-                    (item.item_discount_value ? item.item_discount_value : 0),
+                  ? check1(
+                      item.item_discount_unit,
+                      item.item_price,
+                      item.item_discount_value
+                    )
+                  : check2(
+                      item.item_discount_unit,
+                      item.item_price,
+                      item.item_discount_value
+                    ),
 
               in_discount_unit: item.item_discount_unit
                 ? item.item_discount_unit
                 : "amount",
 
-              in_gst_prectentage: item.item_igst ? item.item_igst : "-",
+              in_gst_prectentage:
+                item.item_igst || item.item_cess
+                  ? parseFloat(item.item_igst) + parseFloat(item.item_cess)
+                  : "-",
+
               in_gst_amt:
                 item.item_tax === "0"
-                  ? (item.item_igst *
-                      (item.item_discount_unit === "percentage"
-                        ? item.item_price -
-                          (item.item_price * item.item_discount_value) / 100
-                        : item.item_price)) /
-                    100
-                  : item.item_discount_unit === "percentage"
-                  ? ((item.item_price / (item.item_igst / 100 + 1)) *
-                      ((100 - item.item_discount_value) / 100) *
-                      item.item_igst) /
-                    100
-                  : item.item_price -
-                    item.item_price / (item.item_igst / 100 + 1),
+                  ? check3(
+                      item.item_discount_unit,
+                      item.item_price,
+                      item.item_discount_value,
+                      item.item_igst,
+                      item.item_cess
+                    )
+                  : check4(
+                      item.item_discount_unit,
+                      item.item_price,
+                      item.item_discount_value,
+                      item.item_igst,
+                      item.item_cess
+                    ),
               in_total_amt: "",
               in_cat: item.item_cat,
               in_sales_no: item.item_sales + item.item_qty,
@@ -682,7 +764,6 @@ const SalesForm = () => {
           : invoiceItems
       )
     );
-    setSelectedItems(true);
   };
 
   const filteredInvoiceItems = [];
@@ -710,6 +791,8 @@ const SalesForm = () => {
 
   const [amountPaid, setAmountPaid] = useState(0);
 
+
+
   const [saleData, setSaleData] = useState({
     cust_cnct_id: "",
     sale_prefix: "",
@@ -724,6 +807,7 @@ const SalesForm = () => {
     sale_desc: "",
     payment_in_prefix: "PaymentIn",
     payment_in_prefix_no: "",
+    sale_acc_id: "",
   });
 
   const total_amt = filteredInvoiceItems
@@ -737,18 +821,6 @@ const SalesForm = () => {
       return acc + current;
     }, 0);
 
-  const [state, setState] = useState({
-    add: false,
-  });
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setState({ ...state, [anchor]: open });
-  };
   const list = (anchor) => (
     <Box sx={{ width: 450 }} role="presentation">
       {anchor === "add" ? (
@@ -756,10 +828,7 @@ const SalesForm = () => {
           <div>
             <div className="flex justify-between p-3 text-center items-center ">
               <div className="flex justify-between flex-row category  ">
-                <button
-                  className="back-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-2 pl-0 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in"
-                  onClick={() => setAddInvoiceItems(false)}
-                >
+                <button className="back-btn flex gap-1 justify-center text-gray-600 bg-gray-200 w-full p-2 pl-0 rounded-[5px] hover:text-white hover:bg-gray-600 transition-all ease-in">
                   Back
                 </button>
               </div>
@@ -840,7 +909,7 @@ const SalesForm = () => {
                               <div className="flex gap-[10px] place-items-center">
                                 <p className="text-slate-500 text-sm">PRICE</p>
                                 <p className="text-slate-800 font-semibold text-lg">
-                                  ₹{" "}
+                                  ₹
                                   {addProducts
                                     ? filteredItem.sale_price
                                     : filteredItem.ser_price}
@@ -890,11 +959,6 @@ const SalesForm = () => {
                                             ? filteredItem.product_id
                                             : filteredItem.ser_id
                                         ),
-                                          // handleIncrease2(
-                                          //   addProducts
-                                          //     ? filteredItem.product_id
-                                          //     : filteredItem.ser_id
-                                          // );
                                           addProducts
                                             ? handleIncrease2(
                                                 filteredItem.product_id
@@ -914,7 +978,6 @@ const SalesForm = () => {
                               <button
                                 onClick={(e) => {
                                   e.preventDefault();
-
                                   handleChange2(filteredItem);
                                   handleIncrease(
                                     addProducts
@@ -936,15 +999,6 @@ const SalesForm = () => {
                             ? filteredItem.qty
                             : filteredItem.ser_qty) !== 0 ? (
                             <div>
-                              {/* {nerArr
-                                .filter(
-                                  (code) => 
-                                    code.item_id ===
-                                    (addProducts
-                                      ? filteredItem.product_id
-                                      : filteredItem.ser_id ) && code.item_qty !== 0 
-                                ) */}
-
                               {(addProducts
                                 ? nerArr.filter(
                                     (code) =>
@@ -962,34 +1016,23 @@ const SalesForm = () => {
                               ).map((item) => (
                                 <div>
                                   <div>
-                                    {item.item_tax === "1" ? (
-                                      <Box className="box-sec margin-top-zero ">
-                                        <label className="pl-2 ">
-                                          Tax Included?
-                                        </label>
-                                        <Switch
-                                          {...label}
-                                          defaultChecked
-                                          color="success"
-                                          onChange={() =>
-                                            handleTaxIncluded(item.item_id)
-                                          }
-                                        />
-                                      </Box>
-                                    ) : (
-                                      <Box className="box-sec margin-top-zero ">
-                                        <label className="pl-2 ">
-                                          Tax Included?
-                                        </label>
-                                        <Switch
-                                          {...label}
-                                          color="success"
-                                          onChange={() =>
-                                            handleTaxIncluded(item.item_id)
-                                          }
-                                        />
-                                      </Box>
-                                    )}
+                                    
+
+                                    <Box className="box-sec margin-top-zero ">
+                                      <label className="pl-2 ">
+                                        Tax Included?
+                                      </label>
+                                      <Switch
+                                        {...label}
+                                        defaultChecked={
+                                          item.item_tax === "1" ? true : false
+                                        }
+                                        color="success"
+                                        onChange={() =>
+                                          handleTaxIncluded(item.item_id)
+                                        }
+                                      />
+                                    </Box>
                                   </div>
                                   <div className="flex flex-col">
                                     <Box className="box-sec ">
@@ -1000,7 +1043,7 @@ const SalesForm = () => {
                                         className="w-[50%] sec-1"
                                         size="small"
                                         name="sale_price"
-                                        defaultValue={item.item_price}
+                                        value={item.item_price}
                                         onChange={(e) =>
                                           handlePriceChange(item.item_id, e)
                                         }
@@ -1024,6 +1067,7 @@ const SalesForm = () => {
                                           id="outlined-basic"
                                           variant="outlined"
                                           size="small"
+                                          value={item.item_discount_value}
                                           onChange={(e) =>
                                             handleDiscountValue(item.item_id, e)
                                           }
@@ -1064,26 +1108,15 @@ const SalesForm = () => {
                                             : "GST %"
                                         }
                                         helperText={
-                                          item.item_igst !== "" &&
-                                          item.item_cess === ""
-                                            ? item.item_cess !== ""
-                                              ? "(" +
-                                                item.item_cgst +
-                                                "% CGST + " +
-                                                item.item_cgst +
-                                                "% SGST/UT GST ; " +
-                                                item.item_igst +
-                                                "% IGST ; " +
-                                                item.item_cess +
-                                                "% CESS )"
-                                              : "(" +
-                                                item.item_cgst +
-                                                "% CGST + " +
-                                                item.item_cgst +
-                                                "% SGST/UT GST ; " +
-                                                item.item_igst +
-                                                "% IGST ; )"
-                                            : ""
+                                          "(" +
+                                          item.item_cgst +
+                                          "% CGST + " +
+                                          item.item_cgst +
+                                          "% SGST/UT GST ; " +
+                                          item.item_igst +
+                                          "% IGST ; " +
+                                          item.item_cess +
+                                          "% CESS )"
                                         }
                                         className="sec-2 w-full"
                                         size="small"
@@ -1109,64 +1142,68 @@ const SalesForm = () => {
                                           size="small"
                                           placeholder="HSN Code or Product Name "
                                           onChange={(e) => {
-                                            setSearchValue(e.target.value);
+                                            setSearchCode(e.target.value);
                                           }}
                                         />
+                                        
+                                      
+                                         {searchCode !== null &&
+                                        (searchCode !== "") === true &&
+                                        (addProducts ? hsnCodes : sacCodes)
 
-                                        {hsnCodes
-                                          .filter(
-                                            (code) =>
-                                              code.hsn_code
-                                                .toString()
-                                                .startsWith(searchValue) ||
-                                              code.hsn_desc.startsWith(
-                                                searchValue
+                                              .filter(
+                                                (code) =>                                              
+                                                code.hsn_code.toString().startsWith(searchCode)
+                                                  ||
+                                                code.hsn_desc
+                                                  .toString()
+                                                  .toLowerCase()
+                                                  .startsWith(
+                                                    searchCode
+                                                      .toString()
+                                                      .toLowerCase()
+                                                  )
                                               )
-                                          )
-                                          .map((hsnItem) => (
-                                            <div
-                                              key={hsnItem.hsn_code}
-                                              className="flex card-sec"
-                                              onClick={() => {
-                                                setHsnCode(hsnItem.hsn_code),
-                                                  setHsnValue1(
-                                                    hsnItem.hsn_desc
-                                                  ),
-                                                  setGstValue1(hsnItem.igst),
-                                                  setGstValue2(
-                                                    "( " +
-                                                      hsnItem.cgst +
-                                                      "% CGST + " +
-                                                      hsnItem.sgst +
-                                                      "% SGST/UT GST ; " +
-                                                      hsnItem.igst +
-                                                      "% IGST )"
-                                                  );
-
-                                                handleAddHsnCode(item.item_id);
-                                                handleHsnChange(
-                                                  item.item_id,
-                                                  hsnItem.hsn_code,
-                                                  hsnItem.hsn_desc,
-                                                  hsnItem.igst,
-                                                  hsnItem.cgst,
-                                                  hsnItem.sgst
-                                                );
-                                              }}
-                                            >
-                                              <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded">
-                                                <div className="flex gap-6 pb-4">
-                                                  <h2 className=" rounded bg-slate-300 px-6 py-1 ">
-                                                    {hsnItem.hsn_code}
-                                                  </h2>
-                                                  <h2 className=" rounded bg-slate-300 px-4 py-1 ">
-                                                    {hsnItem.igst + "% GST"}
-                                                  </h2>
+                                              .map((filteredItem) => (
+                                                <div
+                                                  key={filteredItem.id}
+                                                  className="flex card-sec"
+                                                  onClick={() => {
+                                                    setSearchCode("");
+                                                    setProductData({
+                                                      ...productData,
+                                                      igst: filteredItem.igst,
+                                                      cgst: filteredItem.cgst,
+                                                      sgst: filteredItem.sgst,
+                                                      cess: filteredItem.cess,
+                                                      hsn_code:
+                                                        typeof filteredItem.hsn_code ===
+                                                        "number"
+                                                          ? filteredItem.hsn_code
+                                                          : null,
+                                                      hsn_desc:
+                                                        filteredItem.hsn_desc,
+                                                    });
+                                                    setIsClicked(false);
+                                                  }}
+                                                >
+                                                  <div className="gst-card-text cursor-pointer hover:bg-slate-100 p-3 rounded">
+                                                    <div className="flex gap-6 pb-4">
+                                                      <h2 className=" rounded bg-slate-300 px-6 py-1 ">
+                                                        {filteredItem.hsn_code}
+                                                      </h2>
+                                                      <h2 className=" rounded bg-slate-300 px-4 py-1 ">
+                                                        {filteredItem.igst +
+                                                          "% GST"}
+                                                      </h2>
+                                                    </div>
+                                                    <p>
+                                                      {filteredItem.hsn_desc}
+                                                    </p>
+                                                  </div>
                                                 </div>
-                                                <p>{hsnItem.hsn_desc}</p>
-                                              </div>
-                                            </div>
-                                          ))}
+                                              ))
+                                          }
                                       </>
                                     ) : (
                                       <span className="m-0"></span>
@@ -1204,18 +1241,6 @@ const SalesForm = () => {
                                                     id="gst_on_selected_item"
                                                     name="gst"
                                                     onChange={() => {
-                                                      setGstValue1(
-                                                        gstItem.label1
-                                                      ),
-                                                        setGstValue2(
-                                                          "( " +
-                                                            gstItem.label1 +
-                                                            "% IGST + " +
-                                                            gstItem.label2 +
-                                                            "% SGST/UT GST ; " +
-                                                            gstItem.label3 +
-                                                            "% CGST )"
-                                                        );
                                                       handleAddGst(
                                                         item.item_id
                                                       );
@@ -1234,6 +1259,7 @@ const SalesForm = () => {
                                         </div>
                                       </Box>
                                       <div>Custom Tax %</div>
+                                      {console.log(item.item_igst)}
                                       <Box className="box-sec">
                                         <TextField
                                           label="GST"
@@ -1242,9 +1268,15 @@ const SalesForm = () => {
                                           className="sec-1 w-full"
                                           size="small"
                                           required
+                                          inputProps={{ maxLength: 10 }}
+                                          value={item.item_igst ? item.item_igst : 0}
                                           onChange={(e) => {
-                                            setcustomGst(
-                                              e.target.value.replace(/\D/g, "")
+                                            handleCustomGstChange(
+                                              item.item_id,
+                                              e.target.value.replace(
+                                                numberValidation,
+                                                "$1"
+                                              )
                                             );
                                           }}
                                         />
@@ -1255,30 +1287,34 @@ const SalesForm = () => {
                                           className="sec-2 w-full"
                                           size="small"
                                           required
+                                          inputProps={{ maxLength: 10 }}
+                                          value={item.item_cess}
+                                         
                                           onChange={(e) => {
-                                            setCustomeCess(
-                                              e.target.value.replace(/\D/g, "")
+                                            handleCustomCessChange(
+                                              item.item_id,
+                                              e.target.value.replace(
+                                                numberValidation,
+                                                "$1"
+                                              )
                                             );
                                           }}
                                         />
                                       </Box>
-                                      <Box className="box-sec">
+                                      {/* <Box className="box-sec">
                                         <button
                                           onClick={(e) => {
                                             e.preventDefault(),
-                                              setGstValue1(customGst),
-                                              setGstValue2(custom_gst_details);
-                                            setIsClicked2(false);
-                                            handleCustomGstChange(
-                                              item.item_id,
-                                              customGst,
-                                              customeCess ? customeCess : 0
-                                            );
+                                              handleCustomGstChange(
+                                                item.item_id,
+                                                customGst,
+                                                customeCess ? customeCess : 0
+                                              );
                                           }}
                                         >
-                                          Add Custome Gst
+                                          Add Custom Gst
                                         </button>
-                                      </Box>
+                                      </Box> */}
                                     </>
                                   ) : (
                                     <div></div>
@@ -1303,9 +1339,6 @@ const SalesForm = () => {
             className="flex justify-between p-3 px-5"
           >
             <button
-              onClick={() => {
-                setSelectedItems(true), setAddInvoiceItems(false);
-              }}
               className="text-blue-600  py-2 px-4 rounded-[5px] hover:text-white hover:bg-blue-600 transition-all ease-in"
               style={{ border: "1px solid rgb(37, 99, 235)" }}
             >
@@ -1327,8 +1360,9 @@ const SalesForm = () => {
     saleData.payment_in_prefix_no = parseInt(paymentInPrefixNo) + 1;
   }
 
+  saleData.sale_acc_id = accountId;
   saleData.sale_amt_paid = amountPaid;
-  saleData.sale_amt_due = totalGrossValue - parseInt(amountPaid);
+  saleData.sale_amt_due = totalGrossValue - parseFloat(amountPaid);
   saleData.sale_amt_type = amtPayMethod;
 
   saleData.sale_amt = total_amt;
@@ -1376,6 +1410,22 @@ const SalesForm = () => {
     }
   };
 
+  const [error, setError] = useState(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  useEffect(() => {
+    if (
+      saleData.sale_name !== "" &&
+      filteredInvoiceItems.length > 0 &&
+      saleData.sale_amt_paid >= 0 &&
+      saleData.sale_amt_paid <= saleData.sale_amt &&
+      error === null
+    ) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [saleData.sale_name, filteredInvoiceItems, saleData.sale_amt_paid, error]);
+
   return (
     <React.Fragment>
       <Drawer
@@ -1404,10 +1454,15 @@ const SalesForm = () => {
                 GST Registered Business ?
                 <Switch defaultChecked onChange={handleBusinessGst} />
               </div>
+
               <button
-                className="p-2 rounded text-green-600 hover:bg-green-600 hover:text-white"
+                className={
+                  submitDisabled === false
+                    ? " p-2 rounded text-green-600 hover:bg-green-600 hover:text-white"
+                    : " cursor-not-allowed text-slate-400 bg-slate-200 p-2 rounded"
+                }
                 style={{
-                  border: "1px solid #109E5B",
+                  border: submitDisabled === false ? "1px solid #109E5B" : "",
                   transition: "all 400ms ease-in-out",
                 }}
                 onClick={handleClick}
@@ -1471,7 +1526,6 @@ const SalesForm = () => {
                     type="text"
                     className="border p-2 rounded-lg w-[90%] border-slate-400"
                     placeholder="Address (Optional)"
-                    onClick={() => setEditCustAddress(true)}
                     value={
                       custData.cust_flat +
                       ", " +
@@ -1522,18 +1576,6 @@ const SalesForm = () => {
                   {addPrefix ? (
                     <div className=" category p-3 shadow-[0_0px_10px_rgba(0,0,0,0.25)]">
                       <div className="w-full ">
-                        {/* <TextField
-                          label="Enter Prefix"
-                          name="enter_prefix_name"
-                          id="outlined-basic"
-                          variant="outlined"
-                          className="w-full"
-                          size="small"
-                          onChange={(e) => {
-                            setTemp(e.target.value), setPrefixNo(1);
-                          }}
-                          required
-                        /> */}
                         <input
                           type="text"
                           className="border p-2 rounded-lg w-[58%] border-slate-400 h-[90%]"
@@ -1617,6 +1659,9 @@ const SalesForm = () => {
                     className="w-[90%]"
                     maxDate={todaysDate}
                     sx={{ height: "50px" }}
+                    onError={(newError) => {
+                      setError(newError);
+                    }}
                   />
                 </LocalizationProvider>
                 <input
@@ -1628,10 +1673,6 @@ const SalesForm = () => {
 
                 <Autocomplete
                   options={states.map((item) => item.state_name)}
-                  //   onChange={(event, newValue) => {
-                  //     setSecondaryUnitValue(newValue);
-                  //   }}
-
                   id="disable-close-on-select"
                   className=" w-[90%] border-slate-400"
                   renderInput={(params) => (
@@ -1712,17 +1753,23 @@ const SalesForm = () => {
 
             {amtPayMethod !== "unpaid" ? (
               <div className="flex gap-2 text-lg font-semibold text-slate-600">
-                {/* <div>Amount Paid (₹) :</div> */}
                 <div>
-                  <input
-                    type="text"
-                    className="border p-2 rounded-lg w-[90%] border-slate-400"
+                  <TextField
+                    variant="outlined"
+                    size="small"
                     placeholder="Amount Paid (₹)"
-                    //defaultValue={totalGrossValue}
+                    className="border p-2 rounded-lg w-[90%] border-slate-400"
+                    value={amountPaid}
+                    inputProps={{ maxLength: 10 }}
                     onChange={(e) =>
                       setAmountPaid(
-                        e.target.value <= totalGrossValue ? e.target.value : 0
+                        e.target.value.replace(numberValidation, "$1")
                       )
+                    }
+                    helperText={
+                      parseFloat(amountPaid) > parseFloat(totalGrossValue)
+                        ? "Error"
+                        : ""
                     }
                   />
                 </div>
@@ -1734,9 +1781,11 @@ const SalesForm = () => {
             <div className="flex gap-2 text-lg font-semibold text-slate-600">
               <div>Balance Due :</div>
               <div>
-                ₹{" "}
-                {totalGrossValue.toFixed(2) -
-                  parseInt(amountPaid ? amountPaid : 0)}
+                ₹
+                {(
+                  totalGrossValue.toFixed(2) -
+                  (amountPaid ? parseFloat(amountPaid).toFixed(2) : 0)
+                ).toFixed(2)}
               </div>
             </div>
             <div className="flex gap-2 text-lg">

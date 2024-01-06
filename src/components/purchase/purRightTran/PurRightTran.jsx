@@ -3,7 +3,8 @@ const PurRightTran = (props) => {
     return (
       <div>
         
-        {props.purchase_pay_out_id === null ? (
+        {console.log(props.purchase_pay_out_id, props.purchase_re_id )}
+        {props.purchase_pay_out_id === null && props.purchase_re_id === undefined ? (
           <div className="flex justify-between border-b px-7 py-4">
             <div className="">
               <div className="details flex flex-col gap-1 ">
@@ -51,6 +52,7 @@ const PurRightTran = (props) => {
                 <div className="category font-semibold ">Adjusted In</div>
                 <div className="text-sm text-slate-700 font-semibold">
                   {props.purchase_prefix} #{props.purchase_prefix_no}
+        
                 </div>
               </div>
             </div>

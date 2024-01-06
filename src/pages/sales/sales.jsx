@@ -1,6 +1,5 @@
 import * as React from "react";
 import Navbar from "../../components/navbar/Navbar";
-import SelectCustomer from "../../components/mainpage/selectCustomer/SelectCustomer";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { useState, useEffect, useContext } from "react";
@@ -11,11 +10,13 @@ import SaleRight from "../../components/sales/saleRight/SaleRight";
 import SalesInvoice from "../../components/sales/salesInvoice/SalesInvoice";
 import PaymentIn from "../../components/sales/salesPaymentIn/SalesPaymenIn";
 import { IconBox, IconUsers } from "@tabler/icons-react";
+import SaleEditPayIn from "../../components/sales/saleEditPayIn/saleEditPayIn";
 const MyApp = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState({
     pdf: false,
     addPayment: false,
+    edit: false,
   });
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -39,12 +40,22 @@ const MyApp = () => {
         <Box sx={{ width: 950 }}>
           <SalesInvoice />
         </Box>
-      ) : anchor === "addPayment" ? (
+      ) : anchor === "edit" ? 
+      <Box sx={{ width: 450 }} >
+        <SaleEditPayIn
+          snack={() =>
+            handleClickVariant(
+              "success",
+              "edit",
+              "Transaction Has been Updated"
+            )
+          }
+        /> </Box> : anchor === "addPayment" ? (
         <Box sx={{ width: 450 }}>
           <PaymentIn
             sx={{ width: 450 }}
             snack={() =>
-              handleClickVariant("success", "add", "Product Has been Added")
+              handleClickVariant("success", "addPayment", "Transaction Has been Added")
             }
           />
         </Box>
@@ -72,6 +83,13 @@ const MyApp = () => {
       </Drawer>
       <Drawer
         anchor="right"
+        open={state["edit"]}
+        onClose={toggleDrawer("edit", false)}
+      >
+        {list("edit")}
+        </Drawer>
+      <Drawer
+        anchor="right"
         open={state["pdf"]}
         onClose={toggleDrawer("pdf", false)}
       >
@@ -87,6 +105,7 @@ const MyApp = () => {
             <SaleRight
               pdf={toggleDrawer("pdf", true)}
               addPayment={toggleDrawer("addPayment", true)}
+              edit = {toggleDrawer("edit" , true)}
             />
           ) : (
             <div className="selectCustomer h-[100vh - 87px] flex flex-col justify-center items-center w-full bg-slate-100">

@@ -9,9 +9,10 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import CashTran from "../cashTran/CashTran";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
+import { Link } from "react-router-dom";
 
 const CashLeft = (props) => {
-  const { change } = useContext(UserContext);
+  const { change, accountId } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -27,15 +28,18 @@ const CashLeft = (props) => {
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 16);
   const [info, setInfo] = useState([]);
-  console.log(filteredDate);
+
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchDate/${filteredDate}`)
+      .get(
+        import.meta.env.VITE_BACKEND +
+          `/api/cash/fetchDate/${filteredDate}/${accountId}`
+      )
       .then((res) => {
         setData(res.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/cash/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/cash/fetchData/${accountId}`)
       .then((res) => {
         setInfo(res.data);
       });
@@ -55,7 +59,7 @@ const CashLeft = (props) => {
     return prev + +current.cash_receive;
   }, 0);
   const totalBalance = total_pay - total_receive;
-  console.log(data);
+
   return (
     <div className="cashleft">
       <div className="text-xl font-semibold p-5 border-b border-gray-300 text-blue-600">
@@ -73,8 +77,8 @@ const CashLeft = (props) => {
           >
             ₹
             {totalBalance < 0
-              ? totalBalance * -1 + " Pay"
-              : totalBalance + " Receive"}
+              ? totalBalance.toFixed(2) * -1 + " Pay"
+              : totalBalance.toFixed(2) + " Receive"}
           </span>
         </div>
         <div className="text-gray-500 flex gap-1 items-center">
@@ -88,13 +92,15 @@ const CashLeft = (props) => {
           >
             ₹
             {todaysBalance < 0
-              ? todaysBalance * -1 + " Pay"
-              : todaysBalance + " Receive"}
+              ? todaysBalance.toFixed(2) * -1 + " Pay"
+              : todaysBalance.toFixed(2) + " Receive"}
           </span>
         </div>
-        <button className="flex gap-1 items-end report rounded-md p-2 text-blue-600 hover:text-white hover:bg-blue-600">
-          <IconChecklist className="w-5 h-5" /> View Report
-        </button>
+        <Link to="/cashReport">
+          <button className="flex gap-1 items-end report rounded-md p-2 text-blue-600 hover:text-white hover:bg-blue-600">
+            <IconChecklist className="w-5 h-5" /> View Report
+          </button>
+        </Link>
       </div>
       <div className="date flex justify-between items-center p-5 px-6 border-b border-gray-300">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -142,10 +148,10 @@ const CashLeft = (props) => {
             </div>
           </div>
           <div className="text-red-600 justify-self-end font-semibold">
-            ₹ {sum_pay}
+            ₹ {sum_pay.toFixed(2)}
           </div>
           <div className="text-green-600 justify-self-end font-semibold">
-            ₹ {sum_receive}
+            ₹ {sum_receive.toFixed(2)}
           </div>
         </div>
       </div>

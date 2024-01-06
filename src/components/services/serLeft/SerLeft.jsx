@@ -8,21 +8,28 @@ import products from "../../../pages/products/productsdata";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 const SerLeft = (props) => {
-  const { change } = useContext(UserContext);
+  const { change , accountId} = useContext(UserContext);
   const [filterByValue, setFilterByValue] = useState("All");
 
   const location = useLocation();
 
   const [result, setResult] = useState([]);
   const [data, setData] = useState([]);
+  const [serTranData , setSerTranData] = useState([]);
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/ser/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchData/${accountId}`)
       .then((res) => {
         setResult(res.data);
       });
+      axios
+    .get(import.meta.env.VITE_BACKEND + `/api/ser/fetchSerTranData`)
+      .then((res) => {
+        setSerTranData(res.data);
+      });
+      
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/auth/fetchProductData")
+      .get(import.meta.env.VITE_BACKEND + `/api/auth/fetchProductData/${accountId}`)
       .then((response) => {
         setData(response.data);
       });
@@ -31,7 +38,7 @@ const SerLeft = (props) => {
   const [filter2, setFilter2] = useState("All");
   const [searchValue, setSearchValue] = useState("");
 
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("recent");
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
@@ -49,7 +56,6 @@ const SerLeft = (props) => {
     sortedUsers.sort((a, b) => a.ser_price - b.ser_price);
   }
 
-  console.log("sortedUsers : ", sortedUsers, result);
   return (
     <div className="serleft">
       <div className="heading text-lg font-semibold">
@@ -137,11 +143,7 @@ const SerLeft = (props) => {
         <div className="sprice text-slate-600">Sales Price</div>
         <div className="qty text-slate-600">No. Of Sales</div>
       </div>
-      {/* <div className="cards">
-        {result.map((item, index) => (
-          <SerCard key={index} data={item} />
-        ))}
-      </div> */}
+      
       <div className="cards">
         {sortedUsers
 
@@ -155,9 +157,20 @@ const SerLeft = (props) => {
           .filter((code) =>
             code.ser_name.toLowerCase().startsWith(searchValue.toLowerCase())
           )
-          .map((filteredItem, index) => (
-            <SerCard key={index} data={filteredItem} />
-          ))}
+          .map((filteredItem, index) => {
+            const sum = serTranData
+                .filter((item) => parseInt(item.sale_cnct_id) === parseInt(filteredItem.ser_id))
+                .reduce(function (prev, current) {
+                  
+                  if (current.ser_quantity) {
+                    return prev + +current.ser_quantity;
+                  } else {
+                    return prev - +current.ser_return;
+                  }
+                }, 0); return (
+            <SerCard key={index} data={filteredItem} totalSales={sum} />
+                )
+                })}
       </div>
     </div>
   );

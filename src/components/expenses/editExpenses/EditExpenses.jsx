@@ -20,7 +20,7 @@ import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 const EditExpenses = (props) => {
-  const { change, expId, changeChange } = useContext(UserContext);
+  const { change, expId, changeChange , accountId} = useContext(UserContext);
   const [expensesListResult, setExpensesListResult] = useState([]);
   const [expensesCategoryResult, setExpensesCategoryResult] = useState([]);
   const [expensesUserAddedItemList, setExpensesUserAddedItemList] = useState(
@@ -64,20 +64,20 @@ const EditExpenses = (props) => {
         setExpensesRightTranResult(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseCategory`)
+      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseCategory/${accountId}`)
       .then((response) => {
         setExpensesCategoryResult(response.data);
       });
 
     axios
-      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseList`)
+      .get(import.meta.env.VITE_BACKEND + `/api/exp/fetchExpenseList/${accountId}`)
       .then((response) => {
         setExpensesListResult(response.data);
       });
     axios
       .get(
         import.meta.env.VITE_BACKEND +
-          `/api/exp/fetchExpensesUserAddedItemList/${expId}/${expId}`
+          `/api/exp/fetchExpensesUserAddedItemList/${expId}/${accountId}/${expId}`
       )
       .then((response) => {
         setExpensesUserAddedItemList(response.data);
@@ -514,11 +514,11 @@ const EditExpenses = (props) => {
                                     expensesCategoryResult.find(
                                       (category) =>
                                         category.category_name.toLowerCase() ===
-                                        e.target.value.toLowerCase()
+                                        e.target.value.toLowerCase().replace(/[^A-Z a-z]/g, "")
                                     )
                                       ? setAddNewCategoryError(true)
                                       : (setAddNewCategoryError(false),
-                                        e.target.value)
+                                        e.target.value.replace(/[^A-Z a-z]/g, ""))
                                   )
                                 }
                                 helperText={
@@ -570,11 +570,11 @@ const EditExpenses = (props) => {
                                     expensesCategoryResult.find(
                                       (category) =>
                                         category.category_name ===
-                                        e.target.value
+                                        e.target.value.replace(/[^A-Z a-z]/g, "")
                                     )
                                       ? setEditCategoryError(true)
                                       : (setEditCategoryError(false),
-                                        e.target.value)
+                                        e.target.value.replace(/[^A-Z a-z]/g, ""))
                                   )
                                 }
                                 helperText={
@@ -848,15 +848,16 @@ const EditExpenses = (props) => {
                               variant="outlined"
                               className="w-full "
                               size="small"
+                              value={expenseList}
                               onChange={(e) =>
                                 setExpenseList(
                                   expensesListResult.find(
                                     (item) =>
-                                      item.expense_name === e.target.value
+                                      item.expense_name === e.target.value.replace(/[^A-Z a-z]/g, "")
                                   )
                                     ? setAddNewExpensesItemError(true)
                                     : (setAddNewExpensesItemError(false),
-                                      e.target.value)
+                                      e.target.value.replace(/[^A-Z a-z]/g, ""))
                                 )
                               }
                               helperText={
@@ -873,7 +874,8 @@ const EditExpenses = (props) => {
                               variant="outlined"
                               className="w-full "
                               size="small"
-                              onChange={(e) => setPrice(e.target.value)}
+                              value={price}
+                              onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))}
                               required
                             />
                           </Box>
@@ -1088,11 +1090,11 @@ const EditExpenses = (props) => {
                                       setupdatedExpenseItemName(
                                         expensesListResult.find(
                                           (item) =>
-                                            item.expense_name === e.target.value
+                                            item.expense_name === e.target.value.replace(/[^A-Z a-z]/g, "")
                                         )
                                           ? setEditExpensesItemError(true)
                                           : (setEditExpensesItemError(false),
-                                            e.target.value)
+                                            e.target.value.replace(/[^A-Z a-z]/g, ""))
                                       )
                                     }
                                     helperText={
@@ -1106,13 +1108,13 @@ const EditExpenses = (props) => {
                                   <TextField
                                     label="Enter Price"
                                     value={updatedExpensePrice}
-                                    //name="enter-category-name"
+                                    
                                     id="outlined-basic"
                                     variant="outlined"
                                     className="w-full "
                                     size="small"
                                     onChange={(e) =>
-                                      setUpdatedExpensePrice(e.target.value)
+                                      setUpdatedExpensePrice(e.target.value.replace(/[^0-9]/g, ""))
                                     }
                                     required
                                   />

@@ -20,6 +20,7 @@ const SupCard = (props) => {
   //   props.data.sup_amt_type === "receive"
   //     ? props.data.sup_amt + total
   //     : -props.data.sup_amt + total;
+
   return (
     <div
       className={
@@ -55,7 +56,7 @@ const SupCard = (props) => {
                   : "text-red-600 font-semibold text-lg"
               }
             >
-              {total > 0 ? "₹ " + total : "₹ " + total * -1}
+              {total > 0 ? "₹ " + total.toFixed(2) : "₹ " + total.toFixed(2) * -1}
             </div>
             <div className="text-slate-700 text-xs">
               {total > 0 ? "You'll Pay" : "You'll Receive"}

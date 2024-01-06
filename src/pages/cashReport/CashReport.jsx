@@ -9,12 +9,15 @@ import {
 import Navbar from "../../components/navbar/Navbar";
 import SideBar from "../../components/report/sideBar/SideBar";
 import CashRepTran from "../../components/report/cashRepTran/CashRepTran";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { ExportToExcel } from "../../components/report/excelDownload/ExcelDownload";
 import { Box, Drawer } from "@mui/material";
 import CashPDF from "../../components/report/cashPdf/CashPDF";
+import { UserContext } from "../../context/UserIdContext";
+
 const CashReport = () => {
+  const {accountId} = useContext(UserContext);
   const [state, setState] = useState({
     pdf: false,
   });
@@ -42,7 +45,7 @@ const CashReport = () => {
   const [sort, setSort] = useState("");
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/rep/fetchCash")
+      .get(import.meta.env.VITE_BACKEND + `/api/rep/fetchCash/${accountId}`)
       .then((res) => setData(res.data));
     if (period === "date") {
       setDateVal(new Date(sdate));
@@ -208,7 +211,7 @@ const CashReport = () => {
                 <div className="flex gap-10">
                   <div className="stat flex rounded-lg bg-green-300/30 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
-                      <div className="text-2xl font-semibold">₹ {In}</div>
+                      <div className="text-2xl font-semibold">₹ {In.toFixed(2)}</div>
                       <div className="text-green-800 font-semibold">
                         Total In
                       </div>
@@ -219,7 +222,7 @@ const CashReport = () => {
                   </div>
                   <div className="stat flex rounded-lg bg-red-300/50 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
-                      <div className="text-2xl font-semibold">₹ {Out}</div>
+                      <div className="text-2xl font-semibold">₹ {Out.toFixed(2)}</div>
                       <div className="text-red-800 font-semibold">
                         Total Out
                       </div>
@@ -231,7 +234,7 @@ const CashReport = () => {
 
                   <div className="stat flex rounded-lg bg-yellow-300/30 w-60 h-24 p-5 items-center justify-between text-slate-700">
                     <div>
-                      <div className="text-2xl font-semibold">₹ {In - Out}</div>
+                      <div className="text-2xl font-semibold">₹ {(In - Out).toFixed(2)}</div>
                       <div className="text-yellow-800 font-semibold">
                         NET BALANCE
                       </div>

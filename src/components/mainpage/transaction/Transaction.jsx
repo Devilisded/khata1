@@ -42,17 +42,17 @@ const Transaction = (props) => {
           <IconPointFilled className="w-3 h-3" />
           {fhours + ":" + fminutes + " " + AMPM}
         </div>
-        <div className="text-sm text-slate-600">Balance : {props.totalBalance}</div>
+        <div className="text-sm text-slate-600">Balance : {props.totalBalance.toFixed(2)}</div>
       </div>
       <div className="flex gap-56 mr-36">
         <div className="text-red-600">
           {props.transactions.tran_pay
-            ? "₹ " + props.transactions.tran_pay
+            ? "₹ " + parseFloat(props.transactions.tran_pay).toFixed(2)
             : "-"}
         </div>
         <div className="text-green-600">
           {props.transactions.tran_receive
-            ? "₹ " + props.transactions.tran_receive
+            ? "₹ " + parseFloat(props.transactions.tran_receive).toFixed(2)
             : "-"}
         </div>
       </div>

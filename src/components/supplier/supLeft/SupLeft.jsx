@@ -18,17 +18,19 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 
 const SupLeft = (props) => {
-  const { change } = useContext(UserContext);
+  const { change, accountId, parties } = useContext(UserContext);
   const [age, setAge] = useState("");
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+  // const handleChange = (event) => {
+  //   setAge(event.target.value);
+  // };
   const [data, setData] = useState([]);
   const [tran, setTran] = useState([]);
   const [skeleton, setSkeleton] = useState(true);
+  const [total, setTotal] = useState([]);
+
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchData/${accountId}`)
       .then((response) => {
         setData(response.data);
       });
@@ -37,6 +39,11 @@ const SupLeft = (props) => {
       .then((response) => {
         setTran(response.data);
         setSkeleton(false);
+      });
+    axios
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchTotal/${accountId}`)
+      .then((response) => {
+        setTotal(response.data);
       });
   }, [change]);
   const sum = data
@@ -58,8 +65,8 @@ const SupLeft = (props) => {
   const total_pay = sum + pay;
   const total_receive = sum1 + receive;
 
-  const [sortOption, setSortOption] = useState("");
-  
+  const [sortOption, setSortOption] = useState("recent");
+
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
@@ -84,15 +91,29 @@ const SupLeft = (props) => {
       <div className="giveget flex justify-between">
         <div className="give text-gray-500 flex gap-1 items-center">
           You'll Give :{" "}
-          <span className="text-gray-700 font-bold">₹ {total_receive}</span>
+          <span className="text-gray-700 font-bold">
+            ₹{" "}
+            {total.length > 0 && total[0].payTotal !== null
+              ? parseFloat(total[0].payTotal).toFixed(2)
+              : 0}
+          </span>
           <IconArrowUpRight className="text-red-600" />
         </div>
         <div className="give text-gray-500 flex gap-1 items-center">
           You'll Get:{" "}
-          <span className="text-gray-700 font-bold">₹ {total_pay}</span>
+          <span className="text-gray-700 font-bold">
+            ₹{" "}
+            {total.length && total[0].payRecieve !== null > 0
+              ? parseFloat(total[0].receiveTotal).toFixed(2)
+              : 0}
+          </span>
           <IconArrowDownLeft className="text-green-600" />
         </div>
-        <button className="flex gap-1" onClick={props.add}>
+        <button
+          className="flex gap-1"
+          onClick={props.add}
+          disabled={parties === 2 || parties === 3 ? false : true}
+        >
           <IconPlus className="w-5" />
           Add Supplier
         </button>
@@ -119,9 +140,6 @@ const SupLeft = (props) => {
               label="Sort By"
               onChange={handleChange1}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value="recent">Most Recent</MenuItem>
               <MenuItem value="highestAmount">Highest Amount</MenuItem>
               <MenuItem value="name">By Name</MenuItem>
@@ -134,18 +152,15 @@ const SupLeft = (props) => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={age}
+              value={filter2}
               label="Filter By"
               onChange={(e) => {
                 setFilter2(e.target.value);
               }}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="receive">Pay</MenuItem>
               <MenuItem value="pay">Receive</MenuItem>
+              <MenuItem value="receive">Pay</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -194,9 +209,9 @@ const SupLeft = (props) => {
 
             .filter((code) => {
               if (filter2 === "pay") {
-                return code.sup_amt_type === "receive";
+                return code.sup_total_amt < 0;
               } else if (filter2 === "receive") {
-                return code.sup_amt_type === "pay";
+                return code.sup_total_amt > 0;
               } else if (filter2 === "All") {
                 return true;
               }

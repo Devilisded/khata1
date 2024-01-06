@@ -4,13 +4,14 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 import { Skeleton } from "@mui/material";
+import { Link } from "react-router-dom";
 const SupCardTran = (props) => {
-  const { supId, change } = useContext(UserContext);
+  const { supId, change, accountId, parties } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [skeleton, setSkeleton] = useState(true);
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/sup/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/sup/fetchData/${accountId}`)
       .then((response) => {
         setResult(response.data);
         setSkeleton(false);
@@ -51,11 +52,14 @@ const SupCardTran = (props) => {
             </div>
             <div>
               <div className="flex items-center gap-6 buttons">
-                <button>
+                <button disabled={parties === 3 ? false : true}>
                   <IconChecklist className="w-10" />
                   Report
                 </button>
-                <button onClick={props.edit}>
+                <button
+                  onClick={props.edit}
+                  disabled={parties === 3 ? false : true}
+                >
                   <IconSettings />
                 </button>
               </div>
@@ -85,15 +89,43 @@ const SupCardTran = (props) => {
                     </div>
                   </div>
                   <div>
-                    <div className="flex items-center gap-6 buttons">
-                      <button>
+                    {/* <div className="flex items-center gap-6 buttons">
+                      <button disabled={parties === 3 ? false : true }>
                         <IconChecklist className="w-10" />
                         Report
                       </button>
-                      <button onClick={props.edit}>
+                      <button onClick={props.edit} disabled={parties === 3 ? false : true }>
                         <IconSettings />
                       </button>
-                    </div>
+                    </div> */}
+                    {parties === 3 ? (
+                      <div className="flex items-center gap-6 buttons ">
+                        <Link to="/supReport">
+                          <button>
+                            <IconChecklist className="w-10" />
+                            Report
+                          </button>
+                        </Link>
+
+                        <button onClick={props.edit}>
+                          <IconSettings />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-6 buttons ">
+                        <button disabled className="cursor-not-allowed">
+                          <IconChecklist className="w-10" />
+                          Report
+                        </button>
+                        <button
+                          onClick={props.edit}
+                          disabled
+                          className=" cursor-not-allowed"
+                        >
+                          <IconSettings />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -11,12 +11,13 @@ import PurLeft from "../../components/purchase/purLeft/PurLeft";
 import PurRight from "../../components/purchase/purRight/PurRight";
 import PurInvoice from "../../components/purchase/purInvoice/PurInvoice";
 import PayOut from "../../components/purchase/purPayOut/PurPayOut";
-
+import PurEditPayOut from "../../components/purchase/purEditPayOut/PurEditPayOut";
 const MyApp = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState({
     pdf: false,
     addPayment: false,
+    edit: false,
   });
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -31,7 +32,6 @@ const MyApp = () => {
     setState({ ...state, [anchor]: open });
   };
   const handleClickVariant = (variant, anchor1, msg) => {
-    
     toggleDrawer1(anchor1, false);
     enqueueSnackbar(msg, { variant });
   };
@@ -40,9 +40,21 @@ const MyApp = () => {
     <Box  role="presentation">
     {anchor === "pdf"
       ? <Box sx={{ width: 950 }} > <PurInvoice  /> </Box>
-      : anchor === "addPayment"
-      ? <Box sx={{ width: 450 }} > <PayOut sx={{ width: 450 }} snack={()=>handleClickVariant('success',"add","Payment Has been Added")}/> </Box>
-      : "-"}
+      : anchor === "edit" ? 
+      <Box sx={{ width: 450 }} >
+        <PurEditPayOut
+          snack={() =>
+            handleClickVariant(
+              "success",
+              "edit",
+              "Transaction Has been Updated"
+            )
+          }
+        /> </Box> :
+      anchor === "addPayment"
+      ? <Box sx={{ width: 450 }} > <PayOut sx={{ width: 450 }} snack={()=>handleClickVariant('success',"addPayment","Payment Has been Added")}/> </Box>
+      : "-" 
+      }
   </Box>
   );
   const [active, setActive] = useState(false);
@@ -64,6 +76,13 @@ const MyApp = () => {
       </Drawer>
       <Drawer
         anchor="right"
+        open={state["edit"]}
+        onClose={toggleDrawer("edit", false)}
+      >
+        {list("edit")}
+        </Drawer>
+      <Drawer
+        anchor="right"
         open={state["pdf"]}
         onClose={toggleDrawer("pdf", false)}
       >
@@ -76,7 +95,7 @@ const MyApp = () => {
           <PurLeft />
 
           {active ? (
-            <PurRight pdf={toggleDrawer("pdf", true)} addPayment={toggleDrawer("addPayment", true)} />
+            <PurRight pdf={toggleDrawer("pdf", true)} addPayment={toggleDrawer("addPayment", true)} edit={toggleDrawer("edit", true)} />
           ) : (
             <SelectCustomer />
           )}

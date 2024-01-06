@@ -7,11 +7,11 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 import { Link } from "react-router-dom";
 const SaleLeft = (props) => {
-  const { change } = useContext(UserContext);
+  const { change , accountId } = useContext(UserContext);
   const [result, setResult] = useState([]);
   const [tran, setTran] = useState([]);
   useEffect(() => {
-    axios.get(import.meta.env.VITE_BACKEND + "/api/sale/fetchData").then((response) => {
+    axios.get(import.meta.env.VITE_BACKEND + `/api/sale/fetchData/${accountId}`).then((response) => {
       setResult(response.data);
     });
   }, [change]);
@@ -20,7 +20,7 @@ const SaleLeft = (props) => {
     return acc + +current.sale_amt;
   }, 0);
 
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("recent");
   const handleChange1 = (e) => {
     setSortOption(e.target.value);
   };
@@ -66,7 +66,7 @@ const SaleLeft = (props) => {
           <input
             type="text"
             className="focus:outline-none p-1 w-56"
-            placeholder="Name Or Phone Number"
+            placeholder="Name Or Invoive Number"
             onChange={(e) => {
               setSearchValue(e.target.value);
             }}
@@ -85,9 +85,8 @@ const SaleLeft = (props) => {
               label="Sort By"
               onChange={handleChange1}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
+              
+              
               <MenuItem value="recent">Most Recent</MenuItem>
               <MenuItem value="highestAmount">Highest Amount</MenuItem>
               <MenuItem value="name">By Name</MenuItem>
@@ -108,10 +107,14 @@ const SaleLeft = (props) => {
               }}
             >
               <MenuItem value={filter2}></MenuItem>
-              <MenuItem value="All">All</MenuItem>
+              {/* <MenuItem value="All">All</MenuItem>
               <MenuItem value="unpaid">Unpaid</MenuItem>
               <MenuItem value="partial">Partially Paid</MenuItem>
-              <MenuItem value="full">Fully Paid</MenuItem>
+              <MenuItem value="full">Fully Paid</MenuItem> */}
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="sale">Sale</MenuItem>
+              <MenuItem value="payIn">Paymenet In</MenuItem>
+              <MenuItem value="payRe">Paymenet Return</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -122,22 +125,39 @@ const SaleLeft = (props) => {
       </div>
       <div className="cards2">
         {sortedUsers
-          // .filter((code) =>
-          //   code.sale_name.toLowerCase().startsWith(searchValue.toLowerCase())
-          // )
+          .filter((code) =>
+            code.sale_prefix_no.toString().startsWith(searchValue) ||
+            code.sale_name.toLowerCase().startsWith(searchValue.toLowerCase())
+          )
+          // .filter((code) => {
+          //   if (filter2 === "unpaid") {
+          //     return code.sale_amt_due === code.sale_amt;
+          //   } else if (filter2 === "partial") {
+          //     return code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt;
+          //   } else if (filter2 === "full") {
+          //     return code.sale_amt_due === "0";
+          //   } else if (filter2 === "All") {
+          //     return true;
+          //   }
+          // })
           .filter((code) => {
-            if (filter2 === "unpaid") {
-              return code.sale_amt_due === code.sale_amt;
-            } else if (filter2 === "partial") {
-              return code.sale_amt_due > "0" && code.sale_amt_due < code.sale_amt;
-            } else if (filter2 === "full") {
-              return code.sale_amt_due === "0";
+            if (filter2 === "sale") {
+              
+              return (
+                code.sale_payment_in_id === null &&
+                code.sale_re_id === null
+              );
+            } else if (filter2 === "payIn") {
+              return code.sale_payment_in_id !== null;
+            } else if (filter2 === "payRe") {
+              return code.sale_re_id !== null;
             } else if (filter2 === "All") {
               return true;
-            }
+            } 
           })
           .map((filteredItem, index) => (
             <SaleTran
+              allTran={result}
               key={index}
               result={tran}
               click={props.click}

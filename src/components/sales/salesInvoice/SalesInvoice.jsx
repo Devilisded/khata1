@@ -6,10 +6,10 @@ import jsPDF from "jspdf";
 import axios from "axios";
 import { UserContext } from "../../../context/UserIdContext";
 const SalesInvoice = () => {
-  const { saleId, change } = useContext(UserContext);
+  const { saleId, change, accountId } = useContext(UserContext);
   const pdfRef = useRef();
   const [data, setData] = useState({
-    salesId: "",
+    sale_id: "",
     cust_cnct_id: 0,
     amtPaid: "",
     amtDue: "",
@@ -44,17 +44,33 @@ const SalesInvoice = () => {
     imgLink: "",
     act_name: "",
   });
+
+  const [saleDataById , setSaleDataById] = useState([]);
+  const [paymentInData , setPaymentInData] = useState([]);
+
   useEffect(() => {
-    axios
-      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${saleId}`)
+    // axios
+    //   .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataById/${sale_id}`)
+    //   .then((response) => {
+    //     setData({
+    //       ...data,
+    //       sale_id: response.data[0].sale_id,
+    //       cust_cnct_id: response.data[0].cust_cnct_id,
+    //       amtPaid: response.data[0].sale_amt_paid,
+    //       amtDue: response.data[0].sale_amt_due,
+    //     });
+    //   });
+      axios
+      .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchDataByIdAndPaymentInId/${saleId}`)
       .then((response) => {
-        setData({
-          ...data,
-          salesId: response.data[0].sale_id,
+        setSaleDataById({
+          ...saleDataById,
+          sale_id: response.data[0].sale_id,
           cust_cnct_id: response.data[0].cust_cnct_id,
-          amtPaid: response.data[0].sale_amt_paid,
-          amtDue: response.data[0].sale_amt_due,
+          sale_amt: response.data[0].sale_amt,
+          //amtDue: response.data[0].sale_amt_due,
         });
+        setPaymentInData(response.data)
       });
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/sale/fetchSaleTran/${saleId}`)
@@ -62,7 +78,7 @@ const SalesInvoice = () => {
         setSaleRightTranData(response.data);
       });
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/act/fetchData")
+      .get(import.meta.env.VITE_BACKEND + `/api/act/fetchData/${accountId}`)
       .then((res) => {
         setAcct(res.data);
         setImg({
@@ -77,7 +93,7 @@ const SalesInvoice = () => {
     axios
       .get(
         import.meta.env.VITE_BACKEND +
-          `/api/auth/fetchCust/${data.cust_cnct_id}`
+          `/api/auth/fetchCust/${saleDataById.cust_cnct_id}`
       )
       .then((response) => {
         setCustData(response.data);
@@ -91,6 +107,19 @@ const SalesInvoice = () => {
     return prev + +current.sale_item_gst_amt * current.sale_item_qty;
   }, 0);
   const date = new Date();
+
+
+  const totalAmtPaid = paymentInData
+    .filter(
+      (filteredItem) =>
+        parseInt(filteredItem.sale_payment_in_id) ===
+        parseInt(saleDataById.sale_id)
+    )
+    .reduce(function (prev, current) {
+      return prev + +current.sale_amt_paid;
+    }, 0);
+
+    console.log("cust data " , custData , saleDataById.cust_cnct_id)
   return (
     <div className="container">
       <div className="flex p-2 items-center justify-around gap-32">
@@ -136,7 +165,7 @@ const SalesInvoice = () => {
                   <p>
                     <span className="text-bold">Invoice No:</span>
                     {date.toLocaleDateString().split("/")}
-                    {data.salesId}
+                    {data.sale_id}
                   </p>
                 </div>
               </div>
@@ -199,11 +228,8 @@ const SalesInvoice = () => {
                         <td>{item.sale_item_name}</td>
                         <td>₹ {item.sale_item_price}</td>
                         <td>
-                          {item.sale_item_disc_val
-                            ? item.sale_item_disc_val +
-                              "|" +
-                              item.sale_item_disc_unit
-                            : "-"}
+                          {item.sale_item_disc_val ? item.sale_item_disc_val + "|" + item.sale_item_disc_unit : "-"}
+                          
                         </td>
                         <td>{item.sale_item_qty}</td>
                         <td>
@@ -257,14 +283,14 @@ const SalesInvoice = () => {
                     </div>
                   </div>
 
-                  {data.amtPaid ? (
+                  {totalAmtPaid !== 0 ? (
                     <>
                       <div className="invoice-body-info-item border-bottom">
                         <div className="info-item-td text-end text-bold">
                           Amount Paid:
                         </div>
                         <div className="info-item-td text-end">
-                          ₹ {data.amtPaid}
+                          ₹ {totalAmtPaid}
                         </div>
                       </div>
 
@@ -273,7 +299,7 @@ const SalesInvoice = () => {
                           Balance Due:
                         </div>
                         <div className="info-item-td text-end">
-                          ₹ {parseFloat(data.amtDue).toFixed(2)}
+                          ₹ {parseFloat(saleDataById.sale_amt - totalAmtPaid).toFixed(2)}
                         </div>
                       </div>
                     </>

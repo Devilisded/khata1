@@ -128,13 +128,15 @@ const Edit = (props) => {
     if (
       data.cust_name !== "" &&
       data.cust_number !== "" &&
-      data.cust_amt !== ""
+      data.cust_number > 9 &&
+      (data.cust_spin === "" || data.cust_spin.length > 5) &&
+      (data.cust_bpin === "" || data.cust_bpin.length > 5)
     ) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
-  }, [data.cust_name, data.cust_number, data.cust_amt]);
+  }, [data.cust_name, data.cust_number,data.cust_spin, data.cust_bpin]);
 
   return (
     <Box sx={{ width: 400 }} role="presentation">
@@ -295,7 +297,7 @@ const Edit = (props) => {
                       <div className="customer-info-text">
                         <h2>Opening Balance</h2>
                         <p className=" font-medium flex gap-2">
-                          ₹ {filteredPersons.cust_amt}
+                          ₹ {parseFloat(filteredPersons.cust_amt).toFixed(2)}
                           <span className=" capitalize">
                             {filteredPersons.amt_type}
                           </span>
@@ -473,7 +475,7 @@ const Edit = (props) => {
                           size="small"
                           value={data.cust_name}
                           onChange={(e) =>
-                            setData({ ...data, cust_name: e.target.value })
+                            setData({ ...data, cust_name: e.target.value.replace(/[^A-Z a-z.]/g, "") })
                           }
                           required
                         />
@@ -492,7 +494,7 @@ const Edit = (props) => {
                           onChange={(e) =>
                             setData({
                               ...data,
-                              cust_number: e.target.value.replace(/\D/g, ""),
+                              cust_number: e.target.value.replace(/[^0-9]/g, ""),
                             })
                           }
                           required
@@ -507,6 +509,7 @@ const Edit = (props) => {
                           label="Enter amount"
                           className="sec-1"
                           size="small"
+                          
                           value={data.cust_amt}
                           required
                         />
@@ -519,7 +522,7 @@ const Edit = (props) => {
                           }
                           value={data.amt_type}
                           onChange={(e) =>
-                            setData({ ...data, amt_type: e.target.value })
+                            setData({ ...data, amt_type: e.target.value.replace(/^\.|[^0-9.]/g, "").replace(/(\.\d*\.)/, "$1").replace(/^(\d*\.\d{0,2}).*$/, "$1"), })
                           }
                         >
                           <option value="pay">Pay</option>
@@ -551,8 +554,12 @@ const Edit = (props) => {
                               label="GST IN"
                               className="w-full"
                               value={data.cust_gstin}
+                              inputProps={{ maxLength: 15}}
                               onChange={(e) =>
-                                setData({ ...data, cust_gstin: e.target.value })
+                                setData({ ...data, cust_gstin: e.target.value.replace(
+                                  /[^A-Z0-9]/g,
+                                  ""
+                                ), })
                               }
                               size="small"
                             />
@@ -566,8 +573,12 @@ const Edit = (props) => {
                               className="w-full"
                               size="small"
                               value={data.cust_sflat}
+                              inputProps={{ maxLength: 40}}
                               onChange={(e) =>
-                                setData({ ...data, cust_sflat: e.target.value })
+                                setData({ ...data, cust_sflat: e.target.value.replace(
+                                  /[^A-Z a-z 0-9 /]/g,
+                                  ""
+                                ), })
                               }
                             />
                           </div>
@@ -580,8 +591,12 @@ const Edit = (props) => {
                               className="w-full"
                               size="small"
                               value={data.cust_sarea}
+                              inputProps={{ maxLength: 40}}
                               onChange={(e) =>
-                                setData({ ...data, cust_sarea: e.target.value })
+                                setData({ ...data, cust_sarea: e.target.value.replace(
+                                  /[^A-Z a-z 0-9 /]/g,
+                                  ""
+                                ), })
                               }
                             />
                           </div>
@@ -593,8 +608,9 @@ const Edit = (props) => {
                               className="w-full"
                               size="small"
                               value={data.cust_spin}
+                              inputProps={{ maxLength: 6 }}
                               onChange={(e) =>
-                                setData({ ...data, cust_spin: e.target.value })
+                                setData({ ...data, cust_spin: e.target.value.replace(/[^0-9]/g, ""), })
                               }
                             />
                           </div>
@@ -605,8 +621,12 @@ const Edit = (props) => {
                               variant="outlined"
                               className="sec-1 w-full"
                               value={data.cust_scity}
+                              inputProps={{ maxLength: 30}}
                               onChange={(e) =>
-                                setData({ ...data, cust_scity: e.target.value })
+                                setData({ ...data, cust_scity: e.target.value.replace(
+                                  /[^A-Z a-z]/g,
+                                  ""
+                                ), })
                               }
                               size="small"
                             />
@@ -618,10 +638,14 @@ const Edit = (props) => {
                               className="sec-2"
                               size="small"
                               value={data.cust_sstate}
+                              inputProps={{ maxLength: 30}}
                               onChange={(e) =>
                                 setData({
                                   ...data,
-                                  cust_sstate: e.target.value,
+                                  cust_sstate: e.target.value.replace(
+                                    /[^A-Z a-z]/g,
+                                    ""
+                                  ),
                                 })
                               }
                             />
@@ -653,10 +677,14 @@ const Edit = (props) => {
                                 className="w-full"
                                 size="small"
                                 value={data.cust_bflat}
+                                inputProps={{ maxLength: 40}}
                                 onChange={(e) =>
                                   setData({
                                     ...data,
-                                    cust_bflat: e.target.value,
+                                    cust_bflat: e.target.value.replace(
+                                      /[^A-Z a-z 0-9 /]/g,
+                                      ""
+                                    ),
                                   })
                                 }
                               />
@@ -670,10 +698,14 @@ const Edit = (props) => {
                                 className="w-full"
                                 size="small"
                                 value={data.cust_barea}
+                                inputProps={{ maxLength: 40}}
                                 onChange={(e) =>
                                   setData({
                                     ...data,
-                                    cust_barea: e.target.value,
+                                    cust_barea: e.target.value.replace(
+                                      /[^A-Z a-z 0-9 /]/g,
+                                      ""
+                                    ),
                                   })
                                 }
                               />
@@ -686,10 +718,14 @@ const Edit = (props) => {
                                 className="w-full"
                                 size="small"
                                 value={data.cust_bpin}
+                                inputProps={{ maxLength: 6}}
                                 onChange={(e) =>
                                   setData({
                                     ...data,
-                                    cust_bpin: e.target.value,
+                                    cust_bpin: e.target.value.replace(
+                                      /[^0-9]/g,
+                                      ""
+                                    ),
                                   })
                                 }
                               />
@@ -702,10 +738,14 @@ const Edit = (props) => {
                                 className="sec-1"
                                 size="small"
                                 value={data.cust_bcity}
+                                inputProps={{ maxLength: 30}}
                                 onChange={(e) =>
                                   setData({
                                     ...data,
-                                    cust_bcity: e.target.value,
+                                    cust_bcity: e.target.value.replace(
+                                      /[^A-Z a-z]/g,
+                                      ""
+                                    ),
                                   })
                                 }
                               />
@@ -716,11 +756,15 @@ const Edit = (props) => {
                                 variant="outlined"
                                 className="sec-2"
                                 size="small"
+                                inputProps={{ maxLength: 30}}
                                 value={data.cust_bstate}
                                 onChange={(e) =>
                                   setData({
                                     ...data,
-                                    cust_bstate: e.target.value,
+                                    cust_bstate: e.target.value.replace(
+                                      /[^A-Z a-z]/g,
+                                      ""
+                                    ),
                                   })
                                 }
                               />

@@ -4,7 +4,18 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { UserContext } from "../../context/UserIdContext";
+
 const Login = () => {
+  const {
+    changeAccountId,
+    changeParties,
+    changeInventory,
+    changeBills,
+    changeUId,
+    changeAccess,
+    changeUserType,
+  } = useContext(UserContext);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [otp, setOtp] = useState(0);
@@ -12,6 +23,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [otpdrop, setOtpdrop] = useState(false);
   const [otpmsg, setOtpmsg] = useState("Next");
+  const { currentUser } = useContext(AuthContext);
+  const [data, setData] = useState([]);
+  if (currentUser) {
+    useEffect(() => {
+      axios
+        .get(
+          import.meta.env.VITE_BACKEND +
+            `/api/act/checkAcc/${currentUser[0].log_id}`
+        )
+        .then((res) => {
+          setData(res.data);
+        });
+    }, [currentUser]);
+  }
 
   const fetchOtp = () => {
     try {
@@ -26,13 +51,44 @@ const Login = () => {
       console.log(err);
     }
   };
+  let userData = 0;
   const checklogin = async () => {
     if (cotp > 0) {
       if (otp == cotp) {
         try {
-          console.log("Entered");
-          await login(email);
-          navigate("/");
+          userData = await login(email);
+
+          changeAccountId(userData[0].business_id);
+          changeUId(userData[0].log_id);
+          changeAccess(userData[0].access);
+          changeUserType(userData[0].log_user);
+          if (userData[0].log_user === 0) {
+            changeParties(userData[0].staff_parties);
+            changeBills(userData[0].staff_bills);
+            changeInventory(userData[0].staff_inventory);
+          }
+
+          if (
+            parseInt(userData[0].access) !== 0 ||
+            userData[0].access === undefined ||
+            userData[0].access === null
+          ) {
+            console.log(userData, userData[0].log_user, userData[0].access);
+            if (userData[0].business_id) {
+              navigate("/");
+            } else {
+              navigate("/addAccount");
+            }
+          } else {
+            console.log("account restricted");
+
+            //localStorage.setItem("user", JSON.stringify(""));
+            navigate(
+              userData[0].log_user === 1
+                ? "/accountRestricted"
+                : "/staffRestricted"
+            ); //navigate to restridted msg page
+          }
         } catch (err) {
           console.log(err);
         }
@@ -42,6 +98,7 @@ const Login = () => {
   useEffect(() => {
     checklogin();
   }, [otp]);
+
   return (
     <motion.div className="bg-no-repeat bg-cover bg-center relative front">
       <div className="absolute bg-gradient-to-b from-blue-500 to-blue-400 opacity-75 inset-0 z-0"></div>
@@ -80,6 +137,7 @@ const Login = () => {
                   placeholder="mail@gmail.com"
                   whileTap={{ scale: 0.97 }}
                   onChange={(e) => setEmail(e.target.value)}
+                  readOnly={otpdrop}
                 />
               </div>
               <div>{cotp}</div>

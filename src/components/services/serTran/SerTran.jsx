@@ -45,10 +45,11 @@ const SerTran = (props) => {
       </div>
       <div className=" mr-60">
         <div>
-          Sale {props.data.ser_quantity} {props.ser_unit}
+        {props.data.ser_quantity !== null ? "Sale " + props.data.ser_quantity+" "+ props.ser_unit : "Return " + props.data.ser_return+" "+ props.ser_unit}
+          {/* Sale {props.data.ser_quantity} {props.ser_unit} */}
         </div>
         <div className="text-blue-600 ">
-          ₹ {props.data.ser_tran_price * props.data.ser_quantity}
+          ₹ {props.data.ser_quantity !== null ? props.data.ser_tran_price * props.data.ser_quantity : props.data.ser_tran_price * props.data.ser_return }
         </div>
       </div>
     </div>

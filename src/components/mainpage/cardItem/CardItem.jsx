@@ -20,9 +20,9 @@ const CardItem = (props) => {
   //   props.users.amt_type === "receive"
   //     ? props.users.cust_amt + total
   //     : -props.users.cust_amt + total;
-  props.skeleton
-    ? console.log("Skeletion is true")
-    : console.log("skeleton is false");
+  // props.skeleton
+  //   ? console.log("Skeletion is true")
+  //   : console.log("skeleton is false");
   return (
     <div
       className={
@@ -58,7 +58,7 @@ const CardItem = (props) => {
                   : "text-red-600 font-semibold text-lg"
               }
             >
-              {total > 0 ? "₹ " + total : "₹ " + total * -1}
+              {total > 0 ? "₹ " + total.toFixed(2) : "₹ " + total.toFixed(2) * -1}
             </div>
             <div className="text-slate-700 text-xs">
               {total > 0 ? "You'll Pay" : "You'll Receive"}

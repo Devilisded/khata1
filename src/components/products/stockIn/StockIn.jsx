@@ -84,6 +84,8 @@ const StockIn = (props) => {
         : parseFloat(values.product_stock_in / conversion);
       values2.updatedStockQty = currentStock + coverted_qty;
 
+      console.log("coverted_qty : ", coverted_qty);
+
       values.purchase_price = isActive
         ? parseFloat(values.purchase_price)
         : convertedPrice;
@@ -105,6 +107,7 @@ const StockIn = (props) => {
     }
   };
 
+  const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   if (convertedPrice !== null) {
     useEffect(() => {
@@ -114,26 +117,28 @@ const StockIn = (props) => {
         //values.purchase_price !== "" &&
         //values.purchase_price > 0 &&
         values.product_stock_in !== null &&
-        values.product_stock_in !== ""
+        values.product_stock_in !== "" &&
+        error === null
       ) {
         setSubmitDisabled(false);
       } else {
         setSubmitDisabled(true);
       }
-    }, [values.product_stock_in, convertedPrice]);
+    }, [values.product_stock_in, convertedPrice, error]);
   } else {
     useEffect(() => {
       if (
         values.product_stock_in !== null &&
         values.product_stock_in !== "" &&
         values.purchase_price !== "" &&
-        values.purchase_price > 0
+        values.purchase_price > 0 &&
+        error === null
       ) {
         setSubmitDisabled(false);
       } else {
         setSubmitDisabled(true);
       }
-    }, [values.product_stock_in, values.purchase_price]);
+    }, [values.product_stock_in, values.purchase_price, error]);
   }
   return (
     <Box sx={{ width: 400 }} role="presentation">
@@ -196,7 +201,17 @@ const StockIn = (props) => {
                   size="small"
                   required
                   name="product_stock_in"
-                  onChange={handleChange}
+                  inputProps={{ maxLength: 10 }}
+                  value={values.product_stock_in}
+                  onChange={(e) =>
+                    setValues({
+                      ...values,
+                      product_stock_in: e.target.value
+                        .replace(/^\.|[^0-9.]/g, "")
+                        .replace(/(\.\d*\.)/, "$1")
+                        .replace(/^(\d*\.\d{0,2}).*$/, "$1"),
+                    })
+                  }
                 />
               </Box>
               <Box className="box-sec">
@@ -209,10 +224,24 @@ const StockIn = (props) => {
                   size="small"
                   required
                   name="purchase_price"
+                  inputProps={{maxLength : 10}}
                   onChange={
                     isActive
-                      ? handleChange
-                      : (e) => setConvertedPrice(e.target.value)
+                      ? (e) =>
+                          setValues({
+                            ...values,
+                            purchase_price: e.target.value
+                              .replace(/^\.|[^0-9.]/g, "")
+                              .replace(/(\.\d*\.)/, "$1")
+                              .replace(/^(\d*\.\d{0,2}).*$/, "$1"),
+                          }) || 0
+                      : (e) =>
+                          setConvertedPrice(
+                            e.target.value
+                              .replace(/^\.|[^0-9.]/g, "")
+                              .replace(/(\.\d*\.)/, "$1")
+                              .replace(/^(\d*\.\d{0,2}).*$/, "$1")
+                          )
                   }
                 />
               </Box>
@@ -226,6 +255,9 @@ const StockIn = (props) => {
                       className="w-full"
                       maxDate={todaysDate}
                       onChange={(newValue) => setTransactionDate(newValue)}
+                      onError={(newError) => {
+                        setError(newError);
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>

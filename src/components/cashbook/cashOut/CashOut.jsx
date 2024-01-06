@@ -7,8 +7,9 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
+import { IconX } from "@tabler/icons-react";
 const CashOut = (props) => {
-  const { changeChange } = useContext(UserContext);
+  const { changeChange, accountId } = useContext(UserContext);
   const today = new Date();
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
@@ -17,8 +18,8 @@ const CashOut = (props) => {
   const todaysDate = dayjs(current_date);
   const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const maxFileSize = 2000000;
-  const [file, setFile] = useState("File Name");
-  const [fileExists, setFileExists] = useState(false);
+  const [file, setFile] = useState("");
+
   const [transactionDate, setTransactionDate] = useState(todaysDate);
   var date1 = transactionDate.$d;
   var filteredDate = date1.toString().slice(4, 15);
@@ -45,6 +46,7 @@ const CashOut = (props) => {
       formData.append("cash_description", values.cash_description);
       formData.append("cash_date", values.cash_date);
       formData.append("cash_mode", values.cash_mode);
+      formData.append("cash_acc_id", accountId);
       axios.post(import.meta.env.VITE_BACKEND + "/api/cash/sendData", formData);
       changeChange();
       props.snack();
@@ -53,14 +55,49 @@ const CashOut = (props) => {
     }
   };
 
+  const [formatError, setFormatError] = useState(false);
+  const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
-    if (values.cash_pay !== "") {
+    if (values.cash_pay > 0 && error === null  &&
+    fileSizeExceeded === false &&
+    formatError === false) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
-  }, [values.cash_pay]);
+  }, [values.cash_pay, error, fileSizeExceeded , formatError]);
+
+  const handleImage = (event) => {
+    setFile(event[0]);
+    var pattern = /image-*/;
+    if (!event[0].type.match(pattern)) {
+      setFormatError(true);
+      setFileSizeExceeded(false);
+    } else if (event[0].size > maxFileSize) {
+      setFileSizeExceeded(true);
+      setFormatError(false);
+      return;
+    } else {
+      setFileSizeExceeded(false);
+      setFormatError(false);
+    }
+  };
+
+  const handleDrag = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      console.log("e.dataTransfer.files : ", e.dataTransfer.files);
+      handleImage(e.dataTransfer.files);
+    }
+  };
 
   return (
     <form className="block overflow-hidden" method="post">
@@ -86,11 +123,13 @@ const CashOut = (props) => {
                 className="w-full m-0"
                 size="small"
                 name="cash_pay"
-                //onChange={handleChange}
+                inputProps={{maxLength : 10}}
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    cash_pay: e.target.value.replace(/\D/g, ""),
+                    cash_pay: e.target.value.replace(/^\.|[^0-9.]/g, "")
+                    .replace(/(\.\d*\.)/, "$1")
+                    .replace(/^(\d*\.\d{0,2}).*$/, "$1")
                   })
                 }
                 value={values.cash_pay}
@@ -149,6 +188,9 @@ const CashOut = (props) => {
                     format="LL"
                     className="w-full"
                     maxDate={todaysDate}
+                    onError={(newError) => {
+                      setError(newError);
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -163,20 +205,15 @@ const CashOut = (props) => {
                 className="hidden sr-only w-full"
                 accept="image/x-png,image/gif,image/jpeg"
                 onChange={(event) => {
-                  setFile(event.target.files[0]);
-                  setFileExists(true);
-                  const get_file_size = event.target.files[0];
-
-                  if (get_file_size.size > maxFileSize) {
-                    setFileSizeExceeded(true);
-                    return;
-                  } else {
-                    setFileSizeExceeded(false);
-                  }
+                  handleImage(event.target.files);
                 }}
               />
 
               <label
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
                 htmlFor="file-1"
                 id="file-1"
                 className="relative flex  items-center justify-center rounded-md text-center border border-dashed border-[#b6b6b6] py-8 px-16"
@@ -197,12 +234,22 @@ const CashOut = (props) => {
               </label>
             </div>
 
-            {fileExists ? (
+            {file !== "" && file !== undefined ? (
               <div className=" rounded-md bg-[#F5F7FB] py-4 px-8">
                 <div className="flex items-center justify-between">
                   <span className="truncate pr-3 text-base font-medium text-[#07074D]">
                     {file.name}
                   </span>
+                  <button
+                    class="text-[#07074D]"
+                    onClick={(e) => {
+                      e.preventDefault(), setFile("");
+                      setFileSizeExceeded(false);
+                      setFormatError(false);
+                    }}
+                  >
+                    <IconX className=" static h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ) : (
@@ -210,13 +257,14 @@ const CashOut = (props) => {
             )}
 
             {fileSizeExceeded && (
-              <>
+              
                 <p className="error">
                   File size exceeded the limit of
                   {maxFileSize / 1000000} MB
                 </p>
-              </>
+            
             )}
+            {formatError && <p className="error">Invalid Format</p>}
           </div>
         </div>
       </div>

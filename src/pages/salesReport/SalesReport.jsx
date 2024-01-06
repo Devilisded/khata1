@@ -9,13 +9,16 @@ import {
 import Navbar from "../../components/navbar/Navbar";
 import SideBar from "../../components/report/sideBar/SideBar";
 import SalesRepTran from "../../components/report/salesRepTran/SalesRepTran";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useContext } from "react";
 import axios from "axios";
 import { ExportToExcel } from "../../components/report/excelDownload/ExcelDownload";
 import { Box, Drawer } from "@mui/material";
 import SalesPDF from "../../components/report/salesPdf/SalesPDF";
-
+import { UserContext } from "../../context/UserIdContext";
+  
+    
 const SalesReport = () => {
+  const {accountId} = useContext(UserContext);
   const [state, setState] = useState({
     pdf: false,
   });
@@ -43,7 +46,7 @@ const SalesReport = () => {
   const [sort, setSort] = useState("");
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/rep/fetchSale")
+      .get(import.meta.env.VITE_BACKEND + `/api/rep/fetchSale/${accountId}`)
       .then((res) => setData(res.data));
     if (period === "date") {
       setDateVal(new Date(sdate));

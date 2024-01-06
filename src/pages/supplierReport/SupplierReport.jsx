@@ -9,14 +9,18 @@ import {
 } from "@tabler/icons-react";
 import Navbar from "../../components/navbar/Navbar";
 import SideBar from "../../components/report/sideBar/SideBar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import SupTran from "../../components/report/supTran/SupTran";
 import axios from "axios";
 import { ExportToExcel } from "../../components/report/excelDownload/ExcelDownload";
 import { Box, Drawer } from "@mui/material";
 import SupplierPDF from "../../components/report/supplierPdf/SupplierPDF";
-
+import { UserContext } from "../../context/UserIdContext";
+  
+  
+    
 const SupplierReport = () => {
+  const {accountId} = useContext(UserContext);
   const [state, setState] = useState({
     pdf: false,
   });
@@ -43,7 +47,7 @@ const SupplierReport = () => {
   year.setDate(year.getDate() - 365);
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND + "/api/rep/fetchSupBoth")
+      .get(import.meta.env.VITE_BACKEND + `/api/rep/fetchSupBoth/${accountId}`)
       .then((res) => {
         setData(res.data);
       });
