@@ -27,7 +27,6 @@ import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
 //import Admin from "./pages/admin/Admin";
-import Admin1 from "./pages/admin/Admin1";
 import AddAccount from "./pages/account/Account";
 import SalesEdit from "./pages/salesEdit/SalesEdit";
 import PurchaseReturn from "./pages/purchaseReturn/PurchaseReturn";
@@ -53,16 +52,15 @@ const App = () => {
   const ProtectedRoute = ({ children }) => {
     if (!currentUser) {
       return <Navigate to="/login" />;
-    } 
-      return children;
+    }
+    return children;
   };
   const router = createBrowserRouter([
-
     {
       path: "/login",
       element: <Login />,
     },
-    
+
     {
       path: "/",
       element: (
@@ -79,7 +77,7 @@ const App = () => {
       path: "/home",
       element: <Home />,
     },
-    
+
     {
       path: "/account",
       element: <Account />,
@@ -298,11 +296,6 @@ const App = () => {
           <StaffRestricted />
         </ProtectedRoute>
       ),
-    },
-    
-    {
-      path: "/admin",
-      element: <Admin1 />,
     },
   ]);
   return (
