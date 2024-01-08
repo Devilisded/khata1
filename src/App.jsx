@@ -26,7 +26,6 @@ import SettingAccount from "./components/setting/settingAccount/SettingAccount";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
-//import Admin from "./pages/admin/Admin";
 import AddAccount from "./pages/account/Account";
 import SalesEdit from "./pages/salesEdit/SalesEdit";
 import PurchaseReturn from "./pages/purchaseReturn/PurchaseReturn";
@@ -34,21 +33,11 @@ import SalesReturn from "./pages/salesReturn/SalesReturn";
 import EditAccount from "./pages/editAccount/EditAccount";
 import AccountRestricted from "./pages/accountRestricted/AccountRestricted";
 import StaffRestricted from "./pages/staffRestricted/StaffRestricted";
-
-//import { UserContext } from "./context/UserIdContext";
-// import Test from "./pages/test";
+import Admin from "./pages/admin/Admin";
+import AdminAccount from "./components/admin/adminAccount/AdminAccount";
 
 const App = () => {
-  // const {
-  //   access,
-  // } = useContext(UserContext);
-  //const { parties, inventory, bills , access } = useContext(UserContext);
   const { currentUser } = useContext(AuthContext);
-
-  // const parties_validation = parties !== 0 && parseInt(access) !== 0;
-  // const inventory_validation = inventory !== 0 && parseInt(access) !== 0;
-  // const bills_validation = bills !== 0 && parseInt(access) !== 0;
-
   const ProtectedRoute = ({ children }) => {
     if (!currentUser) {
       return <Navigate to="/login" />;
@@ -60,7 +49,6 @@ const App = () => {
       path: "/login",
       element: <Login />,
     },
-
     {
       path: "/",
       element: (
@@ -86,7 +74,6 @@ const App = () => {
       path: "/contact",
       element: <Contact />,
     },
-    //parties_validation &&
     {
       path: "/supplier",
       element: (
@@ -95,7 +82,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //inventory_validation &&
     {
       path: "/services",
       element: (
@@ -104,7 +90,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //inventory_validation &&
     {
       path: "/products",
       element: (
@@ -113,7 +98,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/cashbook",
       element: (
@@ -122,7 +106,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/expenses",
       element: (
@@ -131,7 +114,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/sales",
       element: (
@@ -140,7 +122,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/salesform",
       element: (
@@ -149,7 +130,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/salesEdit",
       element: (
@@ -158,7 +138,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/saleReturn",
       element: (
@@ -199,7 +178,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/purchase",
       element: (
@@ -208,7 +186,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/purchaseForm",
       element: (
@@ -217,7 +194,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/purchaseEdit",
       element: (
@@ -226,7 +202,6 @@ const App = () => {
         </ProtectedRoute>
       ),
     },
-    //bills_validation &&
     {
       path: "/purchaseReturn",
       element: (
@@ -296,6 +271,16 @@ const App = () => {
           <StaffRestricted />
         </ProtectedRoute>
       ),
+    },
+    {
+      path: "/admin",
+      element: <Admin />,
+      children: [
+        {
+          path: "account",
+          element: <AdminAccount />,
+        },
+      ],
     },
   ]);
   return (
