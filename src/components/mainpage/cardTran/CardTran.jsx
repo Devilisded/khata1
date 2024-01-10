@@ -79,7 +79,6 @@ const CardTran = (props) => {
               </div>
               <div className="flex flex-col">
                 <span className="text-xl">{result[0].cust_name}</span>
-
                 <span className="text-slate-500 text-xs">
                   {result[0].cust_number}
                 </span>
@@ -87,7 +86,7 @@ const CardTran = (props) => {
             </div>
             <div>
               {parties === 3 ? (
-                <div className="flex items-center gap-6 buttons ">
+                <div className="flex items-center gap-6 buttons">
                   <Link to="/custReport">
                     <button>
                       <IconChecklist className="w-10" />

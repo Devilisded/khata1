@@ -110,7 +110,7 @@ const SupLeft = (props) => {
           <IconArrowDownLeft className="text-green-600" />
         </div>
         <button
-          className="flex gap-1"
+          className="flex gap-1 cursor-pointer items-center p-2 shadow shadow-green-600 text-green-600 rounded hover:bg-green-600 hover:text-white transition-all ease-in-out duration-500"
           onClick={props.add}
           disabled={parties === 2 || parties === 3 ? false : true}
         >

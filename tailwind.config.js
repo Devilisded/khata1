@@ -4,8 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        pri: "#9f99be",
-        sec: "#73628A",
+        pri: "#FFFFF",
+        sec: "#4895ef",
+        high: "#4949",
       },
     },
   },

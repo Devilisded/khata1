@@ -1,6 +1,5 @@
 import {
   IconBook2,
-  IconBriefcase,
   IconBuildingBank,
   IconCreditCard,
   IconHelpCircle,
@@ -21,12 +20,10 @@ import { Link, useLocation } from "react-router-dom";
 import { useAnimate, stagger, motion } from "framer-motion";
 import { UserContext } from "../../context/UserIdContext";
 import { useNavigate } from "react-router-dom";
-import { replaceInvalidDateByNull } from "@mui/x-date-pickers/internals";
 
 const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
 
 function useMenuAnimation(isOpen) {
-  
   const [scope, animate] = useAnimate();
   useEffect(() => {
     animate(
@@ -59,60 +56,66 @@ function useMenuAnimation(isOpen) {
 }
 const Navbar = () => {
   const navigate = useNavigate();
-  const { parties, inventory, bills , access } = useContext(UserContext);
+  const { parties, inventory, bills, access } = useContext(UserContext);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const scope = useMenuAnimation(isOpen);
 
-
-  const access_validation = parseInt(access) !== 0 && access !== undefined && access !== null;
-  const parties_validation = parties !== 0 && parseInt(access) !== 0 && access !== undefined && access !== null;
-  const inventory_validation = inventory !== 0 && parseInt(access) !== 0  && access !== undefined && access !== null;
-  const bills_validation = bills !== 0 && parseInt(access) !== 0 && access !== undefined && access !== null;
-  console.log(parties_validation, access)
+  const access_validation =
+    parseInt(access) !== 0 && access !== undefined && access !== null;
+  const parties_validation =
+    parties !== 0 &&
+    parseInt(access) !== 0 &&
+    access !== undefined &&
+    access !== null;
+  const inventory_validation =
+    inventory !== 0 &&
+    parseInt(access) !== 0 &&
+    access !== undefined &&
+    access !== null;
+  const bills_validation =
+    bills !== 0 &&
+    parseInt(access) !== 0 &&
+    access !== undefined &&
+    access !== null;
+  console.log(parties_validation, access);
   const items = [
-
-    
-      
-
-     
     {
       name: "Customer",
       icon: <IconUser />,
-      linkto: "/" ,
+      linkto: "/",
       user_access: parties_validation,
-    } ,
-     
+    },
+
     {
       name: "Supplier",
       icon: <IconTruckLoading />,
-      linkto:"/supplier",
+      linkto: "/supplier",
       user_access: parties_validation,
     },
-    
-    
+
     {
       name: "Items",
       icon: <IconServer />,
       linkto: "/products",
       link2: "/services",
       user_access: inventory_validation,
-    } ,
-    
+    },
+
     {
       name: "CashBook",
       icon: <IconBuildingBank />,
       linkto: "/cashbook",
       user_access: bills_validation,
     },
-    
+
     {
       name: "Expenses",
       icon: <IconCreditCard />,
       linkto: "/expenses",
       user_access: bills_validation,
     },
-    
+
     {
       name: "Sales",
       icon: <IconShoppingCart />,
@@ -120,15 +123,15 @@ const Navbar = () => {
       link2: "/salesForm",
       user_access: bills_validation,
     },
-    
+
     {
       name: "Purchase",
       icon: <IconTruckDelivery />,
       linkto: "/purchase",
       link2: "/purchaseForm",
       user_access: bills_validation,
-    } ,
-    
+    },
+
     {
       name: "Reports",
       icon: <IconReportAnalytics />,
@@ -139,7 +142,6 @@ const Navbar = () => {
       name: "Staff",
       icon: <IconUsers />,
       linkto: "/staff",
-      //user_access: parseInt(access) === 1 ? true : false,
       user_access: access_validation,
     },
 
@@ -149,48 +151,48 @@ const Navbar = () => {
       linkto: "/settings/account",
       user_access: access_validation,
     },
-
-    // {
-    //   name: "Account",
-    //   icon: <IconBriefcase />,
-    //   linkto: "/account",
-    // },
-  
   ];
-  const logout =()=>{
-    localStorage.removeItem("user")
+  const logout = () => {
+    localStorage.removeItem("user");
     navigate("/login");
-  }
+  };
   return (
     <div className="navbar flex items-center w-full justify-around shadow-md">
       <div className="left flex items-center">
-        <IconBook2 className="text-[#008cff] h-16 w-16" />
-        <div className="text-[50px] text-[#008cff]">
+        <IconBook2 className="text-sec h-16 w-16" />
+        <div className="text-[50px] text-sec">
           Acc
-          <span className="font-bold">Book</span>
+          <span className="font-bold text-amber-500">Book</span>
         </div>
       </div>
+      <div></div>
       <div className="center flex ">
         <div className="items flex">
-          {items.filter((code) => code.linkto !== undefined)
-          .map((item, index) => (
-            <Link
-              className={
-                location.pathname === item.linkto ||
-                location.pathname === item.link2
-                  ? "active"
-                  : ""
-              }
-              key={index}
-              to={item.user_access ? item.linkto : "" }
-            >
-              
-              <div className={item.user_access ? "item flex flex-col items-center gap-1 justify-center cursor-pointer" : "cursor-not-allowed item flex flex-col items-center gap-1 justify-center " }>
-                <div className="icon1">{item.icon}</div>
-                <div className="name text-xs">{item.name}</div>
-              </div>
-            </Link>
-          ))}
+          {items
+            .filter((code) => code.linkto !== undefined)
+            .map((item, index) => (
+              <Link
+                className={
+                  location.pathname === item.linkto ||
+                  location.pathname === item.link2
+                    ? "shadow active"
+                    : ""
+                }
+                key={index}
+                to={item.user_access ? item.linkto : ""}
+              >
+                <div
+                  className={
+                    item.user_access
+                      ? "item flex flex-col items-center gap-1 justify-center cursor-pointer"
+                      : "cursor-not-allowed item flex flex-col items-center gap-1 justify-center "
+                  }
+                >
+                  {/* <div className="icon1">{item.icon}</div> */}
+                  <div className="name text-sm font-semibold">{item.name}</div>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
       <div className="right">
@@ -221,12 +223,11 @@ const Navbar = () => {
                 Contact Us
               </li>
             </Link>
-            
-              <li className="flex gap-1 items-center" onClick={logout}>
-                <IconLogout className="text-slate-600 w-5" />
-                Logout
-              </li>
-            
+
+            <li className="flex gap-1 items-center" onClick={logout}>
+              <IconLogout className="text-slate-600 w-5" />
+              Logout
+            </li>
           </ul>
         </div>
       </div>

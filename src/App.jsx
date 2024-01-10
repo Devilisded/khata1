@@ -35,6 +35,9 @@ import AccountRestricted from "./pages/accountRestricted/AccountRestricted";
 import StaffRestricted from "./pages/staffRestricted/StaffRestricted";
 import Admin from "./pages/admin/Admin";
 import AdminAccount from "./components/admin/adminAccount/AdminAccount";
+import AdminSac from "./components/admin/adminSac/AdminSac";
+import AdminHsn from "./components/admin/adminHsn/AdminHsn";
+import AdminLogin from "./pages/adminLogin/AdminLogin";
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -280,7 +283,19 @@ const App = () => {
           path: "account",
           element: <AdminAccount />,
         },
+        {
+          path: "sac",
+          element: <AdminSac />,
+        },
+        {
+          path: "hsn",
+          element: <AdminHsn />,
+        },
       ],
+    },
+    {
+      path: "/adminlogin",
+      element: <AdminLogin />,
     },
   ]);
   return (

@@ -20,27 +20,27 @@ const AdminSidebar = () => {
       icon: <IconBrandDatabricks />,
     },
     {
-      linkto: "/payplan",
+      linkto: "/admin/payplan",
       name: "Payment Plan",
       icon: <IconWallet />,
     },
     {
-      linkto: "/moderator",
+      linkto: "/admin/moderator",
       name: "Moderator",
       icon: <IconBrandAmongUs />,
     },
     {
-      linkto: "/hsncode",
+      linkto: "/admin/hsn",
       name: "HSN Codes",
       icon: <IconBoxSeam />,
     },
     {
-      linkto: "/saccode",
+      linkto: "/admin/sac",
       name: "SAC Codes",
       icon: <IconDevices2 />,
     },
     {
-      linkto: "/logout",
+      linkto: "/admin/logout",
       name: "Logout",
       icon: <IconLogout2 />,
     },

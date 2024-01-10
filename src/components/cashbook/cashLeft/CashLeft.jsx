@@ -66,8 +66,8 @@ const CashLeft = (props) => {
         CashBook
       </div>
       <div className="flex justify-between p-5 border-b border-gray-300 balance">
-        <div className="text-gray-500 flex gap-1 items-center">
-          Total Balance &nbsp;
+        <div className="text-black font-semibold flex gap-1 items-center">
+          Total Balance :&nbsp;
           <span
             className={
               totalBalance < 0
@@ -81,8 +81,8 @@ const CashLeft = (props) => {
               : totalBalance.toFixed(2) + " Receive"}
           </span>
         </div>
-        <div className="text-gray-500 flex gap-1 items-center">
-          Today's Balance &nbsp;
+        <div className="text-black font-semibold flex gap-1 items-center">
+          Today's Balance :&nbsp;
           <span
             className={
               todaysBalance < 0
@@ -97,7 +97,7 @@ const CashLeft = (props) => {
           </span>
         </div>
         <Link to="/cashReport">
-          <button className="flex gap-1 items-end report rounded-md p-2 text-blue-600 hover:text-white hover:bg-blue-600">
+          <button className="flex gap-1 items-end shadow shadow-blue-600 rounded p-2 text-blue-600 hover:text-white hover:bg-blue-600 transition-all ease-in-out duration-300">
             <IconChecklist className="w-5 h-5" /> View Report
           </button>
         </Link>
