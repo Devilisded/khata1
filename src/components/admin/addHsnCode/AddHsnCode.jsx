@@ -4,7 +4,7 @@ import { Box, TextField } from "@mui/material";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 
-export const AddHsnCode = (props) => {
+const AddHsnCode = (props) => {
   const { changeChange } = useContext(UserContext);
 
   const [values, setValues] = useState({
@@ -152,3 +152,5 @@ export const AddHsnCode = (props) => {
     </form>
   );
 };
+
+export default AddHsnCode;

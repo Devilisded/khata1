@@ -4,30 +4,28 @@ import { Box, TextField } from "@mui/material";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 
-export const EditHsnCode = (props) => {
-  const {hsnId, changeChange } = useContext(UserContext);
+const EditHsnCode = (props) => {
+  const { hsnId, changeChange } = useContext(UserContext);
   const [values, setValues] = useState({
     hsn_code: "",
     hsn_desc: "",
     hsn_gst: "",
     hsn_cess: "",
   });
-  
+
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/ad/fetchHsnCodeById/${hsnId}`)
       .then((response) => {
         setValues({
-            ...values,
-            hsn_code: response.data[0].hsn_code,
-            hsn_desc: response.data[0].hsn_desc,
-            hsn_gst: response.data[0].igst,
-            hsn_cess: response.data[0].cess,
-        })
+          ...values,
+          hsn_code: response.data[0].hsn_code,
+          hsn_desc: response.data[0].hsn_desc,
+          hsn_gst: response.data[0].igst,
+          hsn_cess: response.data[0].cess,
+        });
       });
   }, []);
-  
-  
 
   const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
 
@@ -149,7 +147,6 @@ export const EditHsnCode = (props) => {
                 }
               />
             </Box>
-            
           </Box>
         </div>
       </div>
@@ -169,3 +166,5 @@ export const EditHsnCode = (props) => {
     </form>
   );
 };
+
+export default EditHsnCode;

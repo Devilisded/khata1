@@ -4,32 +4,26 @@ import { Box, TextField } from "@mui/material";
 import { UserContext } from "../../../context/UserIdContext";
 import axios from "axios";
 
-export const EditSacCode = (props) => {
-  const {sacId, changeChange } = useContext(UserContext);
+const EditSacCode = (props) => {
+  const { sacId, changeChange } = useContext(UserContext);
   const [values, setValues] = useState({
     sac_code: "",
     sac_desc: "",
     sac_gst: "",
   });
-  const [sacDataById, setSacDataById] = useState([]);
-  
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND + `/api/ad/fetchSacCodeById/${sacId}`)
       .then((response) => {
         setValues({
-            ...values,
-            sac_code: response.data[0].sac_code,
-            sac_desc: response.data[0].sac_desc,
-            sac_gst: response.data[0].sac_igst,
-        })
+          ...values,
+          sac_code: response.data[0].sac_code,
+          sac_desc: response.data[0].sac_desc,
+          sac_gst: response.data[0].sac_igst,
+        });
       });
   }, []);
-  
-  
-
   const numberValidation = /^\.|[^0-9.]|\.\d*\.|^(\d*\.\d{0,2}).*$/g;
-
   const updateSac = async (e) => {
     e.preventDefault();
     try {
@@ -43,14 +37,12 @@ export const EditSacCode = (props) => {
       console.log(err);
     }
   };
-
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
     if (values.sac_code > 0 && values.sac_desc.length > 0) {
       setSubmitDisabled(false);
     } else setSubmitDisabled(true);
   }, [values.sac_code, values.sac_desc]);
-
   return (
     <form className="block overflow-hidden" method="post">
       <h1 className="text_left heading text-green-500 font-semibold text-lg">
@@ -130,7 +122,6 @@ export const EditSacCode = (props) => {
                 }
               />
             </Box>
-            
           </Box>
         </div>
       </div>
@@ -150,3 +141,5 @@ export const EditSacCode = (props) => {
     </form>
   );
 };
+
+export default EditSacCode;
