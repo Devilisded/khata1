@@ -162,7 +162,7 @@ const Navbar = () => {
         <IconBook2 className="text-sec h-16 w-16" />
         <div className="text-[50px] text-sec">
           Acc
-          <span className="font-bold text-amber-500">Book</span>
+          <span className="font-bold text-[#fca311]">Book</span>
         </div>
       </div>
       <div></div>

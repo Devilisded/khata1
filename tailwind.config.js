@@ -5,8 +5,8 @@ export default {
     extend: {
       colors: {
         pri: "#FFFFF",
-        sec: "#4895ef",
-        high: "#4949",
+        sec: "#2e4e93",
+        high: "#fca311",
       },
     },
   },
