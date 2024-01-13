@@ -93,11 +93,12 @@ const PaymentIn = (props) => {
 
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+ 
   useEffect(() => {
     if (
-      parseFloat(amtIn) !== 0 &&
-      parseFloat(amtIn) <=
-        parseFloat(saleData.sale_amt).toFixed(2) - parseFloat(totalAmtPaid) &&
+      amtIn !== 0 && 
+      parseFloat(amtIn).toFixed(2) <=
+      (parseFloat(saleData.sale_amt) - parseFloat(totalAmtPaid)).toFixed(2)&&
       error === null
     ) {
       setSubmitDisabled(false);
@@ -144,7 +145,7 @@ const PaymentIn = (props) => {
         import.meta.env.VITE_BACKEND + "/api/sale/addSalePayment",
         payData
       );
-      //await axios.put("http://localhost:8000/api/sale/updateBalanceDue", payData);
+      
       changeChange();
       props.snack();
     } catch (err) {
@@ -160,6 +161,8 @@ const PaymentIn = (props) => {
     .reduce(function (prev, current) {
       return prev + +current.sale_amt_paid;
     }, 0);
+
+    
 
   return (
     <div>
@@ -230,9 +233,9 @@ const PaymentIn = (props) => {
                 Total Amount : {parseFloat(saleData.sale_amt).toFixed(2)}
               </div>
               <div>
-                Balance Due :{" "}
-                {parseFloat(saleData.sale_amt).toFixed(2) -
-                  parseFloat(totalAmtPaid)}
+                Balance Due :
+                {(parseFloat(saleData.sale_amt) -
+                  parseFloat(totalAmtPaid)).toFixed(2)}
               </div>
             </div>
             <div className="box-sec">
@@ -279,12 +282,12 @@ const PaymentIn = (props) => {
               </div>
             </div>
             <div>
-              Remaning Amount :{" "}
+              Remaning Amount :
               {(
-                parseFloat(saleData.sale_amt).toFixed(2) -
-                parseFloat(totalAmtPaid) -
-                parseFloat(amtIn)
-              ).toFixed(2)}
+                (parseFloat(saleData.sale_amt) -
+                parseFloat(totalAmtPaid)).toFixed(2) -
+                parseFloat(amtIn ? amtIn : 0)
+              ).toFixed(2) }
             </div>
           </Box>
           <div className="cashout-btn-wrapper">

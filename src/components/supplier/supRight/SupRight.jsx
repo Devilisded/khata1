@@ -64,7 +64,7 @@ const SupRight = (props) => {
       </div>
 
       <div className="transactions">
-        {result.length > 0 ? (
+        {result.length > 0  ? (
           result.map((item, index) => {
             if (supAmtType === "receive") {
               const sum = result

@@ -20,6 +20,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAnimate, stagger, motion } from "framer-motion";
 import { UserContext } from "../../context/UserIdContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
 
@@ -56,10 +57,30 @@ function useMenuAnimation(isOpen) {
 }
 const Navbar = () => {
   const navigate = useNavigate();
-  const { parties, inventory, bills, access } = useContext(UserContext);
+  const { parties, inventory, bills, access, accountId, userType } = useContext(UserContext);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const scope = useMenuAnimation(isOpen);
+
+    useEffect(() => {
+      axios
+        .get(
+          import.meta.env.VITE_BACKEND +
+            `/api/act/fetchAccessData/${accountId}`
+        )
+        .then((res) => {
+          if (parseInt(userType) === 0 && parseInt(res.data[0].access) === 0) {
+            localStorage.removeItem("user");
+            navigate("/staffRestricted");
+          }
+          else if (parseInt(res.data[0].access) === 0 && location.pathname !== "/addAccount" && location.pathname !== "/settings/account" ) {
+            navigate("/accountRestricted");
+          }
+        });
+    });
+
+    
+    
 
   const access_validation =
     parseInt(access) !== 0 && access !== undefined && access !== null;
@@ -78,7 +99,7 @@ const Navbar = () => {
     parseInt(access) !== 0 &&
     access !== undefined &&
     access !== null;
-  console.log(parties_validation, access);
+
   const items = [
     {
       name: "Customer",
@@ -162,7 +183,7 @@ const Navbar = () => {
         <IconBook2 className="text-sec h-16 w-16" />
         <div className="text-[50px] text-sec">
           Acc
-          <span className="font-bold text-[#fca311]">Book</span>
+          <span className="font-bold text-amber-500">Book</span>
         </div>
       </div>
       <div></div>

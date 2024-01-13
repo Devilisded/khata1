@@ -53,7 +53,11 @@ const MainLeft = (props) => {
   if (sortOption === "recent") {
     sortedUsers.sort((a, b) => b.cust_id - a.cust_id);
   } else if (sortOption === "highestAmount") {
-    sortedUsers.sort((a, b) => b.cust_amt - a.cust_amt);
+    sortedUsers.sort(
+      (a, b) =>
+        (b.cust_total_amt < 0 ? b.cust_total_amt * -1 : b.cust_total_amt) -
+        (a.cust_total_amt < 0 ? a.cust_total_amt * -1 : a.cust_total_amt)
+    );
   } else if (sortOption === "name") {
     sortedUsers.sort((a, b) => a.cust_name.localeCompare(b.cust_name));
   }

@@ -223,6 +223,7 @@ const SalesForm = () => {
   const [prefixValue, setPrefixValue] = useState("");
   const [temp, setTemp] = useState("");
 
+  const [addNewPrefix, setAddNewPrefix] = useState(false);
   const [prefixSelected, setprefixSelected] = useState(true);
   const prefixSelectorHandler = () => {
     setprefixSelected(!prefixSelected);
@@ -1482,8 +1483,27 @@ const SalesForm = () => {
                         ? parseInt(defaultPrefixNo) + 1
                         : prefixNo
                     }
+                    // onChange={(e) =>
+                    //   setPrefixNo(
+                    //     salesPrefixData.find(
+                    //       (item) =>
+                    //         (item.sale_prefix_no ===
+                    //         e.target.value.replace(/[^0-9]/g, "") && item.sale_prefix === (prefixValue))
+                    //     )
+                    //       ? setAddNewPrefix(true)
+                    //       : (setAddNewPrefix(false),
+                    //         e.target.value.replace(/[^0-9]/g, ""))
+                    //   )
+                    // }
+                    helperText={
+                      addNewPrefix
+                        ? "Prefix Number Already Exists"
+                        : ""
+                    }
+                    // onChange={(e)=> setPrefixNo(e.target.value)}
                     name="prefix_number"
                   />
+                  
                 </div>
                 <div className=" absolute z-10 bg-white">
                   {addPrefix ? (
