@@ -42,8 +42,7 @@ const MyApp = () => {
             handleClickVariant("success", "add", "Staff Has been Added")
           }
         />
-      ) 
-      : anchor === "edit" ? (
+      ) : anchor === "edit" ? (
         <EditStaff
           // snack={() =>
           //   handleClickVariant("success", "edit", "Deleted Successfully")
@@ -52,8 +51,7 @@ const MyApp = () => {
             handleClickVariant("success", "edit", "Updated Successfully")
           }
         />
-      )  
-      : (
+      ) : (
         "-"
       )}
     </Box>
@@ -66,6 +64,7 @@ const MyApp = () => {
   useEffect(() => {
     checkActive();
   }, [staffId, change]);
+
   return (
     <React.Fragment>
       <Drawer
@@ -82,8 +81,7 @@ const MyApp = () => {
       >
         {list("edit")}
       </Drawer>
-      
-      
+
       <div className="mainpage">
         <Navbar />
         <div className="content flex">
@@ -110,6 +108,5 @@ const Staff = () => {
     </SnackbarProvider>
   );
 };
-
 
 export default Staff;

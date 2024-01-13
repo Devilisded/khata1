@@ -6,9 +6,9 @@ import axios from "axios";
 
 const StaffLeft = (props) => {
   //const uId = 5;
-  const { change , accountId, staffId, uId } = useContext(UserContext);
-  const [staffData , setStaffData] = useState([]);
-  const [searchValue , setSearchValue] = useState("");
+  const { change, accountId, staffId, uId } = useContext(UserContext);
+  const [staffData, setStaffData] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     axios
@@ -19,7 +19,6 @@ const StaffLeft = (props) => {
   }, [change]);
 
   return (
-
     <div className="bg-white shadow-lg w-full flex flex-col h-full">
       <div className="text-xl font-semibold flex p-5 gap-2 text-[#008cffb4] items-center border-b border-slate-300">
         Staff
@@ -57,18 +56,20 @@ const StaffLeft = (props) => {
           <div>Staff Information</div>
         </div>
         <div className="flex flex-col gap-1 h-[calc(100vh-280px)] overflow-y-scroll">
-          
-          {staffData.
-          filter(
+          {staffData
+            .filter(
               (code) =>
-                code.staff_email.toString().toLowerCase().startsWith(searchValue.toString().toLowerCase()) ||
+                code.staff_email
+                  .toString()
+                  .toLowerCase()
+                  .startsWith(searchValue.toString().toLowerCase()) ||
                 code.staff_name
                   .toLowerCase()
                   .startsWith(searchValue.toLowerCase())
             )
-          .map((filteredItem, index) => (
-            <StaffObj data={filteredItem} key={index} />
-          ))}
+            .map((filteredItem, index) => (
+              <StaffObj data={filteredItem} key={index} />
+            ))}
         </div>
       </div>
     </div>

@@ -69,6 +69,8 @@ const AddStaff = (props) => {
     }
   }, [otp]);
 
+  // this is what we are using to show and hide
+
   const [submitDisabled, setSubmitDisabled] = useState(true);
   useEffect(() => {
     if (
@@ -344,7 +346,7 @@ const AddStaff = (props) => {
         {submitDisabled ? (
           <button
             disabled={submitDisabled}
-            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px]  transition-all ease-in"
+            className="cursor-not-allowed text-slate-600 bg-slate-200 w-full p-3 rounded-[5px] transition-all ease-in"
           >
             Add Staff
           </button>

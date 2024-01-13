@@ -25,12 +25,12 @@ const AdminSidebar = () => {
       icon: <IconWallet />,
     },
     {
-      linkto: "/moderator",
+      linkto: "/admin/moderator",
       name: "Moderator",
       icon: <IconBrandAmongUs />,
     },
     {
-      linkto: "/hsncode",
+      linkto: "/admin/hsncode",
       name: "HSN Codes",
       icon: <IconBoxSeam />,
     },

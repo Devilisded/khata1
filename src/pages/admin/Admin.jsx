@@ -5,7 +5,10 @@ const Admin = () => {
   return (
     <div className="flex">
       <AdminSidebar />
-      <Outlet />
+
+      <div className="w-full">
+        <Outlet />
+      </div>
     </div>
   );
 };

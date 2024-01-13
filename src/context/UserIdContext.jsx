@@ -87,7 +87,11 @@ export const UserContextProvider = ({ children }) => {
     setUserType(userType);
   };
 
-  
+  const [modId, setModId] = useState(0); // by mayank
+  const changeModId = (modId) => {
+    setModId(modId);
+  };
+
   //  const { currentUser } = useContext(AuthContext);
 
   //  useEffect(() => {
@@ -108,9 +112,9 @@ export const UserContextProvider = ({ children }) => {
     if (currentUser) {
       setAccountId(currentUser[0].business_id);
       changeUId(currentUser[0].log_id);
-      changeAccess(currentUser[0].access)
-      changeUserType(currentUser[0].log_user)
-      console.log(currentUser[0].log_user, currentUser[0].access)
+      changeAccess(currentUser[0].access);
+      changeUserType(currentUser[0].log_user);
+      console.log(currentUser[0].log_user, currentUser[0].access);
       if (currentUser[0].log_user === 0) {
         changeParties(currentUser[0].staff_parties);
         changeBills(currentUser[0].staff_bills);
@@ -118,8 +122,6 @@ export const UserContextProvider = ({ children }) => {
       }
     }
   }, []);
-
-  
 
   return (
     <UserContext.Provider
@@ -162,6 +164,8 @@ export const UserContextProvider = ({ children }) => {
         changeAccess,
         userType,
         changeUserType,
+        modId, // by mayank
+        setModId, // by mayank
       }}
     >
       {children}

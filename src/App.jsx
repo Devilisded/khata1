@@ -35,6 +35,8 @@ import AccountRestricted from "./pages/accountRestricted/AccountRestricted";
 import StaffRestricted from "./pages/staffRestricted/StaffRestricted";
 import Admin from "./pages/admin/Admin";
 import AdminAccount from "./components/admin/adminAccount/AdminAccount";
+import HsnCode from "./components/admin/hsncode/HsnCode";
+import Moderator from "./components/admin/moderator/Moderator";
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -279,6 +281,14 @@ const App = () => {
         {
           path: "account",
           element: <AdminAccount />,
+        },
+        {
+          path: "hsncode",
+          element: <HsnCode />,
+        },
+        {
+          path: "moderator",
+          element: <Moderator />,
         },
       ],
     },
